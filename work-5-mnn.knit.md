@@ -5,9 +5,9 @@ author:
   affiliation: Cancer Research UK Cambridge Institute, Li Ka Shing Centre, Robinson Way, Cambridge CB2 0RE, United Kingdom
 - name: Michael D. Morgan
   affiliation: Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
-date: "2018-09-08"
+date: "2018-09-19"
 vignette: >
-  %\VignetteIndexEntry{5. Correcting batch effects in scRNA-seq data}
+  %\VignetteIndexEntry{05. Correcting batch effects in scRNA-seq data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}    
 output: 
@@ -805,28 +805,28 @@ data.frame(row.names=rownames(demo),
 
 ```
 ##                  Symbol Top           FDR
-## ENSG00000170561    IRX2   1  0.000000e+00
 ## ENSG00000169903  TM4SF4   1  0.000000e+00
-## ENSG00000007372    PAX6   1 1.188930e-278
-## ENSG00000078098     FAP   1 6.943194e-271
-## ENSG00000135447 PPP1R1A   1 7.924989e-267
-## ENSG00000171951    SCG2   1 2.210830e-264
-## ENSG00000018236   CNTN1   1 3.494569e-249
+## ENSG00000007372    PAX6   1  0.000000e+00
+## ENSG00000171951    SCG2   1  0.000000e+00
+## ENSG00000135447 PPP1R1A   1  0.000000e+00
+## ENSG00000170561    IRX2   1  0.000000e+00
+## ENSG00000078098     FAP   1  0.000000e+00
+## ENSG00000018236   CNTN1   1  0.000000e+00
+## ENSG00000109472     CPE   2  0.000000e+00
 ## ENSG00000115263     GCG   2  0.000000e+00
+## ENSG00000166922    SCG5   2  0.000000e+00
+## ENSG00000145730     PAM   2  0.000000e+00
+## ENSG00000155093  PTPRN2   2  0.000000e+00
 ## ENSG00000011347    SYT7   2  0.000000e+00
-## ENSG00000109472     CPE   2 2.735566e-315
-## ENSG00000166922    SCG5   2 4.455261e-278
-## ENSG00000145730     PAM   2 3.422295e-219
-## ENSG00000155093  PTPRN2   2 6.776902e-217
-## ENSG00000138131   LOXL4   2 2.933115e-179
+## ENSG00000138131   LOXL4   2 1.008531e-290
+## ENSG00000054356   PTPRN   3  0.000000e+00
+## ENSG00000089199    CHGB   3  0.000000e+00
 ## ENSG00000145321      GC   3  0.000000e+00
-## ENSG00000054356   PTPRN   3 4.292725e-309
-## ENSG00000089199    CHGB   3 2.822294e-291
-## ENSG00000163499  CRYBA2   3 1.703102e-285
-## ENSG00000004848     ARX   3 2.658646e-249
-## ENSG00000174938  SEZ6L2   3 1.818052e-234
-## ENSG00000076554   TPD52   3 9.931431e-184
-## ENSG00000138193   PLCE1   3 9.923787e-132
+## ENSG00000163499  CRYBA2   3  0.000000e+00
+## ENSG00000004848     ARX   3  0.000000e+00
+## ENSG00000174938  SEZ6L2   3  0.000000e+00
+## ENSG00000076554   TPD52   3  0.000000e+00
+## ENSG00000138193   PLCE1   3 1.535895e-190
 ```
 
 
@@ -838,8 +838,12 @@ However, the use of a linear model makes some strong assumptions about the homog
 
 
 ```r
+# Setting up the design matrix (we remove intercept for full rank
+# in the final design matrix with the cluster-specific terms).
 design <- model.matrix(~sce$Batch)
-m.alt <- findMarkers(sce, clusters$membership, design=design, 
+design <- design[,-1,drop=FALSE]
+
+m.alt <- findMarkers(sce, clusters$membership, design=design,
     direction="up")
 demo <- m.alt[["5"]]
 demo <- demo[demo$Top <= 3,]
@@ -851,17 +855,16 @@ data.frame(row.names=rownames(demo),
 ```
 
 ```
-##                 Symbol Top           FDR
-## ENSG00000118271    TTR   1 1.221128e-119
-## ENSG00000166922   SCG5   1 1.243849e-105
-## ENSG00000115263    GCG   1 3.735214e-100
-## ENSG00000109472    CPE   2  5.811790e-96
-## ENSG00000125851  PCSK2   2  4.179052e-94
-## ENSG00000169903 TM4SF4   2  1.476173e-72
-## ENSG00000204103   MAFB   2  1.441558e-44
-## ENSG00000089199   CHGB   3  7.781188e-99
-## ENSG00000145321     GC   3  7.237113e-53
-## ENSG00000170561   IRX2   3  1.069073e-31
+##                 Symbol Top FDR
+## ENSG00000166922   SCG5   1   0
+## ENSG00000125851  PCSK2   1   0
+## ENSG00000169903 TM4SF4   1   0
+## ENSG00000170561   IRX2   1   0
+## ENSG00000109472    CPE   2   0
+## ENSG00000118271    TTR   2   0
+## ENSG00000115263    GCG   2   0
+## ENSG00000145321     GC   2   0
+## ENSG00000078098    FAP   3   0
 ```
 
 It is similarly possible to perform these analyses with standard Bioconductor packages for DE analysis such as *[edgeR](https://bioconductor.org/packages/3.8/edgeR)* or *[limma](https://bioconductor.org/packages/3.8/limma)*.
@@ -910,10 +913,10 @@ sessionInfo()
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] scran_1.9.20                scater_1.9.20              
+##  [1] scran_1.9.26                scater_1.9.20              
 ##  [3] ggplot2_3.0.0               SingleCellExperiment_1.3.10
-##  [5] SummarizedExperiment_1.11.6 DelayedArray_0.7.37        
-##  [7] BiocParallel_1.15.11        matrixStats_0.54.0         
+##  [5] SummarizedExperiment_1.11.6 DelayedArray_0.7.41        
+##  [7] BiocParallel_1.15.12        matrixStats_0.54.0         
 ##  [9] GenomicRanges_1.33.13       GenomeInfoDb_1.17.1        
 ## [11] org.Hs.eg.db_3.6.0          AnnotationDbi_1.43.1       
 ## [13] IRanges_2.15.17             S4Vectors_0.19.19          
@@ -926,20 +929,20 @@ sessionInfo()
 ##  [1] dynamicTreeCut_1.63-1    viridis_0.5.1           
 ##  [3] httr_1.3.1               edgeR_3.23.3            
 ##  [5] bit64_0.9-7              viridisLite_0.3.0       
-##  [7] DelayedMatrixStats_1.3.8 assertthat_0.2.0        
+##  [7] DelayedMatrixStats_1.3.9 assertthat_0.2.0        
 ##  [9] statmod_1.4.30           highr_0.7               
 ## [11] BiocManager_1.30.2       blob_1.1.1              
 ## [13] vipor_0.4.5              GenomeInfoDbData_1.1.0  
 ## [15] yaml_2.2.0               pillar_1.3.0            
 ## [17] RSQLite_2.1.1            backports_1.1.2         
 ## [19] lattice_0.20-35          limma_3.37.4            
-## [21] glue_1.3.0               digest_0.6.16           
+## [21] glue_1.3.0               digest_0.6.17           
 ## [23] XVector_0.21.3           colorspace_1.3-2        
 ## [25] cowplot_0.9.3            htmltools_0.3.6         
 ## [27] Matrix_1.2-14            plyr_1.8.4              
 ## [29] pkgconfig_2.0.2          bookdown_0.7            
 ## [31] zlibbioc_1.27.0          purrr_0.2.5             
-## [33] scales_1.0.0             HDF5Array_1.9.15        
+## [33] scales_1.0.0             HDF5Array_1.9.19        
 ## [35] Rtsne_0.13               kmknn_0.99.16           
 ## [37] tibble_1.4.2             withr_2.1.2             
 ## [39] lazyeval_0.2.1           magrittr_1.5            

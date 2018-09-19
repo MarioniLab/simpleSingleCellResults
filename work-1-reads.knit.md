@@ -12,9 +12,9 @@ author:
   - *CRUK
   - *EMBL
   - Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
-date: "2018-09-08"
+date: "2018-09-19"
 vignette: >
-  %\VignetteIndexEntry{2. Analyzing scRNA-seq read count data}
+  %\VignetteIndexEntry{02. Analyzing scRNA-seq read count data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}    
 output: 
@@ -1142,31 +1142,31 @@ head(marker.set, 10)
 ```
 
 ```
-## DataFrame with 10 rows and 6 columns
-##              Top                  FDR           logFC.2           logFC.3
-##        <integer>            <numeric>         <numeric>         <numeric>
-## Aurkb          1 1.13058145692908e-33 -7.37163348746989 -6.72799344278974
-## Tk1            1 1.97237927427994e-29 -4.92754578116824 -7.74065112846769
-## Myh11          1 4.97451399220966e-22  4.42159319409116  4.30812919188871
-## Cdca8          1 1.55657580334351e-20 -6.84273524406495 -4.88595091616654
-## Ccna2          2 7.65737292948265e-31 -7.30797562717896 -6.96768519428654
-## Rrm2           2 6.69982658678535e-26 -5.52120320375744 -7.94685698699535
-## Cks1b          2 2.59604818646854e-17 -6.67921179963203 -5.92137180544953
-## Pirb           2 1.90345022250531e-15  5.25803750523071  5.18195597944541
-## Pimreg         3 1.28946374389102e-30 -7.30454209124205 -5.91099761451465
-## Pclaf          3 4.30426735225053e-23 -5.60087983909796 -7.56997892341564
-##                   logFC.4            logFC.5
-##                 <numeric>          <numeric>
-## Aurkb   -1.95039440707189  -6.91128801152809
-## Tk1     -3.53749564918697  -4.63516272478573
-## Myh11     4.4523571874051   1.04131495610462
-## Cdca8   -2.43821401649457  -7.12791470271152
-## Ccna2   -2.46589325539015  -7.12692720839657
-## Rrm2    -3.19173143336724  -5.42878090899579
-## Cks1b   -4.37146346065968  -6.21459246147227
-## Pirb     5.87631058664443 0.0704964374472336
-## Pimreg -0.874660675194747  -7.01798852550674
-## Pclaf   -2.36631043047157  -5.16956926737242
+## DataFrame with 10 rows and 7 columns
+##              Top              p.value                  FDR           logFC.2
+##        <integer>            <numeric>            <numeric>         <numeric>
+## Aurkb          1  6.6586365293815e-75 1.58362352578282e-70 -7.37163348746989
+## Tk1            1 6.41442400544287e-64 3.81385615303623e-60 -4.92754578116824
+## Myh11          1 4.95086470978904e-49  9.8122012827427e-46  4.42159319409116
+## Cdca8          1 2.22335011226212e-46   3.525195714662e-43 -6.84273524406495
+## Ccna2          2 1.16841256912409e-68 1.38941780657393e-64 -7.30797562717896
+## Rrm2           2 1.48873865795832e-56 5.05809592888897e-53 -5.52120320375744
+## Cks1b          2 3.83636250452745e-39 2.40105814329412e-36 -6.67921179963203
+## Pirb           2 1.83893780552265e-34 6.15992363785147e-32  5.25803750523071
+## Pimreg         3 7.41004852233185e-68 5.87443946688721e-64 -7.30454209124205
+## Pclaf          3 8.96517654145094e-51 2.13218793685327e-47 -5.60087983909796
+##                  logFC.3            logFC.4            logFC.5
+##                <numeric>          <numeric>          <numeric>
+## Aurkb  -6.72799344278974  -1.95039440707189  -6.91128801152809
+## Tk1    -7.74065112846769  -3.53749564918697  -4.63516272478573
+## Myh11   4.30812919188871    4.4523571874051   1.04131495610462
+## Cdca8  -4.88595091616654  -2.43821401649457  -7.12791470271152
+## Ccna2  -6.96768519428654  -2.46589325539015  -7.12692720839657
+## Rrm2   -7.94685698699535  -3.19173143336724  -5.42878090899579
+## Cks1b  -5.92137180544953  -4.37146346065968  -6.21459246147227
+## Pirb    5.18195597944541   5.87631058664443 0.0704964374472336
+## Pimreg -5.91099761451465 -0.874660675194747  -7.01798852550674
+## Pclaf  -7.56997892341564  -2.36631043047157  -5.16956926737242
 ```
 
 
@@ -1176,7 +1176,7 @@ We save the list of candidate marker genes for further examination.
 
 ```r
 write.table(marker.set, file="416B_marker_1.tsv", sep="\t", 
-    quote=FALSE, row.names=FALSE)
+    quote=FALSE, col.names=NA)
 ```
 
 We visualize the expression profiles of the top candidates to verify that the DE signature is robust (Figure \@ref(fig:heatmapmarker416b)). 
@@ -1226,7 +1226,8 @@ This is because the clusters have been empirically identified from the data.
 *[limma](https://bioconductor.org/packages/3.8/limma)* does not account for the uncertainty of clustering, which means that the _p_-values are much lower than they should be. 
 This is not a concern in other analyses where the groups are pre-defined.
 - The `overlapExprs` function may also be useful here, to prioritize candidates where there is clear separation between the distributions of expression values of different clusters.
-This differs from `findMarkers`, which is primarily concerned with the log-fold changes in average expression between clusters.
+This uses the Wilcoxon rank sum test to detect uneven mixing of the distributions of expression values between clusters.
+By contrast, `findMarkers` uses t-tests and is primarily concerned with log-fold changes.
 
 # Concluding remarks
 
@@ -1281,7 +1282,7 @@ sessionInfo()
 ##  [1] cluster_2.0.7-1                       
 ##  [2] dynamicTreeCut_1.63-1                 
 ##  [3] limma_3.37.4                          
-##  [4] scran_1.9.20                          
+##  [4] scran_1.9.26                          
 ##  [5] scater_1.9.20                         
 ##  [6] ggplot2_3.0.0                         
 ##  [7] TxDb.Mmusculus.UCSC.mm10.ensGene_3.4.0
@@ -1290,8 +1291,8 @@ sessionInfo()
 ## [10] AnnotationDbi_1.43.1                  
 ## [11] SingleCellExperiment_1.3.10           
 ## [12] SummarizedExperiment_1.11.6           
-## [13] DelayedArray_0.7.37                   
-## [14] BiocParallel_1.15.11                  
+## [13] DelayedArray_0.7.41                   
+## [14] BiocParallel_1.15.12                  
 ## [15] matrixStats_0.54.0                    
 ## [16] Biobase_2.41.2                        
 ## [17] GenomicRanges_1.33.13                 
@@ -1311,7 +1312,7 @@ sessionInfo()
 ##  [5] httr_1.3.1               rprojroot_1.3-2         
 ##  [7] tools_3.5.0              backports_1.1.2         
 ##  [9] R6_2.2.2                 KernSmooth_2.23-15      
-## [11] HDF5Array_1.9.15         vipor_0.4.5             
+## [11] HDF5Array_1.9.19         vipor_0.4.5             
 ## [13] DBI_1.0.0                lazyeval_0.2.1          
 ## [15] colorspace_1.3-2         withr_2.1.2             
 ## [17] tidyselect_0.2.4         gridExtra_2.3           
@@ -1319,12 +1320,12 @@ sessionInfo()
 ## [21] compiler_3.5.0           rtracklayer_1.41.5      
 ## [23] labeling_0.3             bookdown_0.7            
 ## [25] scales_1.0.0             rappdirs_0.3.1          
-## [27] stringr_1.3.1            digest_0.6.16           
+## [27] stringr_1.3.1            digest_0.6.17           
 ## [29] Rsamtools_1.33.5         rmarkdown_1.10          
 ## [31] XVector_0.21.3           pkgconfig_2.0.2         
 ## [33] htmltools_0.3.6          highr_0.7               
 ## [35] rlang_0.2.2              RSQLite_2.1.1           
-## [37] DelayedMatrixStats_1.3.8 bindr_0.1.1             
+## [37] DelayedMatrixStats_1.3.9 bindr_0.1.1             
 ## [39] dplyr_0.7.6              RCurl_1.95-4.11         
 ## [41] magrittr_1.5             GenomeInfoDbData_1.1.0  
 ## [43] Matrix_1.2-14            Rcpp_0.12.18            

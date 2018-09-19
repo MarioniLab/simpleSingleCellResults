@@ -12,9 +12,9 @@ author:
   - *CRUK
   - *EMBL
   - Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
-date: "2018-09-08"
+date: "2018-09-19"
 vignette: >
-  %\VignetteIndexEntry{3. Analyzing scRNA-seq UMI count data}
+  %\VignetteIndexEntry{03. Analyzing scRNA-seq UMI count data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}    
 output: 
@@ -637,42 +637,42 @@ head(marker.set[,1:8], 10) # only first 8 columns, for brevity
 
 ```
 ## DataFrame with 10 rows and 8 columns
-##               Top                   FDR            logFC.2           logFC.3
-##         <integer>             <numeric>          <numeric>         <numeric>
-## Snap25          1  3.1475496239189e-264 -0.354294095149351 0.340117299504504
-## Mllt11          1 9.18246270142629e-193  0.365170419908248 0.924996225036646
-## Atp1a3          1 5.34671812448944e-174  0.462504066481883  1.12674016284263
-## Gad1            1  9.8622561385453e-173   4.18705718512123  3.57360914317586
-## Celf4           1 6.02331447547877e-157 -0.187435032806592 0.704927320176858
-## Gad2            1 2.47742186552965e-152   3.81079423774551  3.28063593061477
-## Vstm2a          1 4.47537084339747e-109   2.14747846790715  2.35624004184546
-## Synpr           1  3.17695240751339e-68    2.9288511065565  2.48276527902932
-## Slc32a1         1  1.18960643638952e-64   1.72021427539416  1.57696733397569
-## Ndrg4           2    2.34988726775e-245  0.251601283679209  1.05192547512691
-##                  logFC.4             logFC.5            logFC.6
-##                <numeric>           <numeric>          <numeric>
-## Snap25  3.65521123984669     1.2457243604206   0.79590537709112
-## Mllt11  2.98325911354461    1.49884172626987  0.622323985512458
-## Atp1a3  3.23363921881298 -0.0305212989553296 -0.115321746617353
-## Gad1    3.98791017467217    3.91590008743585   4.11434816863818
-## Celf4   2.70010040039546   0.430907554882714  0.195423912602373
-## Gad2    3.63281114318632    3.45750199364546   3.76682908641341
-## Vstm2a  2.89937207148961    2.68316613092912   2.79126151922907
-## Synpr   3.08673521450369    3.02164798455159   3.08438332201148
-## Slc32a1 1.70655532822886    1.61148118807856   1.69842283940163
-## Ndrg4    3.6272374874884   0.965091775807663  0.806032578350594
-##                  logFC.7
-##                <numeric>
-## Snap25  4.07293350410887
-## Mllt11  3.18504300639575
-## Atp1a3  3.33005751985716
-## Gad1    3.92620245385403
-## Celf4    2.8103305192127
-## Gad2    3.75551894127671
-## Vstm2a  2.82944792441327
-## Synpr   3.17434289297389
-## Slc32a1 1.71531129910244
-## Ndrg4   3.59099863116024
+##               Top               p.value                   FDR
+##         <integer>             <numeric>             <numeric>
+## Snap25          1  1.5867064696874e-268 3.14754962391882e-264
+## Mllt11          1 2.31447867657062e-196 9.18246270142618e-193
+## Atp1a3          1 1.88672817822383e-177 5.34671812448942e-174
+## Gad1            1 4.97164699225956e-176 9.86225613854515e-173
+## Celf4           1 5.46552707358057e-160 6.02331447547864e-157
+## Gad2            1 2.49777876244356e-155  2.4774218655296e-152
+## Vstm2a          1 1.17315765416478e-111  4.4753708433975e-109
+## Synpr           1  2.97884331198009e-70  3.17695240751335e-68
+## Slc32a1         1  1.30132881331111e-66  1.18960643638953e-64
+## Ndrg4           2 2.36919621691788e-249 2.34988726775007e-245
+##                    logFC.2           logFC.3          logFC.4
+##                  <numeric>         <numeric>        <numeric>
+## Snap25  -0.354294095149351 0.340117299504504 3.65521123984669
+## Mllt11   0.365170419908248 0.924996225036646 2.98325911354461
+## Atp1a3   0.462504066481883  1.12674016284263 3.23363921881298
+## Gad1      4.18705718512123  3.57360914317586 3.98791017467217
+## Celf4   -0.187435032806592 0.704927320176858 2.70010040039546
+## Gad2      3.81079423774551  3.28063593061477 3.63281114318632
+## Vstm2a    2.14747846790715  2.35624004184546 2.89937207148961
+## Synpr      2.9288511065565  2.48276527902932 3.08673521450369
+## Slc32a1   1.72021427539416  1.57696733397569 1.70655532822886
+## Ndrg4    0.251601283679209  1.05192547512691  3.6272374874884
+##                     logFC.5            logFC.6
+##                   <numeric>          <numeric>
+## Snap25      1.2457243604206   0.79590537709112
+## Mllt11     1.49884172626987  0.622323985512458
+## Atp1a3  -0.0305212989553296 -0.115321746617353
+## Gad1       3.91590008743585   4.11434816863818
+## Celf4     0.430907554882714  0.195423912602373
+## Gad2       3.45750199364546   3.76682908641341
+## Vstm2a     2.68316613092912   2.79126151922907
+## Synpr      3.02164798455159   3.08438332201148
+## Slc32a1    1.61148118807856   1.69842283940163
+## Ndrg4     0.965091775807663  0.806032578350594
 ```
 
 
@@ -683,7 +683,7 @@ The `overlapExprs` function may also be useful for summarizing differences betwe
 
 ```r
 gzout <- gzfile("brain_marker_1.tsv.gz", open="wb")
-write.table(marker.set, file=gzout, sep="\t", quote=FALSE, row.names=FALSE)
+write.table(marker.set, file=gzout, sep="\t", quote=FALSE, col.names=NA)
 close(gzout)
 ```
 
@@ -748,11 +748,11 @@ sessionInfo()
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] pheatmap_1.0.10             scran_1.9.20               
+##  [1] pheatmap_1.0.10             scran_1.9.26               
 ##  [3] scater_1.9.20               ggplot2_3.0.0              
 ##  [5] org.Mm.eg.db_3.6.0          AnnotationDbi_1.43.1       
 ##  [7] SingleCellExperiment_1.3.10 SummarizedExperiment_1.11.6
-##  [9] DelayedArray_0.7.37         BiocParallel_1.15.11       
+##  [9] DelayedArray_0.7.41         BiocParallel_1.15.12       
 ## [11] matrixStats_0.54.0          Biobase_2.41.2             
 ## [13] GenomicRanges_1.33.13       GenomeInfoDb_1.17.1        
 ## [15] IRanges_2.15.17             S4Vectors_0.19.19          
@@ -766,19 +766,19 @@ sessionInfo()
 ##  [5] rprojroot_1.3-2          dynamicTreeCut_1.63-1   
 ##  [7] tools_3.5.0              backports_1.1.2         
 ##  [9] R6_2.2.2                 irlba_2.3.2             
-## [11] HDF5Array_1.9.15         vipor_0.4.5             
+## [11] HDF5Array_1.9.19         vipor_0.4.5             
 ## [13] DBI_1.0.0                lazyeval_0.2.1          
 ## [15] colorspace_1.3-2         withr_2.1.2             
 ## [17] tidyselect_0.2.4         gridExtra_2.3           
 ## [19] bit_1.1-14               compiler_3.5.0          
 ## [21] labeling_0.3             bookdown_0.7            
 ## [23] scales_1.0.0             rappdirs_0.3.1          
-## [25] stringr_1.3.1            digest_0.6.16           
+## [25] stringr_1.3.1            digest_0.6.17           
 ## [27] rmarkdown_1.10           XVector_0.21.3          
 ## [29] pkgconfig_2.0.2          htmltools_0.3.6         
 ## [31] limma_3.37.4             highr_0.7               
 ## [33] rlang_0.2.2              RSQLite_2.1.1           
-## [35] DelayedMatrixStats_1.3.8 bindr_0.1.1             
+## [35] DelayedMatrixStats_1.3.9 bindr_0.1.1             
 ## [37] dplyr_0.7.6              RCurl_1.95-4.11         
 ## [39] magrittr_1.5             GenomeInfoDbData_1.1.0  
 ## [41] Matrix_1.2-14            Rcpp_0.12.18            

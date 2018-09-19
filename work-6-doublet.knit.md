@@ -3,9 +3,9 @@ title: Detecting doublets in single-cell RNA-seq data
 author:
 - name: Aaron T. L. Lun
   affiliation: &CRUK Cancer Research UK Cambridge Institute, Li Ka Shing Centre, Robinson Way, Cambridge CB2 0RE, United Kingdom
-date: "2018-09-09"
+date: "2018-09-19"
 vignette: >
-  %\VignetteIndexEntry{8. Detecting doublets in scRNA-seq data}
+  %\VignetteIndexEntry{08. Detecting doublets in scRNA-seq data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 output:
@@ -262,7 +262,7 @@ plotTSNE(sce, colour_by="Cluster")
 
 # Doublet detection with clusters
 
-The `doubletCluster()` function will identify clusters that have intermediate expression profiles of two other clusters [@bach2018differentiation].
+The `doubletCluster()` function will identify clusters that have intermediate expression profiles of two other clusters [@bach2017differentiation].
 Specifically, it will examine every possible triplet of clusters consisting of a query cluster and its two "parents".
 It will then compute a number of statistics:
 
@@ -285,16 +285,16 @@ dbl.out
 ##         source1     source2         N        best              p.value
 ##     <character> <character> <integer> <character>            <numeric>
 ## 7             8           5         0       Fabp3   0.0516239051106075
-## 10           13           2        13        Xist 1.73868501814697e-29
+## 10           13           2        13        Xist 1.73868501814698e-29
 ## 8            12           1        28         Ptn 1.10432261800312e-14
 ## 5            12           7        49       Cotl1 7.90164177238926e-08
 ## 6             7           2        56      Sec61b  1.3329887878903e-07
 ## ...         ...         ...       ...         ...                  ...
-## 2            12           6       182       Cdc20 1.47756925944611e-19
+## 2            12           6       182       Cdc20  1.4775692594461e-19
 ## 13           14          12       198        Gpx3  1.1282711558589e-19
-## 4            14          12       270        C1qb 9.41841774529012e-49
-## 11           14          12       299       Fabp4  2.7072539896372e-32
-## 14           13          11       388         Dcn 4.93706079643113e-32
+## 4            14          12       270        C1qb 9.41841774529017e-49
+## 11           14          12       299       Fabp4 2.70725398963721e-32
+## 14           13          11       388         Dcn 4.93706079643116e-32
 ##             lib.size1         lib.size2                prop
 ##             <numeric>         <numeric>           <numeric>
 ## 7   0.456830005034402 0.574593052525592  0.0303030303030303
@@ -343,7 +343,7 @@ plotHeatmap(sce, columns=order(sce$Cluster), colour_columns_by="Cluster",
 
 
 
-Closer examination of some known markers suggests that the offending cluster consists of doublets of basal cells (_Acta2_) and alveolar cells (_Csn2_) (Figure \@ref(fig:markerexprs))).
+Closer examination of some known markers suggests that the offending cluster consists of doublets of basal cells (_Acta2_) and alveolar cells (_Csn2_) (Figure \@ref(fig:markerexprs)).
 Indeed, no cell type is known to strongly express both of these genes at the same time, which supports the hypothesis that this cluster consists solely of doublets.
 Of course, it is possible that this cluster represents an entirely novel cell type, though the presence of doublets provides a more sober explanation for its expression profile.
 
@@ -443,6 +443,9 @@ Another approach is to use these scores in the context of cluster annotation, wh
 
 **Comments from Aaron:**
 
+- To speed up the density calculations, `doubletCells()` will perform a PCA on the log-expression matrix. 
+When `approximate=TRUE`, methods from the *[irlba](https://CRAN.R-project.org/package=irlba)* package are used to perform a fast approximate PCA.
+This involves randomization so it is necessary to call `set.seed()` to ensure that results are reproducible.
 - In some cases, we can improve the clarity of the result by setting `force.match=TRUE` in the `doubletCells()` call.
 This will forcibly match each simulated doublet to the nearest neighbouring cells in the original data set.
 Any systematic differences between simulated and real doublets will be removed, provided that the former are close enough to the latter to identify the correct nearest neighbours.
@@ -452,12 +455,30 @@ This will provide an accurate estimate of the total RNA content of each cell.
 To this end, size factors from `computeSpikeFactors()` (see [here](https://bioconductor.org/packages/3.8/simpleSingleCell/vignettes/xtra-2-spike)) can be supplied to the `doubletCells()` function via the `size.factors.content=` argument.
 This will use the spike-in size factors to scale the contribution of each cell to a doublet library.
 
+# Concluding remarks
+
+Doublet detection procedures should only be applied to libraries generated in the same experimental batch.
+It is obviously impossible for doublets to form between two cells that were captured separately.
+Thus, some understanding of the experimental design is required prior to the use of the above functions.
+This avoids unnecessary concerns about the validity of clusters when they cannot possibly consist of doublets.
+
+It is also difficult to interpret doublet predictions in data containing cellular trajectories.
+By definition, cells in the middle of a trajectory are always intermediate between other cells and are liable to be incorrectly detected as doublets.
+Some protection is provided by the non-linear nature of many real trajectories, which reduces the risk of simulated doublets coinciding with real cells in `doubletCells()`.
+One can also put more weight on the relative library sizes in `doubletCluster()` instead of relying on `N`, 
+under the assumption that sudden spikes in RNA content are unlikely in a continuous biological process.
+
 # Session information
+
+We save the `SingleCellExperiment` object with its associated data to file for future use.
 
 
 ```r
 saveRDS(sce, file="mammary.rds")
 ```
+
+All software packages used in this workflow are publicly available from the Comprehensive R Archive Network (https://cran.r-project.org) or the Bioconductor project (http://bioconductor.org).
+The specific version numbers of the packages used are shown below, along with the version of the R installation.
 
 
 ```r
@@ -486,7 +507,7 @@ sessionInfo()
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] scran_1.9.20                          
+##  [1] scran_1.9.26                          
 ##  [2] TxDb.Mmusculus.UCSC.mm10.ensGene_3.4.0
 ##  [3] GenomicFeatures_1.33.2                
 ##  [4] AnnotationDbi_1.43.1                  
@@ -495,8 +516,8 @@ sessionInfo()
 ##  [7] ggplot2_3.0.0                         
 ##  [8] SingleCellExperiment_1.3.10           
 ##  [9] SummarizedExperiment_1.11.6           
-## [10] DelayedArray_0.7.37                   
-## [11] BiocParallel_1.15.11                  
+## [10] DelayedArray_0.7.41                   
+## [11] BiocParallel_1.15.12                  
 ## [12] matrixStats_0.54.0                    
 ## [13] Biobase_2.41.2                        
 ## [14] GenomicRanges_1.33.13                 
@@ -516,7 +537,7 @@ sessionInfo()
 ##  [5] httr_1.3.1               rprojroot_1.3-2         
 ##  [7] dynamicTreeCut_1.63-1    tools_3.5.0             
 ##  [9] backports_1.1.2          irlba_2.3.2             
-## [11] R6_2.2.2                 HDF5Array_1.9.15        
+## [11] R6_2.2.2                 HDF5Array_1.9.19        
 ## [13] vipor_0.4.5              DBI_1.0.0               
 ## [15] lazyeval_0.2.1           colorspace_1.3-2        
 ## [17] withr_2.1.2              tidyselect_0.2.4        
@@ -525,12 +546,12 @@ sessionInfo()
 ## [23] labeling_0.3             rtracklayer_1.41.5      
 ## [25] bookdown_0.7             scales_1.0.0            
 ## [27] rappdirs_0.3.1           stringr_1.3.1           
-## [29] digest_0.6.16            Rsamtools_1.33.5        
+## [29] digest_0.6.17            Rsamtools_1.33.5        
 ## [31] rmarkdown_1.10           XVector_0.21.3          
 ## [33] pkgconfig_2.0.2          htmltools_0.3.6         
 ## [35] highr_0.7                limma_3.37.4            
 ## [37] rlang_0.2.2              RSQLite_2.1.1           
-## [39] DelayedMatrixStats_1.3.8 bindr_0.1.1             
+## [39] DelayedMatrixStats_1.3.9 bindr_0.1.1             
 ## [41] dplyr_0.7.6              RCurl_1.95-4.11         
 ## [43] magrittr_1.5             GenomeInfoDbData_1.1.0  
 ## [45] Rcpp_0.12.18             ggbeeswarm_0.6.0        
