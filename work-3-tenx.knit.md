@@ -3,9 +3,9 @@ title: Analyzing single-cell RNA sequencing data from droplet-based protocols
 author: 
 - name: Aaron T. L. Lun
   affiliation: Cancer Research UK Cambridge Institute, Li Ka Shing Centre, Robinson Way, Cambridge CB2 0RE, United Kingdom
-date: "2018-09-19"
+date: "2018-10-08"
 vignette: >
-  %\VignetteIndexEntry{04. Analyzing droplet-based scRNA-seq data}
+  %\VignetteIndexEntry{04. Droplet-based data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}    
 output: 
@@ -122,7 +122,7 @@ summary(location=="MT")
 An interesting aspect of droplet-based data is that we have no prior knowledge about which droplets (i.e., cell barcodes) actually contain cells, and which are empty.
 Thus, we need to call cells from empty droplets based on the observed expression profiles.
 This is not entirely straightforward as empty droplets can contain ambient (i.e., extracellular) RNA that can be captured and sequenced.
-An examination of the distribution of total counts suggests a fairly sharp transition between barcodes with large and small total counts (Figure \@ref(fig:rankplot)),
+The distribution of total counts exhibits a sharp transition between barcodes with large and small total counts (Figure \@ref(fig:rankplot)),
 probably corresponding to cell-containing and empty droplets respectively.
 
 
@@ -146,7 +146,7 @@ legend("bottomleft", legend=c("Inflection", "Knee"),
 <p class="caption">(\#fig:rankplot)Total UMI count for each barcode in the PBMC dataset, plotted against its rank (in decreasing order of total counts). The inferred locations of the inflection and knee points are also shown.</p>
 </div>
 
-We use the `emptyDrops()` function to test whether the expression profile for each cell barcode is significantly different from the ambient pool [@lun2018distinguishing].
+We use the `emptyDrops()` function to test whether the expression profile for each cell barcode is significantly different from the ambient RNA pool [@lun2018distinguishing].
 Any significant deviation indicates that the barcode corresponds to a cell-containing droplet.
 We call cells at a false discovery rate (FDR) of 1%, meaning that no more than 1% of our called barcodes should be empty droplets on average.
 
@@ -158,7 +158,7 @@ sum(e.out$FDR <= 0.01, na.rm=TRUE)
 ```
 
 ```
-## [1] 4453
+## [1] 4358
 ```
 
 We then subset our `SingleCellExperiment` object to retain only the detected cells.
@@ -171,8 +171,9 @@ sce <- sce[,which(e.out$FDR <= 0.01)]
 
 **Comments from Aaron:**
 
-- `emptyDrops()` computes Monte Carlo _p_-values, so it is important to set the random seed to obtain reproducible results.
-- The function assumes that cell barcodes with total UMI counts below a certain threshold (default of 100) correspond to empty droplets, 
+- `emptyDrops()` computes Monte Carlo _p_-values based on a Dirichlet-multinomial model of sampling molecules into droplets.
+These _p_-values are stochastic so it is important to set the random seed to obtain reproducible results.
+- The function assumes that cell barcodes with total UMI counts below a certain threshold (`lower=100` by default) correspond to empty droplets, 
 and uses them to estimate the ambient expression profile.
 By definition, these barcodes cannot be cell-containing droplets and are excluded from the hypothesis testing, hence the `NA`s in the output.
 - Users wanting to use the cell calling algorithm from the _CellRanger_ pipeline can call `defaultDrops()` instead.
@@ -194,8 +195,8 @@ table(Sig=e.out$FDR <= 0.01, Limited=e.out$Limited)
 ```
 ##        Limited
 ## Sig     FALSE TRUE
-##   FALSE   836    0
-##   TRUE   1751 2702
+##   FALSE   931    0
+##   TRUE   1745 2613
 ```
 
 As mentioned above, `emptyDrops()` assumes that barcodes with low total UMI counts are empty droplets.
@@ -218,10 +219,8 @@ hist(all.out$PValue[all.out$Total <= limit & all.out$Total > 0],
 <p class="caption">(\#fig:ambientpvalhist)Distribution of p-values for the assumed empty droplets.</p>
 </div>
 
-Large peaks near zero indicate that barcodes with total counts below `limit` are not all ambient.
-This can be resolved by decreasing `limit` further to exclude barcodes corresponding to droplets with very small cells.
-Alternatively, it may indicate that the transcripts are not independently sampled into droplets.
-This can be accommodated by setting `alpha=NULL` in `emptyDrops()` to account for overdispersion in sampling. 
+Large peaks near zero indicate that barcodes with total counts below `lower` are not all ambient.
+This can be resolved by decreasing `lower` further to exclude barcodes corresponding to droplets with very small cells.
 
 # Quality control on the cells
 
@@ -260,7 +259,7 @@ summary(high.mito)
 
 ```
 ##    Mode   FALSE    TRUE 
-## logical    4115     338
+## logical    4037     321
 ```
 
 **Comments from Aaron:**
@@ -315,7 +314,7 @@ table(clusters)
 ```
 ## clusters
 ##    1    2    3    4    5 
-##  933  232 1230 1149  571
+##  937  269 1173 1109  549
 ```
 
 We apply the deconvolution method to compute size factors for all cells [@lun2016pooling].
@@ -329,7 +328,7 @@ summary(sizeFactors(sce))
 
 ```
 ##      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
-##  0.006186  0.718973  0.888180  1.000000  1.112198 12.915774
+##  0.005117  0.722562  0.884547  1.000000  1.105609 12.711794
 ```
 
 The size factors are well correlated against the library sizes (Figure \@ref(fig:sfplot)), indicating that capture efficiency and sequencing depth are the major biases.
@@ -411,12 +410,12 @@ head(top.dec)
 ## DataFrame with 6 rows and 6 columns
 ##                     mean            total              bio              tech
 ##                <numeric>        <numeric>        <numeric>         <numeric>
-## LYZ     2.02284931288164 5.34935900326918  4.7039036085117 0.645455394757482
-## S100A9  1.98568762295228 4.81257556027317 4.16184313894573 0.650732421327444
-## S100A8  1.76819835306268 4.72229787951705 4.04635016513721 0.675947714379834
-## HLA-DRA  2.1243268398276 3.75858487230521  3.1286471349007 0.629937737404506
-## CD74    2.89661449698661 3.36247132560491 2.87118430224341 0.491287023361501
-## CST3    1.52092418862097  3.0646402626279 2.37588695981624 0.688753302811662
+## LYZ     2.00433282867795 5.27238976970295 4.63611169338538 0.636278076317563
+## S100A9  1.96814061490774 4.73501347757919 4.09335226800879 0.641661209570392
+## S100A8   1.7450872893628 4.62384461299396 3.95524147335823 0.668603139635734
+## HLA-DRA 2.10913349062558 3.74365888475255 3.12419870700643 0.619460177746116
+## CD74    2.88808019297542 3.34102575092047 2.86962155465658 0.471404196263887
+## CST3    1.51005991810233 3.04448800763578 2.36293668357704 0.681551324058745
 ##           p.value       FDR
 ##         <numeric> <numeric>
 ## LYZ             0         0
@@ -461,7 +460,7 @@ ncol(reducedDim(sce, "PCA"))
 ```
 
 ```
-## [1] 13
+## [1] 11
 ```
 
 
@@ -518,7 +517,7 @@ table(sce$Cluster)
 ```
 ## 
 ##   1   2   3   4   5   6   7   8   9  10  11  12  13  14 
-##  58  46 610 537 203 558 703 132 168  29 790  92 153  36
+## 850 591 544 200 534  46 120  46 798  40 136  29  17  86
 ```
 
 We look at the ratio of the observed and expected edge weights to confirm that the clusters are modular.
@@ -562,41 +561,53 @@ Again, we only look at upregulated genes in each cluster, as these are more usef
 markers <- findMarkers(sce, clusters=sce$Cluster, direction="up")
 ```
 
-We examine the markers for cluster 2 in more detail.
+We examine the markers for cluster 8 in more detail.
 The upregulation of genes such as _PF4_ and _PPBP_ suggests that this cluster contains platelets or their precursors.
 
 
 ```r
-marker.set <- markers[["2"]]
+marker.set <- markers[["8"]]
 head(marker.set[,1:8], 10) # only first 8 columns, for brevity
 ```
 
 ```
 ## DataFrame with 10 rows and 8 columns
-##              Top              p.value                  FDR          logFC.1
-##        <integer>            <numeric>            <numeric>        <numeric>
-## TMSB4X         1 3.99530838623268e-37 1.34617920765724e-32 3.05272983508684
-## PF4            1 1.00151985241629e-30 1.68726049536571e-26 6.80041172088112
-## TAGLN2         2 9.27068382228275e-27 1.04122140235999e-22 4.96408414309086
-## B2M            3 1.84261922919592e-24 1.55213030771318e-20 1.73786333536748
-## SDPR           3 2.04016400896676e-23 1.37482572236251e-19 5.70565120550292
-## GPX1           4 5.71359452979871e-22 3.20856423478396e-18 3.47637059658915
-## NRGN           5 7.04378406785277e-22 3.39047514831758e-18 4.94092307532316
-## ACTB           6 3.51270495136094e-21 1.47946350788944e-17 3.22904067727421
-## PPBP           6 5.81836687048384e-21 2.17826725926758e-17 6.54507211689417
-## GNG11          7  7.8325130469107e-20  2.6390869460261e-16 5.54759889764733
-##                 logFC.3          logFC.4          logFC.5          logFC.6
-##               <numeric>        <numeric>        <numeric>        <numeric>
-## TMSB4X 3.23817469341465 3.25524908164327 3.49845300342833 3.85438422048691
-## PF4    6.82208636836457 6.82567215587966 6.81969449408296 6.82481200957178
-## TAGLN2 4.75903518033134 4.92707026862085 4.92288952964962 4.64542425674851
-## B2M    1.44669301277189   1.194726259807 1.36660978430939 2.11286488707311
-## SDPR   5.73589571605448 5.74364680060088 5.74364680060088 5.73431152782485
-## GPX1   5.26550091465639 5.43024494730159 5.49729075869164 5.00088324121661
-## NRGN   5.02343881236173 5.03008574871641 5.03038151507198 5.02709917182746
-## ACTB   3.71818429217299 3.49673280842883 3.33780538275341 4.07449134468409
-## PPBP   6.59294933433555 6.60137150268145 6.60037984168758 6.59434422306224
-## GNG11  5.58971956500863  5.5928996921033 5.59775686044506 5.56345678744932
+##                 Top              p.value                  FDR
+##           <integer>            <numeric>            <numeric>
+## TMSB4X            1 5.35760583326261e-35  1.8051917094595e-30
+## PF4               1 5.12050931325382e-30 8.62652204003868e-26
+## TAGLN2            2 9.84031158911545e-26 1.10519819561219e-21
+## SDPR              2 1.09264714960276e-22  9.2039132646789e-19
+## GPX1              3  8.8776256972845e-22  5.9824544048861e-18
+## PPBP              3 4.66923110355769e-21 2.62208454672122e-17
+## ACTB              4  2.1293693738595e-20 8.96837146035275e-17
+## NRGN              5 9.50068126106725e-21  4.5730850630057e-17
+## GNG11             7 3.99705163013454e-19 1.49640730695281e-15
+## HIST1H2AC         8  9.7347880763609e-19 3.28003949444905e-15
+##                    logFC.1          logFC.2          logFC.3
+##                  <numeric>        <numeric>        <numeric>
+## TMSB4X    2.28378175710327 2.72251442896142 2.76133648694816
+## PF4        6.3180410124472 6.36708295382423 6.37291217458349
+## TAGLN2    4.46385139989111 4.26174885894995 4.46325505239159
+## SDPR      5.28229555255907 5.33079013944103 5.33711366958133
+## GPX1      2.49875298171963 4.80932926423923 4.93623033629471
+## PPBP      6.09985681188489 6.19243453124335  6.1970659544121
+## ACTB      2.33529538395888 3.21038176116685  3.0073999346119
+## NRGN      4.36583495397255 4.59794551675681 4.60087668501509
+## GNG11     5.11648049930094 5.16755151142283 5.17120403573627
+## HIST1H2AC 5.10888323361265 5.14563307683107 5.14606795276647
+##                    logFC.4          logFC.5
+##                  <numeric>        <numeric>
+## TMSB4X    2.99168279631072 3.36484534862961
+## PF4       6.36659548548937 6.37432350301952
+## TAGLN2    4.41428250025306  4.1619645723748
+## SDPR      5.33711366958133 5.32700873954551
+## GPX1      5.00157378898467 4.51330365854975
+## PPBP       6.1973642133943 6.19154459691209
+## ACTB      2.81031789967064 3.59027478829347
+## NRGN      4.60388537827064 4.60053114511147
+## GNG11     5.17562678251855 5.14000969651157
+## HIST1H2AC 5.17054604083487 5.07232660241665
 ```
 
 
@@ -657,15 +668,15 @@ sessionInfo()
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] pheatmap_1.0.10             scran_1.9.26               
+##  [1] pheatmap_1.0.10             scran_1.9.31               
 ##  [3] EnsDb.Hsapiens.v86_2.99.0   ensembldb_2.5.8            
 ##  [5] AnnotationFilter_1.5.2      GenomicFeatures_1.33.2     
 ##  [7] AnnotationDbi_1.43.1        scater_1.9.20              
-##  [9] ggplot2_3.0.0               DropletUtils_1.1.10        
+##  [9] ggplot2_3.0.0               DropletUtils_1.1.11        
 ## [11] SingleCellExperiment_1.3.10 SummarizedExperiment_1.11.6
-## [13] DelayedArray_0.7.41         matrixStats_0.54.0         
-## [15] Biobase_2.41.2              GenomicRanges_1.33.13      
-## [17] GenomeInfoDb_1.17.1         IRanges_2.15.17            
+## [13] DelayedArray_0.7.43         matrixStats_0.54.0         
+## [15] Biobase_2.41.2              GenomicRanges_1.33.14      
+## [17] GenomeInfoDb_1.17.2         IRanges_2.15.18            
 ## [19] S4Vectors_0.19.19           BiocGenerics_0.27.1        
 ## [21] BiocParallel_1.15.12        bindrcpp_0.2.2             
 ## [23] BiocFileCache_1.5.5         dbplyr_1.2.2               
@@ -684,29 +695,29 @@ sessionInfo()
 ## [19] tidyselect_0.2.4         gridExtra_2.3           
 ## [21] prettyunits_1.0.2        curl_3.2                
 ## [23] bit_1.1-14               compiler_3.5.0          
-## [25] labeling_0.3             rtracklayer_1.41.5      
-## [27] bookdown_0.7             scales_1.0.0            
-## [29] rappdirs_0.3.1           stringr_1.3.1           
-## [31] digest_0.6.17            Rsamtools_1.33.5        
-## [33] rmarkdown_1.10           XVector_0.21.3          
-## [35] pkgconfig_2.0.2          htmltools_0.3.6         
-## [37] highr_0.7                limma_3.37.4            
-## [39] rlang_0.2.2              RSQLite_2.1.1           
-## [41] DelayedMatrixStats_1.3.9 bindr_0.1.1             
-## [43] dplyr_0.7.6              RCurl_1.95-4.11         
-## [45] magrittr_1.5             GenomeInfoDbData_1.1.0  
-## [47] Matrix_1.2-14            Rcpp_0.12.18            
-## [49] ggbeeswarm_0.6.0         munsell_0.5.0           
-## [51] Rhdf5lib_1.3.3           viridis_0.5.1           
-## [53] stringi_1.2.4            yaml_2.2.0              
-## [55] edgeR_3.23.3             zlibbioc_1.27.0         
-## [57] Rtsne_0.13               rhdf5_2.25.9            
-## [59] plyr_1.8.4               grid_3.5.0              
-## [61] blob_1.1.1               crayon_1.3.4            
-## [63] lattice_0.20-35          cowplot_0.9.3           
-## [65] Biostrings_2.49.1        hms_0.4.2               
-## [67] locfit_1.5-9.1           pillar_1.3.0            
-## [69] igraph_1.2.2             kmknn_0.99.16           
+## [25] BiocNeighbors_0.99.20    labeling_0.3            
+## [27] rtracklayer_1.41.5       bookdown_0.7            
+## [29] scales_1.0.0             rappdirs_0.3.1          
+## [31] stringr_1.3.1            digest_0.6.17           
+## [33] Rsamtools_1.33.5         rmarkdown_1.10          
+## [35] XVector_0.21.3           pkgconfig_2.0.2         
+## [37] htmltools_0.3.6          highr_0.7               
+## [39] limma_3.37.7             rlang_0.2.2             
+## [41] RSQLite_2.1.1            DelayedMatrixStats_1.3.9
+## [43] bindr_0.1.1              dplyr_0.7.6             
+## [45] RCurl_1.95-4.11          magrittr_1.5            
+## [47] GenomeInfoDbData_1.1.0   Matrix_1.2-14           
+## [49] Rcpp_0.12.18             ggbeeswarm_0.6.0        
+## [51] munsell_0.5.0            Rhdf5lib_1.3.3          
+## [53] viridis_0.5.1            stringi_1.2.4           
+## [55] yaml_2.2.0               edgeR_3.23.5            
+## [57] zlibbioc_1.27.0          Rtsne_0.14              
+## [59] rhdf5_2.25.11            plyr_1.8.4              
+## [61] grid_3.5.0               blob_1.1.1              
+## [63] crayon_1.3.4             lattice_0.20-35         
+## [65] cowplot_0.9.3            Biostrings_2.49.1       
+## [67] hms_0.4.2                locfit_1.5-9.1          
+## [69] pillar_1.3.0             igraph_1.2.2            
 ## [71] reshape2_1.4.3           biomaRt_2.37.6          
 ## [73] XML_3.98-1.16            glue_1.3.0              
 ## [75] evaluate_0.11            BiocManager_1.30.2      
