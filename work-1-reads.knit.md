@@ -12,9 +12,9 @@ author:
   - *CRUK
   - *EMBL
   - Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
-date: "2018-09-19"
+date: "2018-11-02"
 vignette: >
-  %\VignetteIndexEntry{02. Analyzing scRNA-seq read count data}
+  %\VignetteIndexEntry{02. Read count data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}    
 output: 
@@ -35,7 +35,7 @@ High-throughput sequencing was performed and the expression of each gene was qua
 Similarly, the quantity of each spike-in transcript was measured by counting the number of reads mapped to the spike-in reference sequences.
 
 Counts for all genes/transcripts in each cell are available from ArrayExpress using the accession number [E-MTAB-5522](https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-5522).
-We download both the count tables (in the "processed files") as well as the metadata file using the *[BiocFileCache](https://bioconductor.org/packages/3.8/BiocFileCache)* framework.
+We download both the count tables (in the "processed files") as well as the metadata file using the *[BiocFileCache](https://bioconductor.org/packages/3.9/BiocFileCache)* package. 
 This saves the files to a local cache (`raw_data`) and avoids re-downloading them if they are already present.
 
 
@@ -50,6 +50,13 @@ lun.sdrf <- bfcrpath(bfc,
         "E-MTAB-5522/E-MTAB-5522.sdrf.txt"))
 unzip(lun.zip)
 ```
+
+<!--
+We don't use a global cache to ensure that the package build is self-contained on the Bioc build system and elsewhere.
+This avoids problems with cross-package behaviour.
+It also ensures that a new file is downloaded at every build, which is necessary for checking that the files are current.
+We avoid hosting an extra copy of everything (locally) by soft-linking raw_data to ~/.cache/BiocFileCache/.
+-->
 
 # Setting up the data
 
@@ -88,7 +95,7 @@ stopifnot(identical(rownames(plate1), rownames(plate2)))
 all.counts <- cbind(plate1, plate2)
 ```
 
-For convenience, the count matrix is stored in a `SingleCellExperiment` object from the *[SingleCellExperiment](https://bioconductor.org/packages/3.8/SingleCellExperiment)* package.
+For convenience, the count matrix is stored in a `SingleCellExperiment` object from the *[SingleCellExperiment](https://bioconductor.org/packages/3.9/SingleCellExperiment)* package.
 This allows different types of row- and column-level metadata to be stored alongside the counts for synchronized manipulation throughout the workflow.
 
 
@@ -202,7 +209,7 @@ table(colData(sce)$Oncogene, colData(sce)$Plate)
 Feature-counting tools typically report genes in terms of standard identifiers from Ensembl or Entrez.
 These identifiers are used as they are unambiguous and highly stable.
 However, they are difficult to interpret compared to the gene symbols which are more commonly used in the literature.
-Given the Ensembl identifiers, we obtain the corresponding gene symbols using annotation packages like *[org.Mm.eg.db](https://bioconductor.org/packages/3.8/org.Mm.eg.db)*.
+Given the Ensembl identifiers, we obtain the corresponding gene symbols using annotation packages like *[org.Mm.eg.db](https://bioconductor.org/packages/3.9/org.Mm.eg.db)*.
 
 
 ```r
@@ -245,7 +252,7 @@ head(rownames(sce))
 ## [4] "ENSMUSG00000102851" "ENSMUSG00000103377" "ENSMUSG00000104017"
 ```
 
-We also determine the chromosomal location for each gene using the *[TxDb.Mmusculus.UCSC.mm10.ensGene](https://bioconductor.org/packages/3.8/TxDb.Mmusculus.UCSC.mm10.ensGene)* package.
+We also determine the chromosomal location for each gene using the *[TxDb.Mmusculus.UCSC.mm10.ensGene](https://bioconductor.org/packages/3.9/TxDb.Mmusculus.UCSC.mm10.ensGene)* package.
 This will be useful later as several quality control metrics will be computed from rows corresponding to mitochondrial genes.
 
 
@@ -262,7 +269,7 @@ summary(location=="chrM")
 ## logical   22428      13   24255
 ```
 
-Alternatively, annotation from BioMart resources can be directly added to the object using the `getBMFeatureAnnos` function from *[scater](https://bioconductor.org/packages/3.8/scater)*.
+Alternatively, annotation from BioMart resources can be directly added to the object using the `getBMFeatureAnnos` function from *[scater](https://bioconductor.org/packages/3.9/scater)*.
 This may be more convenient than the approach shown above, but depends on an available internet connection to the BioMart databases.
 
 # Quality control on the cells 
@@ -283,7 +290,7 @@ The same amount of spike-in RNA to each cell, so an enrichment in spike-in count
 High proportions are indicative of poor-quality cells [@islam2014quantitative;@ilicic2016classification], possibly because of loss of cytoplasmic RNA from perforated cells.
 The reasoning is that mitochondria are larger than individual transcript molecules and less likely to escape through tears in the cell membrane.
 
-For each cell, we calculate these quality control metrics using the `calculateQCMetrics` function from the *[scater](https://bioconductor.org/packages/3.8/scater)* package [@mccarthy2017scater].
+For each cell, we calculate these quality control metrics using the `calculateQCMetrics` function from the *[scater](https://bioconductor.org/packages/3.9/scater)* package [@mccarthy2017scater].
 These are stored in the row- and column-wise metadata of the `SingleCellExperiment` for future reference.
 
 
@@ -412,7 +419,7 @@ dim(sce)
 
 **Comments from Aaron:**
 
-- See [this section](https://bioconductor.org/packages/3.8/simpleSingleCell/vignettes/xtra-1-qc.html#assumptions-of-outlier-identification) for a more detailed discussion of the assumptions underlying the outlier-based detection of low-quality cells.
+- See [this section](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/xtra-1-qc.html#assumptions-of-outlier-identification) for a more detailed discussion of the assumptions underlying the outlier-based detection of low-quality cells.
 - `isOutlier()` will also return the exact filter thresholds for each metric (within each batch, if `batch=` is specified).
 These may be useful for checking whether the automatically selected thresholds are appropriate.
 
@@ -444,7 +451,7 @@ Using a training dataset, the sign of the difference in expression between two g
 Pairs with changes in the sign across cell cycle phases were chosen as markers.
 Cells in a test dataset can then be classified into the appropriate phase, based on whether the observed sign for each marker pair is consistent with one phase or another.
 
-This approach is implemented in the `cyclone` function from the *[scran](https://bioconductor.org/packages/3.8/scran)* package.
+This approach is implemented in the `cyclone` function from the *[scran](https://bioconductor.org/packages/3.9/scran)* package.
 The package contains a pre-trained set of marker pairs for mouse data, which we can load in the the `readRDS` function.
 We use the Ensembl identifiers for each gene in our dataset to match up with the names in the pre-trained set of gene pairs.
 
@@ -490,7 +497,7 @@ table(sce$phases)
 ##  99  62  22
 ```
 
-Pre-trained classifiers are available in *[scran](https://bioconductor.org/packages/3.8/scran)* for human and mouse data. 
+Pre-trained classifiers are available in *[scran](https://bioconductor.org/packages/3.9/scran)* for human and mouse data. 
 While the mouse classifier used here was trained on data from embryonic stem cells, it is still accurate for other cell types [@scialdone2015computational].
 This may be due to the conservation of the transcriptional program associated with the cell cycle [@bertoli2013control;@conboy2007cell].
 The pair-based method is also a non-parametric procedure that is robust to most technical differences between datasets.
@@ -616,7 +623,7 @@ This is often done by assuming that most genes are not differentially expressed 
 Any systematic difference in count size across the non-DE majority of genes between two cells is assumed to represent bias and is removed by scaling.
 More specifically, "size factors" are calculated that represent the extent to which counts should be scaled in each library.
 
-Size factors can be computed with several different approaches, e.g., using the `estimateSizeFactorsFromMatrix` function in the *[DESeq2](https://bioconductor.org/packages/3.8/DESeq2)* package [@anders2010differential;@love2014moderated], or with the `calcNormFactors` function [@robinson2010scaling] in the *[edgeR](https://bioconductor.org/packages/3.8/edgeR)* package.
+Size factors can be computed with several different approaches, e.g., using the `estimateSizeFactorsFromMatrix` function in the *[DESeq2](https://bioconductor.org/packages/3.9/DESeq2)* package [@anders2010differential;@love2014moderated], or with the `calcNormFactors` function [@robinson2010scaling] in the *[edgeR](https://bioconductor.org/packages/3.9/edgeR)* package.
 However, single-cell data can be problematic for these bulk data-based methods due to the dominance of low and zero counts.
 To overcome this, we pool counts from many cells to increase the count size for accurate size factor estimation [@lun2016pooling].
 Pool-based size factors are then "deconvolved" into cell-based factors for cell-specific normalization.
@@ -674,7 +681,7 @@ The total number of cells should also be at least 100 for effective pooling.
 This can be done with the `quickCluster` function and the results passed to `computeSumFactors` via the `cluster` argument.
 Cells in each cluster are normalized separately, and the size factors are rescaled to be comparable across clusters.
 This avoids the need to assume that most genes are non-DE across the entire population - only a non-DE majority is required between pairs of clusters.
-We demonstrate this approach later with a larger dataset in the next [workflow](https://bioconductor.org/packages/3.8/simpleSingleCell/vignettes/work-2-umis.html#6_normalization_of_cell-specific_biases).
+We demonstrate this approach later with a larger dataset in the next [workflow](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/work-2-umis.html#6_normalization_of_cell-specific_biases).
 
 ## Computing separate size factors for spike-in transcripts
 
@@ -803,9 +810,9 @@ plotExpression(sce, features=rownames(var.out)[chosen.genes]) + fontsize
 **Comments from Aaron:**
 
 - In practice, trend fitting is complicated by the small number of spike-in transcripts and the uneven distribution of their abundances.
-See [here](https://bioconductor.org/packages/3.8/simpleSingleCell/vignettes/xtra-3-var.html#details-of-trend-fitting-parameters) for more details on how to refine the fit.
-- In the absence of spike-ins, users can set `use.spikes=FALSE` to fit a trend to the variances of the endogenous genes (see [here](https://bioconductor.org/packages/3.8/simpleSingleCell/vignettes/xtra-3-var.html#when-spike-ins-are-unavailable)).
-Alternatively, we can create a trend based on the assumption of Poisson technical noise, as described [here](https://bioconductor.org/packages/3.8/simpleSingleCell/vignettes/work-3-tenx.html#modelling-the-mean-variance-trend).
+See [here](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/xtra-3-var.html#details-of-trend-fitting-parameters) for more details on how to refine the fit.
+- In the absence of spike-ins, users can set `use.spikes=FALSE` to fit a trend to the variances of the endogenous genes (see [here](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/xtra-3-var.html#when-spike-ins-are-unavailable)).
+Alternatively, we can create a trend based on the assumption of Poisson technical noise, as described [here](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/work-3-tenx.html#modelling-the-mean-variance-trend).
 - Negative biological components are often obtained from `decomposeVar`. 
 These are intuitively meaningless as it is impossible for a gene to have total variance below technical noise.
 Nonetheless, such values occur due to imprecise estimation of the total variance, especially for low numbers of cells.
@@ -816,7 +823,7 @@ We will discuss this in more detail later, as formal detection of HVGs is not ne
 
 As previously mentioned, the data were collected on two plates.
 Small uncontrollable differences in processing between plates can result in a batch effect, i.e., systematic differences in expression between cells on different plates.
-Such differences are not interesting and can be removed by applying the `removeBatchEffect()` function from the *[limma](https://bioconductor.org/packages/3.8/limma)* package [@ritchie2015limma].
+Such differences are not interesting and can be removed by applying the `removeBatchEffect()` function from the *[limma](https://bioconductor.org/packages/3.9/limma)* package [@ritchie2015limma].
 This removes the effect of the plate of origin while accounting for the (interesting) effect of oncogene induction.
 
 
@@ -1120,7 +1127,7 @@ Of course, it is simple (and recommended) to try other approaches provided that 
 
 Once putative subpopulations are identified by clustering, we can identify marker genes for each cluster using the `findMarkers` function.
 This performs Welch $t$-tests on the log-expression values for every gene and between every pair of clusters [@soneson2018bias].
-The aim is to test for DE in each cluster compared to the others while blocking on uninteresting factors such as the plate of origin.
+The aim is to test for DE in each cluster compared to the others while blocking on uninteresting factors such as the plate of origin (see [here](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/xtra-3b-de.html#blocking-on-uninteresting-factors-of-variation) for details).
 The top DE genes are likely to be good candidate markers as they can effectively distinguish between cells in different clusters.
 
 
@@ -1183,7 +1190,7 @@ We visualize the expression profiles of the top candidates to verify that the DE
 Most of the top markers have strong and consistent up- or downregulation in cells of cluster 1 compared to some or all of the other clusters.
 A cursory examination of the heatmap indicates that cluster 1 contains oncogene-induced cells with strong downregulation of DNA replication and cell cycle genes.
 This is consistent with the potential induction of senescence as an anti-tumorigenic response [@wajapeyee2010senescence].
-A more comprehensive investigation of the function of these markers can be performed with gene set enrichment analyses, e.g., using `kegga` or `goana` from *[limma](https://bioconductor.org/packages/3.8/limma)*.
+A more comprehensive investigation of the function of these markers can be performed with gene set enrichment analyses, e.g., using `kegga` or `goana` from *[limma](https://bioconductor.org/packages/3.9/limma)*.
 
 
 ```r
@@ -1214,20 +1221,12 @@ __Comments from Aaron:__
 - By setting `direction="up"`, `findMarkers` will only return genes that are upregulated in each cluster compared to the others.
 This is convenient in highly heterogeneous populations to focus on genes that can immediately identify each cluster.
 While lack of expression may also be informative, it is less useful for positive identification.
-- By setting `block=`, `findMarkers()` will perform pairwise tests between clusters using only cells on the same plate.
-It will then combine $p$-values from different plates using Stouffer's Z method to obtain a single $p$-value per gene.
-An alternative approach is to use linear models via the `design=` argument - the differences between the two are discussed [here](https://bioconductor.org/packages/3.8/simpleSingleCell/vignettes/work-5-mnn.html#using-the-corrected-values-in-downstream-analyses).
 - `findMarkers` can also be directed to find genes that are DE between the chosen cluster and _all_ other clusters.
 This should be done by setting `pval.type="all"`, which defines the p-value for each gene as the maximum value across all pairwise comparisons involving the chosen cluster.
 Combined with `direction="up"`, this can be used to identify unique markers for each cluster.
 However, this is sensitive to overclustering, as unique marker genes will no longer exist if a cluster is split into two smaller subclusters.
 - It must be stressed that the (adjusted) _p_-values computed here cannot be properly interpreted as measures of significance.
-This is because the clusters have been empirically identified from the data.
-*[limma](https://bioconductor.org/packages/3.8/limma)* does not account for the uncertainty of clustering, which means that the _p_-values are much lower than they should be. 
-This is not a concern in other analyses where the groups are pre-defined.
-- The `overlapExprs` function may also be useful here, to prioritize candidates where there is clear separation between the distributions of expression values of different clusters.
-This uses the Wilcoxon rank sum test to detect uneven mixing of the distributions of expression values between clusters.
-By contrast, `findMarkers` uses t-tests and is primarily concerned with log-fold changes.
+This is because the clusters have been empirically identified from the data, see [simpleSingleCell](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/xtra-3b-de.html#misinterpretation-of-de-p-values).
 
 # Concluding remarks
 
@@ -1241,10 +1240,10 @@ saveRDS(file="416B_data.rds", sce)
 ```
 
 A variety of methods are available to perform more complex analyses on the processed expression data.
-For example, cells can be ordered in pseudotime (e.g., for progress along a differentiation pathway) with *[monocle](https://bioconductor.org/packages/3.8/monocle)* [@trapnell2014dynamics] or *[TSCAN](https://bioconductor.org/packages/3.8/TSCAN)* [@ji2016tscan]; 
-cell-state hierarchies can be characterized with the *[sincell](https://bioconductor.org/packages/3.8/sincell)* package [@julia2015sincell];
-and oscillatory behaviour can be identified using *[Oscope](https://bioconductor.org/packages/3.8/Oscope)* [@leng2015oscope].
-HVGs can be used in gene set enrichment analyses to identify biological pathways and processes with heterogeneous activity, using packages designed for bulk data like *[topGO](https://bioconductor.org/packages/3.8/topGO)* or with dedicated single-cell methods like *[scde](https://bioconductor.org/packages/3.8/scde)* [@fan2016characterizing].
+For example, cells can be ordered in pseudotime (e.g., for progress along a differentiation pathway) with *[monocle](https://bioconductor.org/packages/3.9/monocle)* [@trapnell2014dynamics] or *[TSCAN](https://bioconductor.org/packages/3.9/TSCAN)* [@ji2016tscan]; 
+cell-state hierarchies can be characterized with the *[sincell](https://bioconductor.org/packages/3.9/sincell)* package [@julia2015sincell];
+and oscillatory behaviour can be identified using *[Oscope](https://bioconductor.org/packages/3.9/Oscope)* [@leng2015oscope].
+HVGs can be used in gene set enrichment analyses to identify biological pathways and processes with heterogeneous activity, using packages designed for bulk data like *[topGO](https://bioconductor.org/packages/3.9/topGO)* or with dedicated single-cell methods like *[scde](https://bioconductor.org/packages/3.9/scde)* [@fan2016characterizing].
 Full descriptions of these analyses are outside the scope of this workflow, so interested users are advised to consult the relevant documentation.
 
 
@@ -1258,13 +1257,13 @@ sessionInfo()
 ```
 
 ```
-## R version 3.5.0 Patched (2018-04-30 r74679)
+## R Under development (unstable) (2018-11-02 r75535)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
 ## Running under: Ubuntu 16.04.5 LTS
 ## 
 ## Matrix products: default
-## BLAS: /home/cri.camres.org/lun01/Software/R/R-3-5-branch/lib/libRblas.so
-## LAPACK: /home/cri.camres.org/lun01/Software/R/R-3-5-branch/lib/libRlapack.so
+## BLAS: /home/cri.camres.org/lun01/Software/R/trunk/lib/libRblas.so
+## LAPACK: /home/cri.camres.org/lun01/Software/R/trunk/lib/libRlapack.so
 ## 
 ## locale:
 ##  [1] LC_CTYPE=en_GB.UTF-8       LC_NUMERIC=C              
@@ -1281,74 +1280,74 @@ sessionInfo()
 ## other attached packages:
 ##  [1] cluster_2.0.7-1                       
 ##  [2] dynamicTreeCut_1.63-1                 
-##  [3] limma_3.37.4                          
-##  [4] scran_1.9.26                          
-##  [5] scater_1.9.20                         
-##  [6] ggplot2_3.0.0                         
+##  [3] limma_3.39.0                          
+##  [4] scran_1.11.1                          
+##  [5] scater_1.11.1                         
+##  [6] ggplot2_3.1.0                         
 ##  [7] TxDb.Mmusculus.UCSC.mm10.ensGene_3.4.0
-##  [8] GenomicFeatures_1.33.2                
-##  [9] org.Mm.eg.db_3.6.0                    
-## [10] AnnotationDbi_1.43.1                  
-## [11] SingleCellExperiment_1.3.10           
-## [12] SummarizedExperiment_1.11.6           
-## [13] DelayedArray_0.7.41                   
-## [14] BiocParallel_1.15.12                  
+##  [8] GenomicFeatures_1.33.6                
+##  [9] org.Mm.eg.db_3.7.0                    
+## [10] AnnotationDbi_1.45.0                  
+## [11] SingleCellExperiment_1.5.0            
+## [12] SummarizedExperiment_1.13.0           
+## [13] DelayedArray_0.9.0                    
+## [14] BiocParallel_1.17.0                   
 ## [15] matrixStats_0.54.0                    
-## [16] Biobase_2.41.2                        
-## [17] GenomicRanges_1.33.13                 
-## [18] GenomeInfoDb_1.17.1                   
-## [19] IRanges_2.15.17                       
-## [20] S4Vectors_0.19.19                     
-## [21] BiocGenerics_0.27.1                   
+## [16] Biobase_2.43.0                        
+## [17] GenomicRanges_1.35.0                  
+## [18] GenomeInfoDb_1.19.0                   
+## [19] IRanges_2.17.0                        
+## [20] S4Vectors_0.21.0                      
+## [21] BiocGenerics_0.29.0                   
 ## [22] bindrcpp_0.2.2                        
-## [23] BiocFileCache_1.5.5                   
+## [23] BiocFileCache_1.7.0                   
 ## [24] dbplyr_1.2.2                          
 ## [25] knitr_1.20                            
-## [26] BiocStyle_2.9.6                       
+## [26] BiocStyle_2.11.0                      
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] bitops_1.0-6             bit64_0.9-7             
 ##  [3] RColorBrewer_1.1-2       progress_1.2.0          
 ##  [5] httr_1.3.1               rprojroot_1.3-2         
-##  [7] tools_3.5.0              backports_1.1.2         
-##  [9] R6_2.2.2                 KernSmooth_2.23-15      
-## [11] HDF5Array_1.9.19         vipor_0.4.5             
+##  [7] tools_3.6.0              backports_1.1.2         
+##  [9] R6_2.3.0                 KernSmooth_2.23-15      
+## [11] HDF5Array_1.11.0         vipor_0.4.5             
 ## [13] DBI_1.0.0                lazyeval_0.2.1          
 ## [15] colorspace_1.3-2         withr_2.1.2             
-## [17] tidyselect_0.2.4         gridExtra_2.3           
+## [17] tidyselect_0.2.5         gridExtra_2.3           
 ## [19] prettyunits_1.0.2        bit_1.1-14              
-## [21] compiler_3.5.0           rtracklayer_1.41.5      
-## [23] labeling_0.3             bookdown_0.7            
-## [25] scales_1.0.0             rappdirs_0.3.1          
-## [27] stringr_1.3.1            digest_0.6.17           
-## [29] Rsamtools_1.33.5         rmarkdown_1.10          
-## [31] XVector_0.21.3           pkgconfig_2.0.2         
-## [33] htmltools_0.3.6          highr_0.7               
-## [35] rlang_0.2.2              RSQLite_2.1.1           
-## [37] DelayedMatrixStats_1.3.9 bindr_0.1.1             
-## [39] dplyr_0.7.6              RCurl_1.95-4.11         
-## [41] magrittr_1.5             GenomeInfoDbData_1.1.0  
-## [43] Matrix_1.2-14            Rcpp_0.12.18            
-## [45] ggbeeswarm_0.6.0         munsell_0.5.0           
-## [47] Rhdf5lib_1.3.3           viridis_0.5.1           
-## [49] edgeR_3.23.3             stringi_1.2.4           
-## [51] yaml_2.2.0               zlibbioc_1.27.0         
-## [53] Rtsne_0.13               rhdf5_2.25.9            
-## [55] plyr_1.8.4               grid_3.5.0              
-## [57] blob_1.1.1               crayon_1.3.4            
-## [59] lattice_0.20-35          Biostrings_2.49.1       
-## [61] cowplot_0.9.3            hms_0.4.2               
-## [63] locfit_1.5-9.1           pillar_1.3.0            
-## [65] igraph_1.2.2             kmknn_0.99.16           
-## [67] reshape2_1.4.3           biomaRt_2.37.6          
-## [69] XML_3.98-1.16            glue_1.3.0              
-## [71] evaluate_0.11            BiocManager_1.30.2      
-## [73] gtable_0.2.0             purrr_0.2.5             
-## [75] assertthat_0.2.0         xfun_0.3                
-## [77] viridisLite_0.3.0        pheatmap_1.0.10         
-## [79] tibble_1.4.2             GenomicAlignments_1.17.3
-## [81] beeswarm_0.2.3           memoise_1.1.0           
-## [83] statmod_1.4.30
+## [21] curl_3.2                 compiler_3.6.0          
+## [23] BiocNeighbors_1.1.0      rtracklayer_1.43.0      
+## [25] labeling_0.3             bookdown_0.7            
+## [27] scales_1.0.0             rappdirs_0.3.1          
+## [29] stringr_1.3.1            digest_0.6.18           
+## [31] Rsamtools_1.35.0         rmarkdown_1.10          
+## [33] XVector_0.23.0           pkgconfig_2.0.2         
+## [35] htmltools_0.3.6          highr_0.7               
+## [37] rlang_0.3.0.1            RSQLite_2.1.1           
+## [39] DelayedMatrixStats_1.5.0 bindr_0.1.1             
+## [41] dplyr_0.7.7              RCurl_1.95-4.11         
+## [43] magrittr_1.5             GenomeInfoDbData_1.2.0  
+## [45] Matrix_1.2-15            Rcpp_0.12.19            
+## [47] ggbeeswarm_0.6.0         munsell_0.5.0           
+## [49] Rhdf5lib_1.5.0           viridis_0.5.1           
+## [51] edgeR_3.25.0             stringi_1.2.4           
+## [53] yaml_2.2.0               zlibbioc_1.29.0         
+## [55] Rtsne_0.13               rhdf5_2.27.0            
+## [57] plyr_1.8.4               grid_3.6.0              
+## [59] blob_1.1.1               crayon_1.3.4            
+## [61] lattice_0.20-35          Biostrings_2.51.0       
+## [63] cowplot_0.9.3            hms_0.4.2               
+## [65] locfit_1.5-9.1           pillar_1.3.0            
+## [67] igraph_1.2.2             reshape2_1.4.3          
+## [69] biomaRt_2.39.0           XML_3.98-1.16           
+## [71] glue_1.3.0               evaluate_0.12           
+## [73] BiocManager_1.30.3       gtable_0.2.0            
+## [75] purrr_0.2.5              assertthat_0.2.0        
+## [77] xfun_0.4                 viridisLite_0.3.0       
+## [79] pheatmap_1.0.10          tibble_1.4.2            
+## [81] GenomicAlignments_1.19.0 beeswarm_0.2.3          
+## [83] memoise_1.1.0            statmod_1.4.30
 ```
 
 # References

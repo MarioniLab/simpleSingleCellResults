@@ -12,9 +12,9 @@ author:
   - *CRUK
   - *EMBL
   - Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
-date: "2018-09-08"
+date: "2018-11-02"
 vignette: >
-  %\VignetteIndexEntry{9. Further strategies for analyzing scRNA-seq data}
+  %\VignetteIndexEntry{11. Further analysis strategies}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}    
 output: 
@@ -263,13 +263,13 @@ sessionInfo()
 ```
 
 ```
-## R version 3.5.0 Patched (2018-04-30 r74679)
+## R Under development (unstable) (2018-11-02 r75535)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
 ## Running under: Ubuntu 16.04.5 LTS
 ## 
 ## Matrix products: default
-## BLAS: /home/cri.camres.org/lun01/Software/R/R-3-5-branch/lib/libRblas.so
-## LAPACK: /home/cri.camres.org/lun01/Software/R/R-3-5-branch/lib/libRlapack.so
+## BLAS: /home/cri.camres.org/lun01/Software/R/trunk/lib/libRblas.so
+## LAPACK: /home/cri.camres.org/lun01/Software/R/trunk/lib/libRlapack.so
 ## 
 ## locale:
 ##  [1] LC_CTYPE=en_GB.UTF-8       LC_NUMERIC=C              
@@ -284,89 +284,67 @@ sessionInfo()
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] org.Mm.eg.db_3.6.0          AnnotationDbi_1.43.1       
-##  [3] readxl_1.1.0                gdata_2.18.0               
-##  [5] R.utils_2.7.0               R.oo_1.22.0                
-##  [7] R.methodsS3_1.7.1           scran_1.9.20               
-##  [9] bindrcpp_0.2.2              BiocFileCache_1.5.5        
-## [11] dbplyr_1.2.2                scRNAseq_1.7.0             
-## [13] edgeR_3.23.3                limma_3.37.4               
-## [15] scater_1.9.20               ggplot2_3.0.0              
-## [17] SingleCellExperiment_1.3.10 SummarizedExperiment_1.11.6
-## [19] DelayedArray_0.7.37         BiocParallel_1.15.11       
-## [21] matrixStats_0.54.0          Biobase_2.41.2             
-## [23] GenomicRanges_1.33.13       GenomeInfoDb_1.17.1        
-## [25] IRanges_2.15.17             S4Vectors_0.19.19          
-## [27] BiocGenerics_0.27.1         knitr_1.20                 
-## [29] BiocStyle_2.9.6            
+##  [1] org.Mm.eg.db_3.7.0          AnnotationDbi_1.45.0       
+##  [3] readxl_1.1.0                DelayedMatrixStats_1.5.0   
+##  [5] gdata_2.18.0                R.utils_2.7.0              
+##  [7] R.oo_1.22.0                 R.methodsS3_1.7.1          
+##  [9] scran_1.11.1                bindrcpp_0.2.2             
+## [11] BiocFileCache_1.7.0         dbplyr_1.2.2               
+## [13] scRNAseq_1.9.0              edgeR_3.25.0               
+## [15] limma_3.39.0                scater_1.11.1              
+## [17] ggplot2_3.1.0               SingleCellExperiment_1.5.0 
+## [19] SummarizedExperiment_1.13.0 DelayedArray_0.9.0         
+## [21] BiocParallel_1.17.0         matrixStats_0.54.0         
+## [23] Biobase_2.43.0              GenomicRanges_1.35.0       
+## [25] GenomeInfoDb_1.19.0         IRanges_2.17.0             
+## [27] S4Vectors_0.21.0            BiocGenerics_0.29.0        
+## [29] knitr_1.20                  BiocStyle_2.11.0           
 ## 
 ## loaded via a namespace (and not attached):
-##   [1] backports_1.1.2          RcppEigen_0.3.3.4.0     
-##   [3] plyr_1.8.4               igraph_1.2.2            
-##   [5] lazyeval_0.2.1           sp_1.3-1                
-##   [7] splines_3.5.0            kmknn_0.99.16           
-##   [9] digest_0.6.16            htmltools_0.3.6         
-##  [11] viridis_0.5.1            magrittr_1.5            
-##  [13] memoise_1.1.0            cluster_2.0.7-1         
-##  [15] openxlsx_4.1.0           xts_0.11-0              
-##  [17] colorspace_1.3-2         blob_1.1.1              
-##  [19] rappdirs_0.3.1           rrcov_1.4-4             
-##  [21] haven_1.1.2              xfun_0.3                
-##  [23] dplyr_0.7.6              crayon_1.3.4            
-##  [25] RCurl_1.95-4.11          bindr_0.1.1             
-##  [27] survival_2.42-6          zoo_1.8-3               
-##  [29] glue_1.3.0               gtable_0.2.0            
-##  [31] zlibbioc_1.27.0          XVector_0.21.3          
-##  [33] car_3.0-2                kernlab_0.9-27          
-##  [35] Rhdf5lib_1.3.3           prabclus_2.2-6          
-##  [37] DEoptimR_1.0-8           HDF5Array_1.9.15        
-##  [39] abind_1.4-5              VIM_4.7.0               
-##  [41] scales_1.0.0             sgeostat_1.0-27         
-##  [43] mvtnorm_1.0-8            DBI_1.0.0               
-##  [45] GGally_1.4.0             ggthemes_4.0.1          
-##  [47] Rcpp_0.12.18             sROC_0.1-2              
-##  [49] viridisLite_0.3.0        laeken_0.4.6            
-##  [51] proxy_0.4-22             foreign_0.8-71          
-##  [53] bit_1.1-14               mclust_5.4.1            
-##  [55] vcd_1.4-4                truncnorm_1.0-8         
-##  [57] httr_1.3.1               RColorBrewer_1.1-2      
-##  [59] fpc_2.1-11.1             modeltools_0.2-22       
-##  [61] pkgconfig_2.0.2          reshape_0.8.7           
-##  [63] NADA_1.6-1               flexmix_2.3-14          
-##  [65] nnet_7.3-12              locfit_1.5-9.1          
-##  [67] dynamicTreeCut_1.63-1    labeling_0.3            
-##  [69] tidyselect_0.2.4         rlang_0.2.2             
-##  [71] reshape2_1.4.3           munsell_0.5.0           
-##  [73] cellranger_1.1.0         tools_3.5.0             
-##  [75] RSQLite_2.1.1            pls_2.7-0               
-##  [77] evaluate_0.11            stringr_1.3.1           
-##  [79] cvTools_0.3.2            yaml_2.2.0              
-##  [81] bit64_0.9-7              zip_1.0.0               
-##  [83] robustbase_0.93-2        purrr_0.2.5             
-##  [85] compiler_3.5.0           beeswarm_0.2.3          
-##  [87] curl_3.2                 e1071_1.7-0             
-##  [89] zCompositions_1.1.1      smoother_1.1            
-##  [91] tibble_1.4.2             statmod_1.4.30          
-##  [93] robCompositions_2.0.8    pcaPP_1.9-73            
-##  [95] stringi_1.2.4            highr_0.7               
-##  [97] forcats_0.3.0            lattice_0.20-35         
-##  [99] trimcluster_0.1-2.1      Matrix_1.2-14           
-## [101] pillar_1.3.0             BiocManager_1.30.2      
-## [103] lmtest_0.9-36            cowplot_0.9.3           
-## [105] data.table_1.11.4        bitops_1.0-6            
-## [107] R6_2.2.2                 bookdown_0.7            
-## [109] gridExtra_2.3            rio_0.5.10              
-## [111] vipor_0.4.5              gtools_3.8.1            
-## [113] boot_1.3-20              MASS_7.3-50             
-## [115] assertthat_0.2.0         destiny_2.11.3          
-## [117] rhdf5_2.25.9             rprojroot_1.3-2         
-## [119] withr_2.1.2              GenomeInfoDbData_1.1.0  
-## [121] diptest_0.75-7           hms_0.4.2               
-## [123] grid_3.5.0               class_7.3-14            
-## [125] rmarkdown_1.10           DelayedMatrixStats_1.3.8
-## [127] carData_3.0-1            mvoutlier_2.0.9         
-## [129] TTR_0.23-3               scatterplot3d_0.3-41    
-## [131] ggbeeswarm_0.6.0
+##   [1] backports_1.1.2        RcppEigen_0.3.3.4.0    plyr_1.8.4            
+##   [4] igraph_1.2.2           lazyeval_0.2.1         sp_1.3-1              
+##   [7] splines_3.6.0          digest_0.6.18          htmltools_0.3.6       
+##  [10] viridis_0.5.1          magrittr_1.5           memoise_1.1.0         
+##  [13] cluster_2.0.7-1        openxlsx_4.1.0         xts_0.11-1            
+##  [16] colorspace_1.3-2       blob_1.1.1             rappdirs_0.3.1        
+##  [19] rrcov_1.4-4            haven_1.1.2            xfun_0.4              
+##  [22] dplyr_0.7.7            crayon_1.3.4           RCurl_1.95-4.11       
+##  [25] bindr_0.1.1            survival_2.43-1        zoo_1.8-4             
+##  [28] glue_1.3.0             gtable_0.2.0           zlibbioc_1.29.0       
+##  [31] XVector_0.23.0         car_3.0-2              kernlab_0.9-27        
+##  [34] Rhdf5lib_1.5.0         prabclus_2.2-6         DEoptimR_1.0-8        
+##  [37] HDF5Array_1.11.0       abind_1.4-5            VIM_4.7.0             
+##  [40] scales_1.0.0           sgeostat_1.0-27        mvtnorm_1.0-8         
+##  [43] DBI_1.0.0              GGally_1.4.0           ggthemes_4.0.1        
+##  [46] Rcpp_0.12.19           sROC_0.1-2             viridisLite_0.3.0     
+##  [49] laeken_0.4.6           proxy_0.4-22           foreign_0.8-71        
+##  [52] bit_1.1-14             mclust_5.4.1           vcd_1.4-4             
+##  [55] truncnorm_1.0-8        httr_1.3.1             RColorBrewer_1.1-2    
+##  [58] fpc_2.1-11.1           modeltools_0.2-22      pkgconfig_2.0.2       
+##  [61] reshape_0.8.8          NADA_1.6-1             flexmix_2.3-14        
+##  [64] nnet_7.3-12            locfit_1.5-9.1         dynamicTreeCut_1.63-1 
+##  [67] labeling_0.3           tidyselect_0.2.5       rlang_0.3.0.1         
+##  [70] reshape2_1.4.3         munsell_0.5.0          cellranger_1.1.0      
+##  [73] tools_3.6.0            RSQLite_2.1.1          pls_2.7-0             
+##  [76] evaluate_0.12          stringr_1.3.1          cvTools_0.3.2         
+##  [79] yaml_2.2.0             bit64_0.9-7            zip_1.0.0             
+##  [82] robustbase_0.93-3      purrr_0.2.5            compiler_3.6.0        
+##  [85] beeswarm_0.2.3         curl_3.2               e1071_1.7-0           
+##  [88] zCompositions_1.1.1-1  smoother_1.1           tibble_1.4.2          
+##  [91] statmod_1.4.30         robCompositions_2.0.8  pcaPP_1.9-73          
+##  [94] stringi_1.2.4          highr_0.7              forcats_0.3.0         
+##  [97] lattice_0.20-35        trimcluster_0.1-2.1    Matrix_1.2-15         
+## [100] pillar_1.3.0           BiocManager_1.30.3     lmtest_0.9-36         
+## [103] BiocNeighbors_1.1.0    cowplot_0.9.3          data.table_1.11.8     
+## [106] bitops_1.0-6           R6_2.3.0               bookdown_0.7          
+## [109] gridExtra_2.3          rio_0.5.10             vipor_0.4.5           
+## [112] gtools_3.8.1           boot_1.3-20            MASS_7.3-51.1         
+## [115] assertthat_0.2.0       destiny_2.13.0         rhdf5_2.27.0          
+## [118] rprojroot_1.3-2        withr_2.1.2            GenomeInfoDbData_1.2.0
+## [121] diptest_0.75-7         hms_0.4.2              grid_3.6.0            
+## [124] class_7.3-14           rmarkdown_1.10         carData_3.0-2         
+## [127] mvoutlier_2.0.9        TTR_0.23-4             scatterplot3d_0.3-41  
+## [130] ggbeeswarm_0.6.0
 ```
 
 # References

@@ -3,7 +3,7 @@ title: Analyzing single-cell RNA sequencing data from droplet-based protocols
 author: 
 - name: Aaron T. L. Lun
   affiliation: Cancer Research UK Cambridge Institute, Li Ka Shing Centre, Robinson Way, Cambridge CB2 0RE, United Kingdom
-date: "2018-10-08"
+date: "2018-11-02"
 vignette: >
   %\VignetteIndexEntry{04. Droplet-based data}
   %\VignetteEngine{knitr::rmarkdown}
@@ -19,7 +19,7 @@ bibliography: ref.bib
 
 # Overview 
 
-Droplet-based scRNA-seq protocols capture cells in droplets for massively multiplexed library prepation [@klein2015droplet; macosko2015highly].
+Droplet-based scRNA-seq protocols capture cells in droplets for massively multiplexed library prepation [@klein2015droplet;@macosko2015highly].
 This greatly increases the throughput of scRNA-seq studies, allowing tens of thousands of individual cells to be profiled in a routine experiment.
 However, it (again) involves some differences from the previous workflows to reflect some unique aspects of droplet-based data.
 
@@ -40,7 +40,7 @@ untar(raw.path, exdir="pbmc4k")
 
 ## Reading in a sparse matrix
 
-We load in the raw count matrix using the `read10xCounts()` function from the *[DropletUtils](https://bioconductor.org/packages/3.8/DropletUtils)* package.
+We load in the raw count matrix using the `read10xCounts()` function from the *[DropletUtils](https://bioconductor.org/packages/3.9/DropletUtils)* package.
 This will create a `SingleCellExperiment` object where each column corresponds to a cell barcode.
 
 
@@ -219,7 +219,7 @@ hist(all.out$PValue[all.out$Total <= limit & all.out$Total > 0],
 <p class="caption">(\#fig:ambientpvalhist)Distribution of p-values for the assumed empty droplets.</p>
 </div>
 
-Large peaks near zero indicate that barcodes with total counts below `lower` are not all ambient.
+Large peaks near zero indicate that barcodes with total counts below `lower` are not all ambient in origin.
 This can be resolved by decreasing `lower` further to exclude barcodes corresponding to droplets with very small cells.
 
 # Quality control on the cells
@@ -245,7 +245,7 @@ hist(sce$pct_counts_Mito, breaks=20, col="grey80",
 <p class="caption">(\#fig:qchist)Histograms of QC metric distributions in the PBMC dataset.</p>
 </div>
 
-Ideally, we would remove cells with low library sizes or total number of expressed features as described [previously](https://bioconductor.org/packages/3.8/simpleSingleCell/vignettes/work-1-reads.html#quality-control-on-the-cells).
+Ideally, we would remove cells with low library sizes or total number of expressed features as described [previously](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/work-1-reads.html#quality-control-on-the-cells).
 However, this would likely remove cell types with low RNA content, especially in a heterogeneous PBMC population with many different cell types.
 Thus, we use a more relaxed strategy and only remove cells with large mitochondrial proportions, using it as a proxy for cell damage.
 (Keep in mind that droplet-based datasets usually do not have spike-in RNA.)
@@ -266,7 +266,7 @@ summary(high.mito)
 
 - The above justification for using a more relaxed filter is largely retrospective.
 In practice, we may not know _a priori_ the degree of population heterogeneity and whether it manifests in the QC metrics.
-We recommend performing the analysis first with a stringent QC filter, and then relaxing it based on further diagnostics (see [here](https://bioconductor.org/packages/3.8/simpleSingleCell/vignettes/xtra-1-qc.html#checking-for-discarded-cell-types) for an example).
+We recommend performing the analysis first with a stringent QC filter, and then relaxing it based on further diagnostics (see [here](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/xtra-1-qc.html#checking-for-discarded-cell-types) for an example).
 
 # Examining gene expression
 
@@ -299,7 +299,7 @@ plotHighestExprs(sce)
 
 # Normalizing for cell-specific biases
 
-We perform some pre-clustering to break up obvious clusters, as described [previously](https://bioconductor.org/packages/3.8/simpleSingleCell/vignettes/work-2-umis.html#normalization-of-cell-specific-biases).
+We perform some pre-clustering to break up obvious clusters, as described [previously](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/work-2-umis.html#normalization-of-cell-specific-biases).
 Recall that we need to set the seed when using `method="igraph"`.
 
 
@@ -356,19 +356,19 @@ sce <- normalize(sce)
 - Larger droplet-based datasets will often be generated in separate batches or runs.
 In such cases, we can set `block=` in `quickCluster()` to cluster cells within each batch or run.
 This reduces computational work considerably without compromising performance, provided that the clusters within each batch are sufficiently large 
-(see comments [here](https://bioconductor.org/packages/3.8/simpleSingleCell/vignettes/work-2-umis.html#6_normalization_of_cell-specific_biases)) for a discussion of the considerations involved in pre-clustering for normalization).
+(see comments [here](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/work-2-umis.html#6_normalization_of_cell-specific_biases)) for a discussion of the considerations involved in pre-clustering for normalization).
 - Even in the absence of any known batch structure, we can improve speed by setting an arbitrary factor, e.g., using `block=cut(seq_len(ncol(sce)), 10)` to split the cells into ten "batches" of roughly equal size.
 Recall that we are not interpreting the clusters themselves, so it is not a problem to have multiple redundant cluster labels.
 Again, this assumes that each cluster is large enough to support deconvolution.
 - On a similar note, both `quickCluster()` and `computeSumFactors()` can process blocks or clusters in parallel.
-This is achieved using the *[BiocParallel](https://bioconductor.org/packages/3.8/BiocParallel)* framework, which accommodates a range of parallelization strategies.
+This is achieved using the *[BiocParallel](https://bioconductor.org/packages/3.9/BiocParallel)* framework, which accommodates a range of parallelization strategies.
 In this manner, size factors for large datasets can be computed in a scalable manner.
 
 # Modelling the mean-variance trend
 
 The lack of spike-in transcripts complicates the modelling of the technical noise.
 One option is to assume that most genes do not exhibit strong biological variation, and to fit a trend to the variances of endogenous genes
-(see [here](https://bioconductor.org/packages/3.8/simpleSingleCell/vignettes/xtra-3-var.html#32_when_spike-ins_are_unavailable) for details).
+(see [here](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/xtra-3-var.html#32_when_spike-ins_are_unavailable) for details).
 However, this assumption is generally unreasonable for a heterogeneous population.
 Instead, we assume that the technical noise is Poisson and create a fitted trend on that basis using the `makeTechTrend()` function.
 
@@ -380,7 +380,7 @@ new.trend <- makeTechTrend(x=sce)
 We estimate the variances for all genes and compare the trend fits in Figure \@ref(fig:trendplot).
 The Poisson-based trend serves as a lower bound for the variances of the endogenous genes.
 This results in non-zero biological components for most genes, which is consistent with other UMI-based data sets 
-(see the [corresponding analysis](https://bioconductor.org/packages/3.8/simpleSingleCell/vignettes/work-2-umis.html#7_modelling_and_removing_technical_noise) of the @zeisel2015brain data set).
+(see the [corresponding analysis](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/work-2-umis.html#7_modelling_and_removing_technical_noise) of the @zeisel2015brain data set).
 
 
 ```r
@@ -612,7 +612,7 @@ head(marker.set[,1:8], 10) # only first 8 columns, for brevity
 
 
 
-This is confirmed in Figure \@ref(fig:heatmap), where the transcriptional profile of cluster 2 is clearly distinct from the others.
+This is confirmed in Figure \@ref(fig:heatmap), where the transcriptional profile of cluster 8 is clearly distinct from the others.
 
 
 ```r
@@ -624,8 +624,8 @@ plotHeatmap(sce, features=chosen, exprs_values="logcounts",
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/work-3-tenx_files/figure-html/heatmap-1.png" alt="Heatmap of mean-centred and normalized log-expression values for the top set of markers for cluster 2 in the PBMC dataset. Column colours represent the cluster to which each cell is assigned, as indicated by the legend." width="100%"  class="widefigure" />
-<p class="caption">(\#fig:heatmap)Heatmap of mean-centred and normalized log-expression values for the top set of markers for cluster 2 in the PBMC dataset. Column colours represent the cluster to which each cell is assigned, as indicated by the legend.</p>
+<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/work-3-tenx_files/figure-html/heatmap-1.png" alt="Heatmap of mean-centred and normalized log-expression values for the top set of markers for cluster 8 in the PBMC dataset. Column colours represent the cluster to which each cell is assigned, as indicated by the legend." width="100%"  class="widefigure" />
+<p class="caption">(\#fig:heatmap)Heatmap of mean-centred and normalized log-expression values for the top set of markers for cluster 8 in the PBMC dataset. Column colours represent the cluster to which each cell is assigned, as indicated by the legend.</p>
 </div>
 
 # Concluding remarks
@@ -647,13 +647,13 @@ sessionInfo()
 ```
 
 ```
-## R version 3.5.0 Patched (2018-04-30 r74679)
+## R Under development (unstable) (2018-11-02 r75535)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
 ## Running under: Ubuntu 16.04.5 LTS
 ## 
 ## Matrix products: default
-## BLAS: /home/cri.camres.org/lun01/Software/R/R-3-5-branch/lib/libRblas.so
-## LAPACK: /home/cri.camres.org/lun01/Software/R/R-3-5-branch/lib/libRlapack.so
+## BLAS: /home/cri.camres.org/lun01/Software/R/trunk/lib/libRblas.so
+## LAPACK: /home/cri.camres.org/lun01/Software/R/trunk/lib/libRlapack.so
 ## 
 ## locale:
 ##  [1] LC_CTYPE=en_GB.UTF-8       LC_NUMERIC=C              
@@ -668,63 +668,63 @@ sessionInfo()
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] pheatmap_1.0.10             scran_1.9.31               
-##  [3] EnsDb.Hsapiens.v86_2.99.0   ensembldb_2.5.8            
-##  [5] AnnotationFilter_1.5.2      GenomicFeatures_1.33.2     
-##  [7] AnnotationDbi_1.43.1        scater_1.9.20              
-##  [9] ggplot2_3.0.0               DropletUtils_1.1.11        
-## [11] SingleCellExperiment_1.3.10 SummarizedExperiment_1.11.6
-## [13] DelayedArray_0.7.43         matrixStats_0.54.0         
-## [15] Biobase_2.41.2              GenomicRanges_1.33.14      
-## [17] GenomeInfoDb_1.17.2         IRanges_2.15.18            
-## [19] S4Vectors_0.19.19           BiocGenerics_0.27.1        
-## [21] BiocParallel_1.15.12        bindrcpp_0.2.2             
-## [23] BiocFileCache_1.5.5         dbplyr_1.2.2               
-## [25] knitr_1.20                  BiocStyle_2.9.6            
+##  [1] pheatmap_1.0.10             scran_1.11.1               
+##  [3] EnsDb.Hsapiens.v86_2.99.0   ensembldb_2.7.0            
+##  [5] AnnotationFilter_1.7.0      GenomicFeatures_1.33.6     
+##  [7] AnnotationDbi_1.45.0        scater_1.11.1              
+##  [9] ggplot2_3.1.0               DropletUtils_1.3.1         
+## [11] SingleCellExperiment_1.5.0  SummarizedExperiment_1.13.0
+## [13] DelayedArray_0.9.0          matrixStats_0.54.0         
+## [15] Biobase_2.43.0              GenomicRanges_1.35.0       
+## [17] GenomeInfoDb_1.19.0         IRanges_2.17.0             
+## [19] S4Vectors_0.21.0            BiocGenerics_0.29.0        
+## [21] BiocParallel_1.17.0         bindrcpp_0.2.2             
+## [23] BiocFileCache_1.7.0         dbplyr_1.2.2               
+## [25] knitr_1.20                  BiocStyle_2.11.0           
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] ProtGenerics_1.13.0      bitops_1.0-6            
+##  [1] ProtGenerics_1.15.0      bitops_1.0-6            
 ##  [3] bit64_0.9-7              RColorBrewer_1.1-2      
 ##  [5] progress_1.2.0           httr_1.3.1              
 ##  [7] rprojroot_1.3-2          dynamicTreeCut_1.63-1   
-##  [9] tools_3.5.0              backports_1.1.2         
-## [11] irlba_2.3.2              R6_2.2.2                
-## [13] HDF5Array_1.9.19         vipor_0.4.5             
+##  [9] tools_3.6.0              backports_1.1.2         
+## [11] irlba_2.3.2              R6_2.3.0                
+## [13] HDF5Array_1.11.0         vipor_0.4.5             
 ## [15] DBI_1.0.0                lazyeval_0.2.1          
 ## [17] colorspace_1.3-2         withr_2.1.2             
-## [19] tidyselect_0.2.4         gridExtra_2.3           
-## [21] prettyunits_1.0.2        curl_3.2                
-## [23] bit_1.1-14               compiler_3.5.0          
-## [25] BiocNeighbors_0.99.20    labeling_0.3            
-## [27] rtracklayer_1.41.5       bookdown_0.7            
+## [19] tidyselect_0.2.5         gridExtra_2.3           
+## [21] prettyunits_1.0.2        bit_1.1-14              
+## [23] curl_3.2                 compiler_3.6.0          
+## [25] BiocNeighbors_1.1.0      labeling_0.3            
+## [27] rtracklayer_1.43.0       bookdown_0.7            
 ## [29] scales_1.0.0             rappdirs_0.3.1          
-## [31] stringr_1.3.1            digest_0.6.17           
-## [33] Rsamtools_1.33.5         rmarkdown_1.10          
-## [35] XVector_0.21.3           pkgconfig_2.0.2         
+## [31] stringr_1.3.1            digest_0.6.18           
+## [33] Rsamtools_1.35.0         rmarkdown_1.10          
+## [35] XVector_0.23.0           pkgconfig_2.0.2         
 ## [37] htmltools_0.3.6          highr_0.7               
-## [39] limma_3.37.7             rlang_0.2.2             
-## [41] RSQLite_2.1.1            DelayedMatrixStats_1.3.9
-## [43] bindr_0.1.1              dplyr_0.7.6             
+## [39] limma_3.39.0             rlang_0.3.0.1           
+## [41] RSQLite_2.1.1            DelayedMatrixStats_1.5.0
+## [43] bindr_0.1.1              dplyr_0.7.7             
 ## [45] RCurl_1.95-4.11          magrittr_1.5            
-## [47] GenomeInfoDbData_1.1.0   Matrix_1.2-14           
-## [49] Rcpp_0.12.18             ggbeeswarm_0.6.0        
-## [51] munsell_0.5.0            Rhdf5lib_1.3.3          
+## [47] GenomeInfoDbData_1.2.0   Matrix_1.2-15           
+## [49] Rcpp_0.12.19             ggbeeswarm_0.6.0        
+## [51] munsell_0.5.0            Rhdf5lib_1.5.0          
 ## [53] viridis_0.5.1            stringi_1.2.4           
-## [55] yaml_2.2.0               edgeR_3.23.5            
-## [57] zlibbioc_1.27.0          Rtsne_0.14              
-## [59] rhdf5_2.25.11            plyr_1.8.4              
-## [61] grid_3.5.0               blob_1.1.1              
+## [55] yaml_2.2.0               edgeR_3.25.0            
+## [57] zlibbioc_1.29.0          Rtsne_0.13              
+## [59] rhdf5_2.27.0             plyr_1.8.4              
+## [61] grid_3.6.0               blob_1.1.1              
 ## [63] crayon_1.3.4             lattice_0.20-35         
-## [65] cowplot_0.9.3            Biostrings_2.49.1       
+## [65] cowplot_0.9.3            Biostrings_2.51.0       
 ## [67] hms_0.4.2                locfit_1.5-9.1          
 ## [69] pillar_1.3.0             igraph_1.2.2            
-## [71] reshape2_1.4.3           biomaRt_2.37.6          
+## [71] reshape2_1.4.3           biomaRt_2.39.0          
 ## [73] XML_3.98-1.16            glue_1.3.0              
-## [75] evaluate_0.11            BiocManager_1.30.2      
+## [75] evaluate_0.12            BiocManager_1.30.3      
 ## [77] gtable_0.2.0             purrr_0.2.5             
-## [79] assertthat_0.2.0         xfun_0.3                
+## [79] assertthat_0.2.0         xfun_0.4                
 ## [81] viridisLite_0.3.0        tibble_1.4.2            
-## [83] GenomicAlignments_1.17.3 beeswarm_0.2.3          
+## [83] GenomicAlignments_1.19.0 beeswarm_0.2.3          
 ## [85] memoise_1.1.0            statmod_1.4.30
 ```
 

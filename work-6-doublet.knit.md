@@ -3,9 +3,9 @@ title: Detecting doublets in single-cell RNA-seq data
 author:
 - name: Aaron T. L. Lun
   affiliation: &CRUK Cancer Research UK Cambridge Institute, Li Ka Shing Centre, Robinson Way, Cambridge CB2 0RE, United Kingdom
-date: "2018-09-19"
+date: "2018-11-02"
 vignette: >
-  %\VignetteIndexEntry{08. Detecting doublets in scRNA-seq data}
+  %\VignetteIndexEntry{08. Detecting doublets}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 output:
@@ -35,7 +35,7 @@ These approaches can be highly effective but rely on experimental information th
 A more general approach is to infer doublets from the expression profiles alone [@dahlin2018single].
 In this workflow, we will describe two purely computational approaches for detecting doublets from scRNA-seq data.
 The main difference between These two methods is whether or not they need cluster information beforehand.
-Both are implemented in the *[scran](https://bioconductor.org/packages/3.8/scran)* package from the open-source Bioconductor project [@huber2015orchestrating].
+Both are implemented in the *[scran](https://bioconductor.org/packages/3.9/scran)* package from the open-source Bioconductor project [@huber2015orchestrating].
 We will demonstrate the use of these methods on data from a droplet-based scRNA-seq study of the mouse mammary gland [@bach2017differentiation],
 available from NCBI GEO with the accession code GSE106273.
 
@@ -109,7 +109,7 @@ rowData(sce)$Chr <- chrloc
 
 ## Quality control
 
-We compute quality control (QC) metrics using the `calculateQCMetrics()` function from the *[scater](https://bioconductor.org/packages/3.8/scater)* package [@mccarthy2017scater].
+We compute quality control (QC) metrics using the `calculateQCMetrics()` function from the *[scater](https://bioconductor.org/packages/3.9/scater)* package [@mccarthy2017scater].
 
 
 ```r
@@ -214,7 +214,7 @@ curve(tech.trend(x), add=TRUE, col="red")
 </div>
 
 We use `denoisePCA()` to choose the number of principal components (PCs) to retain based on the technical noise per gene.
-We need to set the seed for reproducibility when `approximate=TRUE`, due to the use of randomized methods from *[irlba](https://bioconductor.org/packages/3.8/irlba)*.
+We need to set the seed for reproducibility when `approximate=TRUE`, due to the use of randomized methods from *[irlba](https://bioconductor.org/packages/3.9/irlba)*.
 
 
 ```r
@@ -381,7 +381,7 @@ Fortunately for us, this is a desirable effect as doublets should be rare in a p
 ## Background
 
 The other doublet detection strategy involves _in silico_ simulation of doublets from the single-cell expression profiles [@dahlin2018single].
-This is performed using the `doubletCells()` function from *[scran](https://bioconductor.org/packages/3.8/scran)*, which will:
+This is performed using the `doubletCells()` function from *[scran](https://bioconductor.org/packages/3.9/scran)*, which will:
 
 1. Simulate thousands of doublets by adding together two randomly chosen single-cell profiles.
 2. For each original cell, compute the density of simulated doublets in the surrounding neighbourhood.
@@ -452,7 +452,7 @@ Any systematic differences between simulated and real doublets will be removed, 
 This overcomes some of issues related to RNA content but is a rather aggressive strategy that may incorrectly inflate the reported doublet scores.
 - The issue of unknown combining proportions can be solved completely if spike-in information is available, e.g., in plate-based protocols.
 This will provide an accurate estimate of the total RNA content of each cell.
-To this end, size factors from `computeSpikeFactors()` (see [here](https://bioconductor.org/packages/3.8/simpleSingleCell/vignettes/xtra-2-spike)) can be supplied to the `doubletCells()` function via the `size.factors.content=` argument.
+To this end, size factors from `computeSpikeFactors()` (see [here](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/xtra-2-spike)) can be supplied to the `doubletCells()` function via the `size.factors.content=` argument.
 This will use the spike-in size factors to scale the contribution of each cell to a doublet library.
 
 # Concluding remarks
@@ -486,13 +486,13 @@ sessionInfo()
 ```
 
 ```
-## R version 3.5.0 Patched (2018-04-30 r74679)
+## R Under development (unstable) (2018-11-02 r75535)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
 ## Running under: Ubuntu 16.04.5 LTS
 ## 
 ## Matrix products: default
-## BLAS: /home/cri.camres.org/lun01/Software/R/R-3-5-branch/lib/libRblas.so
-## LAPACK: /home/cri.camres.org/lun01/Software/R/R-3-5-branch/lib/libRlapack.so
+## BLAS: /home/cri.camres.org/lun01/Software/R/trunk/lib/libRblas.so
+## LAPACK: /home/cri.camres.org/lun01/Software/R/trunk/lib/libRlapack.so
 ## 
 ## locale:
 ##  [1] LC_CTYPE=en_GB.UTF-8       LC_NUMERIC=C              
@@ -507,73 +507,74 @@ sessionInfo()
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] scran_1.9.26                          
+##  [1] scran_1.11.1                          
 ##  [2] TxDb.Mmusculus.UCSC.mm10.ensGene_3.4.0
-##  [3] GenomicFeatures_1.33.2                
-##  [4] AnnotationDbi_1.43.1                  
-##  [5] Matrix_1.2-14                         
-##  [6] scater_1.9.20                         
-##  [7] ggplot2_3.0.0                         
-##  [8] SingleCellExperiment_1.3.10           
-##  [9] SummarizedExperiment_1.11.6           
-## [10] DelayedArray_0.7.41                   
-## [11] BiocParallel_1.15.12                  
+##  [3] GenomicFeatures_1.33.6                
+##  [4] AnnotationDbi_1.45.0                  
+##  [5] Matrix_1.2-15                         
+##  [6] scater_1.11.1                         
+##  [7] ggplot2_3.1.0                         
+##  [8] SingleCellExperiment_1.5.0            
+##  [9] SummarizedExperiment_1.13.0           
+## [10] DelayedArray_0.9.0                    
+## [11] BiocParallel_1.17.0                   
 ## [12] matrixStats_0.54.0                    
-## [13] Biobase_2.41.2                        
-## [14] GenomicRanges_1.33.13                 
-## [15] GenomeInfoDb_1.17.1                   
-## [16] IRanges_2.15.17                       
-## [17] S4Vectors_0.19.19                     
-## [18] BiocGenerics_0.27.1                   
+## [13] Biobase_2.43.0                        
+## [14] GenomicRanges_1.35.0                  
+## [15] GenomeInfoDb_1.19.0                   
+## [16] IRanges_2.17.0                        
+## [17] S4Vectors_0.21.0                      
+## [18] BiocGenerics_0.29.0                   
 ## [19] bindrcpp_0.2.2                        
-## [20] BiocFileCache_1.5.5                   
+## [20] BiocFileCache_1.7.0                   
 ## [21] dbplyr_1.2.2                          
 ## [22] knitr_1.20                            
-## [23] BiocStyle_2.9.6                       
+## [23] BiocStyle_2.11.0                      
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] bitops_1.0-6             bit64_0.9-7             
 ##  [3] RColorBrewer_1.1-2       progress_1.2.0          
 ##  [5] httr_1.3.1               rprojroot_1.3-2         
-##  [7] dynamicTreeCut_1.63-1    tools_3.5.0             
+##  [7] dynamicTreeCut_1.63-1    tools_3.6.0             
 ##  [9] backports_1.1.2          irlba_2.3.2             
-## [11] R6_2.2.2                 HDF5Array_1.9.19        
+## [11] R6_2.3.0                 HDF5Array_1.11.0        
 ## [13] vipor_0.4.5              DBI_1.0.0               
 ## [15] lazyeval_0.2.1           colorspace_1.3-2        
-## [17] withr_2.1.2              tidyselect_0.2.4        
+## [17] withr_2.1.2              tidyselect_0.2.5        
 ## [19] gridExtra_2.3            prettyunits_1.0.2       
-## [21] bit_1.1-14               compiler_3.5.0          
-## [23] labeling_0.3             rtracklayer_1.41.5      
-## [25] bookdown_0.7             scales_1.0.0            
-## [27] rappdirs_0.3.1           stringr_1.3.1           
-## [29] digest_0.6.17            Rsamtools_1.33.5        
-## [31] rmarkdown_1.10           XVector_0.21.3          
-## [33] pkgconfig_2.0.2          htmltools_0.3.6         
-## [35] highr_0.7                limma_3.37.4            
-## [37] rlang_0.2.2              RSQLite_2.1.1           
-## [39] DelayedMatrixStats_1.3.9 bindr_0.1.1             
-## [41] dplyr_0.7.6              RCurl_1.95-4.11         
-## [43] magrittr_1.5             GenomeInfoDbData_1.1.0  
-## [45] Rcpp_0.12.18             ggbeeswarm_0.6.0        
-## [47] munsell_0.5.0            Rhdf5lib_1.3.3          
-## [49] viridis_0.5.1            edgeR_3.23.3            
-## [51] stringi_1.2.4            yaml_2.2.0              
-## [53] zlibbioc_1.27.0          Rtsne_0.13              
-## [55] rhdf5_2.25.9             plyr_1.8.4              
-## [57] grid_3.5.0               blob_1.1.1              
-## [59] crayon_1.3.4             lattice_0.20-35         
-## [61] cowplot_0.9.3            Biostrings_2.49.1       
-## [63] hms_0.4.2                locfit_1.5-9.1          
-## [65] pillar_1.3.0             igraph_1.2.2            
-## [67] kmknn_0.99.16            reshape2_1.4.3          
-## [69] biomaRt_2.37.6           XML_3.98-1.16           
-## [71] glue_1.3.0               evaluate_0.11           
-## [73] BiocManager_1.30.2       gtable_0.2.0            
-## [75] purrr_0.2.5              assertthat_0.2.0        
-## [77] xfun_0.3                 viridisLite_0.3.0       
-## [79] pheatmap_1.0.10          tibble_1.4.2            
-## [81] GenomicAlignments_1.17.3 beeswarm_0.2.3          
-## [83] memoise_1.1.0            statmod_1.4.30
+## [21] bit_1.1-14               curl_3.2                
+## [23] compiler_3.6.0           BiocNeighbors_1.1.0     
+## [25] labeling_0.3             rtracklayer_1.43.0      
+## [27] bookdown_0.7             scales_1.0.0            
+## [29] rappdirs_0.3.1           stringr_1.3.1           
+## [31] digest_0.6.18            Rsamtools_1.35.0        
+## [33] rmarkdown_1.10           XVector_0.23.0          
+## [35] pkgconfig_2.0.2          htmltools_0.3.6         
+## [37] highr_0.7                limma_3.39.0            
+## [39] rlang_0.3.0.1            RSQLite_2.1.1           
+## [41] DelayedMatrixStats_1.5.0 bindr_0.1.1             
+## [43] dplyr_0.7.7              RCurl_1.95-4.11         
+## [45] magrittr_1.5             GenomeInfoDbData_1.2.0  
+## [47] Rcpp_0.12.19             ggbeeswarm_0.6.0        
+## [49] munsell_0.5.0            Rhdf5lib_1.5.0          
+## [51] viridis_0.5.1            edgeR_3.25.0            
+## [53] stringi_1.2.4            yaml_2.2.0              
+## [55] zlibbioc_1.29.0          Rtsne_0.13              
+## [57] rhdf5_2.27.0             plyr_1.8.4              
+## [59] grid_3.6.0               blob_1.1.1              
+## [61] crayon_1.3.4             lattice_0.20-35         
+## [63] cowplot_0.9.3            Biostrings_2.51.0       
+## [65] hms_0.4.2                locfit_1.5-9.1          
+## [67] pillar_1.3.0             igraph_1.2.2            
+## [69] reshape2_1.4.3           biomaRt_2.39.0          
+## [71] XML_3.98-1.16            glue_1.3.0              
+## [73] evaluate_0.12            BiocManager_1.30.3      
+## [75] gtable_0.2.0             purrr_0.2.5             
+## [77] assertthat_0.2.0         xfun_0.4                
+## [79] viridisLite_0.3.0        pheatmap_1.0.10         
+## [81] tibble_1.4.2             GenomicAlignments_1.19.0
+## [83] beeswarm_0.2.3           memoise_1.1.0           
+## [85] statmod_1.4.30
 ```
 
 # References

@@ -12,9 +12,9 @@ author:
   - *CRUK
   - *EMBL
   - Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
-date: "2018-09-08"
+date: "2018-11-02"
 vignette: >
-  %\VignetteIndexEntry{8. Variance modelling in scRNA-seq data}
+  %\VignetteIndexEntry{09. Advanced variance modelling}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}    
 output: 
@@ -97,7 +97,7 @@ summary(is.spike)
 
 ### Quality control and normalization
 
-For each cell, we calculate quality control metrics using the `calculateQCMetrics` function from *[scater](https://bioconductor.org/packages/3.8/scater)* [@mccarthy2017scater] as previously described.
+For each cell, we calculate quality control metrics using the `calculateQCMetrics` function from *[scater](https://bioconductor.org/packages/3.9/scater)* [@mccarthy2017scater] as previously described.
 We filter out HSCs that are outliers for any metric, under the assumption that these represent low-quality libraries. 
 
 
@@ -228,7 +228,7 @@ head(hvg.out)
 ```
 
 We check the distribution of expression values for the genes with the largest biological components.
-This ensures that the variance estimate is not driven by one or two outlier cells (Figure \@ref(fig:hvgvioplothsc)).
+We see that the variance estimate is not driven by one or two outlier cells (Figure \@ref(fig:hvgvioplothsc)).
 
 
 ```r
@@ -245,12 +245,12 @@ plotExpression(sce.hsc, features=rownames(hvg.out)[1:10]) + fontsize
 
 There are many other strategies for defining HVGs, based on a variety of metrics:
 
-- the coefficient of variation, using the `technicalCV2()` function [@brennecke2013accounting] or the `DM()` function [@kim2015characterizing] in *[scran](https://bioconductor.org/packages/3.8/scran)*.
-- the dispersion parameter in the negative binomial distribution, using the `estimateDisp()` function in *[edgeR](https://bioconductor.org/packages/3.8/edgeR)* [@mccarthy2012differential].
-- a proportion of total variability, using methods in the *[BASiCS](https://bioconductor.org/packages/3.8/BASiCS)* package [@vallejos2015basics].
+- the coefficient of variation, using the `technicalCV2()` function [@brennecke2013accounting] or the `DM()` function [@kim2015characterizing] in *[scran](https://bioconductor.org/packages/3.9/scran)*.
+- the dispersion parameter in the negative binomial distribution, using the `estimateDisp()` function in *[edgeR](https://bioconductor.org/packages/3.9/edgeR)* [@mccarthy2012differential].
+- a proportion of total variability, using methods in the *[BASiCS](https://bioconductor.org/packages/3.9/BASiCS)* package [@vallejos2015basics].
 
 Here, we used the variance of the log-expression values because the log-transformation protects against genes with strong expression in only one or two cells.
-This ensures that the set of top HVGs is not dominated by genes with (mostly uninteresting) outlier expression patterns.
+This reduces the risk that the set of top HVGs is not dominated by genes with (mostly uninteresting) outlier expression patterns.
 
 We also save the HSC dataset to file for later use, using `saveRDS()` as previously described.
 
@@ -360,7 +360,7 @@ curve(var.fit$trend(x), add=TRUE, col="red")
 </div>
 
 The use of `block=` also assumes that the average size factor within each plate is close to unity for both endogenous genes and spike-in transcripts.
-This ensures that scaling normalization preserves the magnitude of the counts, allowing genes of the same average abundance to be compared within and across plates.
+This means that scaling normalization will preserve the magnitude of the counts, allowing genes of the same average abundance to be compared within and across plates.
 Here, the distributions of size factors exhibit only modest deviations from unity in the averages for the endogenous genes and spike-in transcripts (Figure \@ref(fig:sizefacplot-416b)), indicating that our assumption is again reasonable.
 
 
@@ -461,7 +461,7 @@ We recommend using `block=` as the default unless there is clear evidence for di
 **Comments from Aaron:**
 
 - We run `multiBlockNorm()` to adjust the size factors within each level of the blocking factor.
-This ensures that the mean of the spike-in size factors across cells in each batch is equal to that of the gene-based size factors. 
+Specifically, the spike-in size factors across cells in a given batch is scaled so that the mean is equal to that of the gene-based size factors for the same set of cells.
 Log-normalized expression values are then recalculated using these centred size factors.
 This procedure ensures that the average abundances of the spike-in transcripts are comparable to the endogenous genes,
 avoiding problems due to differences in the quantity of spike-in RNA between batches.
@@ -496,13 +496,13 @@ sessionInfo()
 ```
 
 ```
-## R version 3.5.0 Patched (2018-04-30 r74679)
+## R Under development (unstable) (2018-11-02 r75535)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
 ## Running under: Ubuntu 16.04.5 LTS
 ## 
 ## Matrix products: default
-## BLAS: /home/cri.camres.org/lun01/Software/R/R-3-5-branch/lib/libRblas.so
-## LAPACK: /home/cri.camres.org/lun01/Software/R/R-3-5-branch/lib/libRlapack.so
+## BLAS: /home/cri.camres.org/lun01/Software/R/trunk/lib/libRblas.so
+## LAPACK: /home/cri.camres.org/lun01/Software/R/trunk/lib/libRlapack.so
 ## 
 ## locale:
 ##  [1] LC_CTYPE=en_GB.UTF-8       LC_NUMERIC=C              
@@ -519,80 +519,80 @@ sessionInfo()
 ## other attached packages:
 ##  [1] gdata_2.18.0                R.utils_2.7.0              
 ##  [3] R.oo_1.22.0                 R.methodsS3_1.7.1          
-##  [5] scran_1.9.20                bindrcpp_0.2.2             
-##  [7] BiocFileCache_1.5.5         dbplyr_1.2.2               
-##  [9] scRNAseq_1.7.0              edgeR_3.23.3               
-## [11] limma_3.37.4                scater_1.9.20              
-## [13] ggplot2_3.0.0               SingleCellExperiment_1.3.10
-## [15] SummarizedExperiment_1.11.6 DelayedArray_0.7.37        
-## [17] BiocParallel_1.15.11        matrixStats_0.54.0         
-## [19] Biobase_2.41.2              GenomicRanges_1.33.13      
-## [21] GenomeInfoDb_1.17.1         IRanges_2.15.17            
-## [23] S4Vectors_0.19.19           BiocGenerics_0.27.1        
-## [25] knitr_1.20                  BiocStyle_2.9.6            
+##  [5] scran_1.11.1                bindrcpp_0.2.2             
+##  [7] BiocFileCache_1.7.0         dbplyr_1.2.2               
+##  [9] scRNAseq_1.9.0              edgeR_3.25.0               
+## [11] limma_3.39.0                scater_1.11.1              
+## [13] ggplot2_3.1.0               SingleCellExperiment_1.5.0 
+## [15] SummarizedExperiment_1.13.0 DelayedArray_0.9.0         
+## [17] BiocParallel_1.17.0         matrixStats_0.54.0         
+## [19] Biobase_2.43.0              GenomicRanges_1.35.0       
+## [21] GenomeInfoDb_1.19.0         IRanges_2.17.0             
+## [23] S4Vectors_0.21.0            BiocGenerics_0.29.0        
+## [25] knitr_1.20                  BiocStyle_2.11.0           
 ## 
 ## loaded via a namespace (and not attached):
 ##   [1] readxl_1.1.0             backports_1.1.2         
 ##   [3] plyr_1.8.4               igraph_1.2.2            
 ##   [5] lazyeval_0.2.1           sp_1.3-1                
-##   [7] splines_3.5.0            kmknn_0.99.16           
-##   [9] digest_0.6.16            htmltools_0.3.6         
-##  [11] viridis_0.5.1            magrittr_1.5            
-##  [13] memoise_1.1.0            cluster_2.0.7-1         
-##  [15] openxlsx_4.1.0           colorspace_1.3-2        
-##  [17] blob_1.1.1               rappdirs_0.3.1          
-##  [19] rrcov_1.4-4              haven_1.1.2             
-##  [21] xfun_0.3                 dplyr_0.7.6             
-##  [23] crayon_1.3.4             RCurl_1.95-4.11         
-##  [25] bindr_0.1.1              survival_2.42-6         
-##  [27] zoo_1.8-3                glue_1.3.0              
-##  [29] gtable_0.2.0             zlibbioc_1.27.0         
-##  [31] XVector_0.21.3           car_3.0-2               
-##  [33] kernlab_0.9-27           Rhdf5lib_1.3.3          
-##  [35] prabclus_2.2-6           DEoptimR_1.0-8          
-##  [37] HDF5Array_1.9.15         abind_1.4-5             
-##  [39] VIM_4.7.0                scales_1.0.0            
-##  [41] sgeostat_1.0-27          mvtnorm_1.0-8           
-##  [43] DBI_1.0.0                GGally_1.4.0            
-##  [45] Rcpp_0.12.18             sROC_0.1-2              
-##  [47] viridisLite_0.3.0        laeken_0.4.6            
-##  [49] foreign_0.8-71           bit_1.1-14              
-##  [51] mclust_5.4.1             vcd_1.4-4               
-##  [53] truncnorm_1.0-8          httr_1.3.1              
-##  [55] RColorBrewer_1.1-2       fpc_2.1-11.1            
-##  [57] modeltools_0.2-22        pkgconfig_2.0.2         
-##  [59] reshape_0.8.7            NADA_1.6-1              
-##  [61] flexmix_2.3-14           nnet_7.3-12             
-##  [63] locfit_1.5-9.1           dynamicTreeCut_1.63-1   
-##  [65] labeling_0.3             tidyselect_0.2.4        
-##  [67] rlang_0.2.2              reshape2_1.4.3          
-##  [69] munsell_0.5.0            cellranger_1.1.0        
-##  [71] tools_3.5.0              RSQLite_2.1.1           
-##  [73] pls_2.7-0                evaluate_0.11           
-##  [75] stringr_1.3.1            cvTools_0.3.2           
-##  [77] yaml_2.2.0               bit64_0.9-7             
-##  [79] zip_1.0.0                robustbase_0.93-2       
-##  [81] purrr_0.2.5              compiler_3.5.0          
-##  [83] beeswarm_0.2.3           curl_3.2                
-##  [85] e1071_1.7-0              zCompositions_1.1.1     
-##  [87] tibble_1.4.2             statmod_1.4.30          
-##  [89] robCompositions_2.0.8    pcaPP_1.9-73            
-##  [91] stringi_1.2.4            highr_0.7               
-##  [93] forcats_0.3.0            lattice_0.20-35         
-##  [95] trimcluster_0.1-2.1      Matrix_1.2-14           
-##  [97] pillar_1.3.0             BiocManager_1.30.2      
-##  [99] lmtest_0.9-36            cowplot_0.9.3           
-## [101] data.table_1.11.4        bitops_1.0-6            
-## [103] R6_2.2.2                 bookdown_0.7            
+##   [7] splines_3.6.0            digest_0.6.18           
+##   [9] htmltools_0.3.6          viridis_0.5.1           
+##  [11] magrittr_1.5             memoise_1.1.0           
+##  [13] cluster_2.0.7-1          openxlsx_4.1.0          
+##  [15] colorspace_1.3-2         blob_1.1.1              
+##  [17] rappdirs_0.3.1           rrcov_1.4-4             
+##  [19] haven_1.1.2              xfun_0.4                
+##  [21] dplyr_0.7.7              crayon_1.3.4            
+##  [23] RCurl_1.95-4.11          bindr_0.1.1             
+##  [25] survival_2.43-1          zoo_1.8-4               
+##  [27] glue_1.3.0               gtable_0.2.0            
+##  [29] zlibbioc_1.29.0          XVector_0.23.0          
+##  [31] car_3.0-2                kernlab_0.9-27          
+##  [33] Rhdf5lib_1.5.0           prabclus_2.2-6          
+##  [35] DEoptimR_1.0-8           HDF5Array_1.11.0        
+##  [37] abind_1.4-5              VIM_4.7.0               
+##  [39] scales_1.0.0             sgeostat_1.0-27         
+##  [41] mvtnorm_1.0-8            DBI_1.0.0               
+##  [43] GGally_1.4.0             Rcpp_0.12.19            
+##  [45] sROC_0.1-2               viridisLite_0.3.0       
+##  [47] laeken_0.4.6             foreign_0.8-71          
+##  [49] bit_1.1-14               mclust_5.4.1            
+##  [51] vcd_1.4-4                truncnorm_1.0-8         
+##  [53] httr_1.3.1               RColorBrewer_1.1-2      
+##  [55] fpc_2.1-11.1             modeltools_0.2-22       
+##  [57] pkgconfig_2.0.2          reshape_0.8.8           
+##  [59] NADA_1.6-1               flexmix_2.3-14          
+##  [61] nnet_7.3-12              locfit_1.5-9.1          
+##  [63] dynamicTreeCut_1.63-1    labeling_0.3            
+##  [65] tidyselect_0.2.5         rlang_0.3.0.1           
+##  [67] reshape2_1.4.3           munsell_0.5.0           
+##  [69] cellranger_1.1.0         tools_3.6.0             
+##  [71] RSQLite_2.1.1            pls_2.7-0               
+##  [73] evaluate_0.12            stringr_1.3.1           
+##  [75] cvTools_0.3.2            yaml_2.2.0              
+##  [77] bit64_0.9-7              zip_1.0.0               
+##  [79] robustbase_0.93-3        purrr_0.2.5             
+##  [81] compiler_3.6.0           beeswarm_0.2.3          
+##  [83] curl_3.2                 e1071_1.7-0             
+##  [85] zCompositions_1.1.1-1    tibble_1.4.2            
+##  [87] statmod_1.4.30           robCompositions_2.0.8   
+##  [89] pcaPP_1.9-73             stringi_1.2.4           
+##  [91] highr_0.7                forcats_0.3.0           
+##  [93] lattice_0.20-35          trimcluster_0.1-2.1     
+##  [95] Matrix_1.2-15            pillar_1.3.0            
+##  [97] BiocManager_1.30.3       lmtest_0.9-36           
+##  [99] BiocNeighbors_1.1.0      cowplot_0.9.3           
+## [101] data.table_1.11.8        bitops_1.0-6            
+## [103] R6_2.3.0                 bookdown_0.7            
 ## [105] gridExtra_2.3            rio_0.5.10              
 ## [107] vipor_0.4.5              gtools_3.8.1            
-## [109] boot_1.3-20              MASS_7.3-50             
-## [111] assertthat_0.2.0         rhdf5_2.25.9            
+## [109] boot_1.3-20              MASS_7.3-51.1           
+## [111] assertthat_0.2.0         rhdf5_2.27.0            
 ## [113] rprojroot_1.3-2          withr_2.1.2             
-## [115] GenomeInfoDbData_1.1.0   diptest_0.75-7          
-## [117] hms_0.4.2                grid_3.5.0              
+## [115] GenomeInfoDbData_1.2.0   diptest_0.75-7          
+## [117] hms_0.4.2                grid_3.6.0              
 ## [119] class_7.3-14             rmarkdown_1.10          
-## [121] DelayedMatrixStats_1.3.8 carData_3.0-1           
+## [121] DelayedMatrixStats_1.5.0 carData_3.0-2           
 ## [123] mvoutlier_2.0.9          ggbeeswarm_0.6.0
 ```
 

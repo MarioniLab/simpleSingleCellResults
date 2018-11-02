@@ -5,7 +5,7 @@ author:
   affiliation: Cancer Research UK Cambridge Institute, Li Ka Shing Centre, Robinson Way, Cambridge CB2 0RE, United Kingdom
 - name: Michael D. Morgan
   affiliation: Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
-date: "2018-10-22"
+date: "2018-11-02"
 vignette: >
   %\VignetteIndexEntry{05. Correcting batch effects}
   %\VignetteEngine{knitr::rmarkdown}
@@ -679,6 +679,13 @@ omat <- do.call(cbind, original)
 sce <- SingleCellExperiment(list(logcounts=omat))
 reducedDim(sce, "MNN") <- mnn.out$corrected
 sce$Batch <- as.character(mnn.out$batch)
+
+# Adjusting the rownames for easier reading.
+rowData(sce)$ENSEMBL <- rownames(sce)    
+rowData(sce)$SYMBOL <- mapIds(org.Hs.eg.db, keytype="ENSEMBL", 
+    keys=rownames(sce), column="SYMBOL")
+rownames(sce) <- uniquifyFeatureNames(rownames(sce), rowData(sce)$SYMBOL)
+
 sce
 ```
 
@@ -687,9 +694,8 @@ sce
 ## dim: 14758 3638 
 ## metadata(0):
 ## assays(1): logcounts
-## rownames(14758): ENSG00000115263 ENSG00000089199 ... ENSG00000148688
-##   ENSG00000176731
-## rowData names(0):
+## rownames(14758): GCG CHGB ... RPP30 C8orf59
+## rowData names(2): ENSEMBL SYMBOL
 ## colnames(3638): D2ex_1 D2ex_2 ... D30.8_93 D30.8_94
 ## colData names(1): Batch
 ## reducedDimNames(1): MNN
@@ -704,14 +710,16 @@ Note that the E-MTAB-5601 dataset still displays some separation, which is proba
 
 ```r
 set.seed(100)
+
 # Using irlba to set up the t-SNE, for speed.
 osce <- runPCA(sce, ntop=Inf, method="irlba")
 osce <- runTSNE(osce, use_dimred="PCA")
 ot <- plotTSNE(osce, colour_by="Batch") + ggtitle("Original")
 
+# Corrected.
 set.seed(100)
-csce <- runTSNE(sce, use_dimred="MNN")
-ct <- plotTSNE(csce, colour_by="Batch") + ggtitle("Corrected")
+sce <- runTSNE(sce, use_dimred="MNN")
+ct <- plotTSNE(sce, colour_by="Batch") + ggtitle("Corrected")
 
 multiplot(ot, ct, cols=2)
 ```
@@ -726,14 +734,10 @@ Cells in the same visual cluster express the same marker genes (Figure \@ref(fig
 
 
 ```r
-ct.gcg <- plotTSNE(csce, colour_by="ENSG00000115263") + 
-    ggtitle("Alpha cells (GCG)")
-ct.ins <- plotTSNE(csce, colour_by="ENSG00000254647") + 
-    ggtitle("Beta cells (INS)")
-ct.sst <- plotTSNE(csce, colour_by="ENSG00000157005") + 
-    ggtitle("Delta cells (SST)")
-ct.ppy <- plotTSNE(csce, colour_by="ENSG00000108849") + 
-    ggtitle("PP cells (PPY)")
+ct.gcg <- plotTSNE(sce, colour_by="GCG") + ggtitle("Alpha cells")
+ct.ins <- plotTSNE(sce, colour_by="INS") + ggtitle("Beta cells")
+ct.sst <- plotTSNE(sce, colour_by="SST") + ggtitle("Delta cells")
+ct.ppy <- plotTSNE(sce, colour_by="PPY") + ggtitle("PP cells")
 multiplot(ct.gcg, ct.ins, ct.sst, ct.ppy, cols=2)
 ```
 
@@ -775,8 +779,8 @@ Figure \@ref(fig:tsne-cluster) shows strong correspondence between the cluster l
 
 
 ```r
-csce$Cluster <- factor(clusters$membership)
-plotTSNE(csce, colour_by="Cluster")
+sce$Cluster <- factor(clusters$membership)
+plotTSNE(sce, colour_by="Cluster")
 ```
 
 <div class="figure">
@@ -787,8 +791,7 @@ plotTSNE(csce, colour_by="Cluster")
 Differential expression analyses should be performed on the **original** log-expression values or counts.
 We do not use the corrected values here (which no longer correspond to genes anyway) except to obtain the clusters or trajectories to be characterized.
 To model the batch effect, we set the batch of origin as the `block=` argument in `findMarkers()`.
-This will perform all comparisons between clusters _within_ each batch, and then combine the _p_-values with Stouffer's Z method to consolidate results across batches.
-Intra-batch comparisons are robust to differences between batches but assume that each pair of clusters is present in at least one batch.
+This will perform all comparisons between clusters _within_ each batch, and then combine the _p_-values to consolidate results across batches.
 
 
 ```r
@@ -796,93 +799,49 @@ m.out <- findMarkers(sce, clusters$membership, block=sce$Batch,
     direction="up")        
 demo <- m.out[["4"]] # looking at cluster 4 (probably alpha cells).
 demo <- demo[demo$Top <= 5,]
-
-library(org.Hs.eg.db)
-data.frame(row.names=rownames(demo),
-    Symbol=mapIds(org.Hs.eg.db, keytype="ENSEMBL", 
-        keys=rownames(demo), column="SYMBOL"),
-    Top=demo$Top, FDR=demo$FDR)
+as.data.frame(demo[,1:3]) # only first three columns for brevity.
 ```
 
 ```
-##                  Symbol Top           FDR
-## ENSG00000169903  TM4SF4   1  0.000000e+00
-## ENSG00000089199    CHGB   1  0.000000e+00
-## ENSG00000171951    SCG2   1  0.000000e+00
-## ENSG00000135447 PPP1R1A   1  0.000000e+00
-## ENSG00000170561    IRX2   1  0.000000e+00
-## ENSG00000078098     FAP   1  0.000000e+00
-## ENSG00000018236   CNTN1   1  0.000000e+00
-## ENSG00000004848     ARX   1  0.000000e+00
-## ENSG00000109472     CPE   2  0.000000e+00
-## ENSG00000007372    PAX6   2  0.000000e+00
-## ENSG00000079689    SCGN   2  0.000000e+00
-## ENSG00000145321      GC   2  0.000000e+00
-## ENSG00000163499  CRYBA2   2  0.000000e+00
-## ENSG00000155093  PTPRN2   2  0.000000e+00
-## ENSG00000145730     PAM   2  0.000000e+00
-## ENSG00000011347    SYT7   2  0.000000e+00
-## ENSG00000138131   LOXL4   2 6.094010e-290
-## ENSG00000054356   PTPRN   3  0.000000e+00
-## ENSG00000166922    SCG5   3  0.000000e+00
-## ENSG00000174938  SEZ6L2   3  0.000000e+00
-## ENSG00000076554   TPD52   3  0.000000e+00
-## ENSG00000138193   PLCE1   3 2.298815e-191
-## ENSG00000204103    MAFB   4  0.000000e+00
-## ENSG00000164756 SLC30A8   4  0.000000e+00
-## ENSG00000139209 SLC38A4   4  0.000000e+00
-## ENSG00000169213   RAB3B   4  0.000000e+00
-## ENSG00000172348   RCAN2   4 1.059137e-279
-## ENSG00000125851   PCSK2   5  0.000000e+00
-## ENSG00000115263     GCG   5  0.000000e+00
-## ENSG00000204580    DDR1   5  0.000000e+00
-## ENSG00000164687   FABP5   5 1.102690e-262
-## ENSG00000136698    CFC1   5 4.356826e-262
+##         Top       p.value           FDR
+## TM4SF4    1  0.000000e+00  0.000000e+00
+## CHGB      1  0.000000e+00  0.000000e+00
+## SCG2      1  0.000000e+00  0.000000e+00
+## PPP1R1A   1  0.000000e+00  0.000000e+00
+## IRX2      1  0.000000e+00  0.000000e+00
+## FAP       1  0.000000e+00  0.000000e+00
+## CNTN1     1  0.000000e+00  0.000000e+00
+## ARX       1  0.000000e+00  0.000000e+00
+## CPE       2  0.000000e+00  0.000000e+00
+## PAX6      2  0.000000e+00  0.000000e+00
+## SCGN      2  0.000000e+00  0.000000e+00
+## GC        2  0.000000e+00  0.000000e+00
+## CRYBA2    2  0.000000e+00  0.000000e+00
+## PTPRN2    2  0.000000e+00  0.000000e+00
+## PAM       2  0.000000e+00  0.000000e+00
+## SYT7      2  0.000000e+00  0.000000e+00
+## LOXL4     2 3.096970e-292 6.094010e-290
+## PTPRN     3  0.000000e+00  0.000000e+00
+## SCG5      3  0.000000e+00  0.000000e+00
+## SEZ6L2    3  0.000000e+00  0.000000e+00
+## TPD52     3  0.000000e+00  0.000000e+00
+## PLCE1     3 2.725929e-193 2.298815e-191
+## MAFB      4  0.000000e+00  0.000000e+00
+## SLC30A8   4  0.000000e+00  0.000000e+00
+## SLC38A4   4  0.000000e+00  0.000000e+00
+## RAB3B     4  0.000000e+00  0.000000e+00
+## RCAN2     4 5.813127e-282 1.059137e-279
+## PCSK2     5  0.000000e+00  0.000000e+00
+## GCG       5  0.000000e+00  0.000000e+00
+## DDR1      5  0.000000e+00  0.000000e+00
+## FABP5     5 7.397093e-265 1.102690e-262
+## CFC1      5 3.011223e-264 4.356826e-262
 ```
 
 
 
-Another approach is to define a design matrix containing the batch of origin as the sole factor.
-`findMarkers()` will then fit a linear model to the log-expression values, similar to the use of *[limma](https://bioconductor.org/packages/3.8/limma)* for bulk RNA sequencing data [@ritchie2015limma].
-This handles situations where multiple batches contain unique clusters, whereby comparisons can be implicitly performed between shared cell types.
-However, the use of a linear model makes some strong assumptions about the homogeneity of the batch effect across cell types and the equality of variances.
-
-
-```r
-# Setting up the design matrix (we remove intercept for full rank
-# in the final design matrix with the cluster-specific terms).
-design <- model.matrix(~sce$Batch)
-design <- design[,-1,drop=FALSE]
-
-m.alt <- findMarkers(sce, clusters$membership, design=design,
-    direction="up")
-demo <- m.alt[["4"]]
-demo <- demo[demo$Top <= 5,]
-
-data.frame(row.names=rownames(demo),
-    Symbol=mapIds(org.Hs.eg.db, keytype="ENSEMBL", 
-        keys=rownames(demo), column="SYMBOL"),
-    Top=demo$Top, FDR=demo$FDR)
-```
-
-```
-##                  Symbol Top FDR
-## ENSG00000166922    SCG5   1   0
-## ENSG00000125851   PCSK2   1   0
-## ENSG00000169903  TM4SF4   1   0
-## ENSG00000170561    IRX2   1   0
-## ENSG00000109472     CPE   2   0
-## ENSG00000118271     TTR   2   0
-## ENSG00000115263     GCG   2   0
-## ENSG00000145321      GC   2   0
-## ENSG00000204103    MAFB   3   0
-## ENSG00000089199    CHGB   4   0
-## ENSG00000078098     FAP   4   0
-## ENSG00000171951    SCG2   5   0
-## ENSG00000135447 PPP1R1A   5   0
-```
-
-It is similarly possible to perform these analyses with standard Bioconductor packages for DE analysis such as *[edgeR](https://bioconductor.org/packages/3.8/edgeR)* or *[limma](https://bioconductor.org/packages/3.8/limma)*.
+Other approaches for handling batch effects during marker gene detection are discussed [elsewhere](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/xtra-3b-de.html#blocking-on-uninteresting-factors-of-variation).
+It is similarly possible to perform these analyses with standard Bioconductor packages for DE analysis such as *[edgeR](https://bioconductor.org/packages/3.9/edgeR)* or *[limma](https://bioconductor.org/packages/3.9/limma)*.
 Note that the use of `block=` is roughly similar to the use of a batch-cluster interaction model and testing whether the average log-fold change across batches is equal to zero.
 
 **Comments from Aaron:**
@@ -898,6 +857,14 @@ This is inappropriate for various reasons:
 
 # Concluding remarks
 
+We save the `SingleCellExperiment` object for use elsewhere.
+This avoids the need to repeat all of the processing steps described above.
+
+
+```r
+saveRDS(file="pancreas_data.rds", sce)
+```
+
 All software packages used in this workflow are publicly available from the Comprehensive R Archive Network (https://cran.r-project.org) or the Bioconductor project (http://bioconductor.org).
 The specific version numbers of the packages used are shown below, along with the version of the R installation.
 
@@ -907,13 +874,13 @@ sessionInfo()
 ```
 
 ```
-## R version 3.5.0 Patched (2018-04-30 r74679)
+## R Under development (unstable) (2018-11-02 r75535)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
 ## Running under: Ubuntu 16.04.5 LTS
 ## 
 ## Matrix products: default
-## BLAS: /home/cri.camres.org/lun01/Software/R/R-3-5-branch/lib/libRblas.so
-## LAPACK: /home/cri.camres.org/lun01/Software/R/R-3-5-branch/lib/libRlapack.so
+## BLAS: /home/cri.camres.org/lun01/Software/R/trunk/lib/libRblas.so
+## LAPACK: /home/cri.camres.org/lun01/Software/R/trunk/lib/libRlapack.so
 ## 
 ## locale:
 ##  [1] LC_CTYPE=en_GB.UTF-8       LC_NUMERIC=C              
@@ -928,56 +895,57 @@ sessionInfo()
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] scran_1.9.38                scater_1.9.23              
-##  [3] ggplot2_3.0.0               SingleCellExperiment_1.3.11
-##  [5] SummarizedExperiment_1.11.6 DelayedArray_0.7.48        
-##  [7] BiocParallel_1.15.15        matrixStats_0.54.0         
-##  [9] GenomicRanges_1.33.14       GenomeInfoDb_1.17.4        
-## [11] org.Hs.eg.db_3.7.0          AnnotationDbi_1.43.1       
-## [13] IRanges_2.15.18             S4Vectors_0.19.22          
-## [15] Biobase_2.41.2              BiocGenerics_0.27.1        
-## [17] bindrcpp_0.2.2              BiocFileCache_1.5.8        
+##  [1] scran_1.11.1                scater_1.11.1              
+##  [3] ggplot2_3.1.0               SingleCellExperiment_1.5.0 
+##  [5] SummarizedExperiment_1.13.0 DelayedArray_0.9.0         
+##  [7] BiocParallel_1.17.0         matrixStats_0.54.0         
+##  [9] GenomicRanges_1.35.0        GenomeInfoDb_1.19.0        
+## [11] org.Hs.eg.db_3.7.0          AnnotationDbi_1.45.0       
+## [13] IRanges_2.17.0              S4Vectors_0.21.0           
+## [15] Biobase_2.43.0              BiocGenerics_0.29.0        
+## [17] bindrcpp_0.2.2              BiocFileCache_1.7.0        
 ## [19] dbplyr_1.2.2                knitr_1.20                 
-## [21] BiocStyle_2.9.6            
+## [21] BiocStyle_2.11.0           
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] dynamicTreeCut_1.63-1     viridis_0.5.1            
-##  [3] httr_1.3.1                edgeR_3.23.5             
-##  [5] bit64_0.9-7               viridisLite_0.3.0        
-##  [7] DelayedMatrixStats_1.3.11 assertthat_0.2.0         
-##  [9] statmod_1.4.30            highr_0.7                
-## [11] BiocManager_1.30.3        blob_1.1.1               
-## [13] vipor_0.4.5               GenomeInfoDbData_1.2.0   
-## [15] yaml_2.2.0                pillar_1.3.0             
-## [17] RSQLite_2.1.1             backports_1.1.2          
-## [19] lattice_0.20-35           limma_3.37.10            
-## [21] glue_1.3.0                digest_0.6.18            
-## [23] XVector_0.21.4            colorspace_1.3-2         
-## [25] cowplot_0.9.3             htmltools_0.3.6          
-## [27] Matrix_1.2-14             plyr_1.8.4               
-## [29] pkgconfig_2.0.2           bookdown_0.7             
-## [31] zlibbioc_1.27.0           purrr_0.2.5              
-## [33] scales_1.0.0              HDF5Array_1.9.19         
-## [35] Rtsne_0.14                tibble_1.4.2             
-## [37] withr_2.1.2               lazyeval_0.2.1           
-## [39] magrittr_1.5              crayon_1.3.4             
-## [41] memoise_1.1.0             evaluate_0.12            
-## [43] beeswarm_0.2.3            tools_3.5.0              
-## [45] stringr_1.3.1             Rhdf5lib_1.3.3           
-## [47] locfit_1.5-9.1            munsell_0.5.0            
-## [49] irlba_2.3.3               compiler_3.5.0           
-## [51] rlang_0.3.0               rhdf5_2.25.11            
-## [53] grid_3.5.0                RCurl_1.95-4.11          
-## [55] BiocNeighbors_0.99.22     rappdirs_0.3.1           
-## [57] igraph_1.2.2              labeling_0.3             
-## [59] bitops_1.0-6              rmarkdown_1.10           
-## [61] gtable_0.2.0              DBI_1.0.0                
-## [63] reshape2_1.4.3            R6_2.3.0                 
-## [65] gridExtra_2.3             dplyr_0.7.7              
-## [67] bit_1.1-14                bindr_0.1.1              
-## [69] rprojroot_1.3-2           stringi_1.2.4            
-## [71] ggbeeswarm_0.6.0          Rcpp_0.12.19             
-## [73] tidyselect_0.2.5          xfun_0.3
+##  [1] dynamicTreeCut_1.63-1    viridis_0.5.1           
+##  [3] httr_1.3.1               edgeR_3.25.0            
+##  [5] bit64_0.9-7              viridisLite_0.3.0       
+##  [7] DelayedMatrixStats_1.5.0 assertthat_0.2.0        
+##  [9] statmod_1.4.30           highr_0.7               
+## [11] BiocManager_1.30.3       blob_1.1.1              
+## [13] vipor_0.4.5              GenomeInfoDbData_1.2.0  
+## [15] yaml_2.2.0               pillar_1.3.0            
+## [17] RSQLite_2.1.1            backports_1.1.2         
+## [19] lattice_0.20-35          limma_3.39.0            
+## [21] glue_1.3.0               digest_0.6.18           
+## [23] XVector_0.23.0           colorspace_1.3-2        
+## [25] cowplot_0.9.3            htmltools_0.3.6         
+## [27] Matrix_1.2-15            plyr_1.8.4              
+## [29] pkgconfig_2.0.2          bookdown_0.7            
+## [31] zlibbioc_1.29.0          purrr_0.2.5             
+## [33] scales_1.0.0             HDF5Array_1.11.0        
+## [35] Rtsne_0.13               tibble_1.4.2            
+## [37] withr_2.1.2              lazyeval_0.2.1          
+## [39] magrittr_1.5             crayon_1.3.4            
+## [41] memoise_1.1.0            evaluate_0.12           
+## [43] beeswarm_0.2.3           tools_3.6.0             
+## [45] stringr_1.3.1            Rhdf5lib_1.5.0          
+## [47] locfit_1.5-9.1           munsell_0.5.0           
+## [49] irlba_2.3.2              compiler_3.6.0          
+## [51] rlang_0.3.0.1            rhdf5_2.27.0            
+## [53] grid_3.6.0               RCurl_1.95-4.11         
+## [55] BiocNeighbors_1.1.0      rappdirs_0.3.1          
+## [57] igraph_1.2.2             labeling_0.3            
+## [59] bitops_1.0-6             rmarkdown_1.10          
+## [61] gtable_0.2.0             DBI_1.0.0               
+## [63] curl_3.2                 reshape2_1.4.3          
+## [65] R6_2.3.0                 gridExtra_2.3           
+## [67] dplyr_0.7.7              bit_1.1-14              
+## [69] bindr_0.1.1              rprojroot_1.3-2         
+## [71] stringi_1.2.4            ggbeeswarm_0.6.0        
+## [73] Rcpp_0.12.19             tidyselect_0.2.5        
+## [75] xfun_0.4
 ```
 
 # References

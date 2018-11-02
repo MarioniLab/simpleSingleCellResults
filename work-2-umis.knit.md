@@ -12,9 +12,9 @@ author:
   - *CRUK
   - *EMBL
   - Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
-date: "2018-09-19"
+date: "2018-11-02"
 vignette: >
-  %\VignetteIndexEntry{03. Analyzing scRNA-seq UMI count data}
+  %\VignetteIndexEntry{03. UMI count data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}    
 output: 
@@ -154,7 +154,7 @@ sce
 # Quality control on the cells 
 
 The original authors of the study have already removed low-quality cells prior to data publication.
-Nonetheless, we compute some quality control metrics with *[scater](https://bioconductor.org/packages/3.8/scater)* [@mccarthy2017scater] to check whether the remaining cells are satisfactory.
+Nonetheless, we compute some quality control metrics with *[scater](https://bioconductor.org/packages/3.9/scater)* [@mccarthy2017scater] to check whether the remaining cells are satisfactory.
 
 
 ```r
@@ -558,7 +558,7 @@ We find that the Walktrap algorithm is usually a good default choice [@yang2016c
 - Decreasing the number of neighbours `k` in `buildSNNGraph` will reduce the connectivity of the graph.
 This will generally result in the formation of smaller clusters [@xu2015identification], which may be desirable if greater resolution is required.
 - Notice that we do not run `library(igraph)`, but instead use `igraph::` to extract methods from the package. 
-This is because *[igraph](https://CRAN.R-project.org/package=igraph)* contains a `normalize` method that will override its counterpart from *[scater](https://bioconductor.org/packages/3.8/scater)*, resulting in some unusual bugs.
+This is because *[igraph](https://CRAN.R-project.org/package=igraph)* contains a `normalize` method that will override its counterpart from *[scater](https://bioconductor.org/packages/3.9/scater)*, resulting in some unusual bugs.
 
 ## Evaluating graph-based clusters
 
@@ -727,13 +727,13 @@ sessionInfo()
 ```
 
 ```
-## R version 3.5.0 Patched (2018-04-30 r74679)
+## R Under development (unstable) (2018-11-02 r75535)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
 ## Running under: Ubuntu 16.04.5 LTS
 ## 
 ## Matrix products: default
-## BLAS: /home/cri.camres.org/lun01/Software/R/R-3-5-branch/lib/libRblas.so
-## LAPACK: /home/cri.camres.org/lun01/Software/R/R-3-5-branch/lib/libRlapack.so
+## BLAS: /home/cri.camres.org/lun01/Software/R/trunk/lib/libRblas.so
+## LAPACK: /home/cri.camres.org/lun01/Software/R/trunk/lib/libRlapack.so
 ## 
 ## locale:
 ##  [1] LC_CTYPE=en_GB.UTF-8       LC_NUMERIC=C              
@@ -748,57 +748,57 @@ sessionInfo()
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] pheatmap_1.0.10             scran_1.9.26               
-##  [3] scater_1.9.20               ggplot2_3.0.0              
-##  [5] org.Mm.eg.db_3.6.0          AnnotationDbi_1.43.1       
-##  [7] SingleCellExperiment_1.3.10 SummarizedExperiment_1.11.6
-##  [9] DelayedArray_0.7.41         BiocParallel_1.15.12       
-## [11] matrixStats_0.54.0          Biobase_2.41.2             
-## [13] GenomicRanges_1.33.13       GenomeInfoDb_1.17.1        
-## [15] IRanges_2.15.17             S4Vectors_0.19.19          
-## [17] BiocGenerics_0.27.1         bindrcpp_0.2.2             
-## [19] BiocFileCache_1.5.5         dbplyr_1.2.2               
-## [21] knitr_1.20                  BiocStyle_2.9.6            
+##  [1] pheatmap_1.0.10             scran_1.11.1               
+##  [3] scater_1.11.1               ggplot2_3.1.0              
+##  [5] org.Mm.eg.db_3.7.0          AnnotationDbi_1.45.0       
+##  [7] SingleCellExperiment_1.5.0  SummarizedExperiment_1.13.0
+##  [9] DelayedArray_0.9.0          BiocParallel_1.17.0        
+## [11] matrixStats_0.54.0          Biobase_2.43.0             
+## [13] GenomicRanges_1.35.0        GenomeInfoDb_1.19.0        
+## [15] IRanges_2.17.0              S4Vectors_0.21.0           
+## [17] BiocGenerics_0.29.0         bindrcpp_0.2.2             
+## [19] BiocFileCache_1.7.0         dbplyr_1.2.2               
+## [21] knitr_1.20                  BiocStyle_2.11.0           
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] bitops_1.0-6             bit64_0.9-7             
 ##  [3] RColorBrewer_1.1-2       httr_1.3.1              
 ##  [5] rprojroot_1.3-2          dynamicTreeCut_1.63-1   
-##  [7] tools_3.5.0              backports_1.1.2         
-##  [9] R6_2.2.2                 irlba_2.3.2             
-## [11] HDF5Array_1.9.19         vipor_0.4.5             
+##  [7] tools_3.6.0              backports_1.1.2         
+##  [9] R6_2.3.0                 irlba_2.3.2             
+## [11] HDF5Array_1.11.0         vipor_0.4.5             
 ## [13] DBI_1.0.0                lazyeval_0.2.1          
 ## [15] colorspace_1.3-2         withr_2.1.2             
-## [17] tidyselect_0.2.4         gridExtra_2.3           
-## [19] bit_1.1-14               compiler_3.5.0          
-## [21] labeling_0.3             bookdown_0.7            
-## [23] scales_1.0.0             rappdirs_0.3.1          
-## [25] stringr_1.3.1            digest_0.6.17           
-## [27] rmarkdown_1.10           XVector_0.21.3          
-## [29] pkgconfig_2.0.2          htmltools_0.3.6         
-## [31] limma_3.37.4             highr_0.7               
-## [33] rlang_0.2.2              RSQLite_2.1.1           
-## [35] DelayedMatrixStats_1.3.9 bindr_0.1.1             
-## [37] dplyr_0.7.6              RCurl_1.95-4.11         
-## [39] magrittr_1.5             GenomeInfoDbData_1.1.0  
-## [41] Matrix_1.2-14            Rcpp_0.12.18            
-## [43] ggbeeswarm_0.6.0         munsell_0.5.0           
-## [45] Rhdf5lib_1.3.3           viridis_0.5.1           
-## [47] stringi_1.2.4            yaml_2.2.0              
-## [49] edgeR_3.23.3             zlibbioc_1.27.0         
-## [51] rhdf5_2.25.9             Rtsne_0.13              
-## [53] plyr_1.8.4               grid_3.5.0              
-## [55] blob_1.1.1               crayon_1.3.4            
-## [57] lattice_0.20-35          cowplot_0.9.3           
-## [59] locfit_1.5-9.1           pillar_1.3.0            
-## [61] igraph_1.2.2             kmknn_0.99.16           
-## [63] reshape2_1.4.3           glue_1.3.0              
-## [65] evaluate_0.11            BiocManager_1.30.2      
-## [67] gtable_0.2.0             purrr_0.2.5             
-## [69] assertthat_0.2.0         xfun_0.3                
-## [71] viridisLite_0.3.0        tibble_1.4.2            
-## [73] beeswarm_0.2.3           memoise_1.1.0           
-## [75] statmod_1.4.30
+## [17] tidyselect_0.2.5         gridExtra_2.3           
+## [19] bit_1.1-14               curl_3.2                
+## [21] compiler_3.6.0           BiocNeighbors_1.1.0     
+## [23] labeling_0.3             bookdown_0.7            
+## [25] scales_1.0.0             rappdirs_0.3.1          
+## [27] stringr_1.3.1            digest_0.6.18           
+## [29] rmarkdown_1.10           XVector_0.23.0          
+## [31] pkgconfig_2.0.2          htmltools_0.3.6         
+## [33] limma_3.39.0             highr_0.7               
+## [35] rlang_0.3.0.1            RSQLite_2.1.1           
+## [37] DelayedMatrixStats_1.5.0 bindr_0.1.1             
+## [39] dplyr_0.7.7              RCurl_1.95-4.11         
+## [41] magrittr_1.5             GenomeInfoDbData_1.2.0  
+## [43] Matrix_1.2-15            Rcpp_0.12.19            
+## [45] ggbeeswarm_0.6.0         munsell_0.5.0           
+## [47] Rhdf5lib_1.5.0           viridis_0.5.1           
+## [49] stringi_1.2.4            yaml_2.2.0              
+## [51] edgeR_3.25.0             zlibbioc_1.29.0         
+## [53] rhdf5_2.27.0             Rtsne_0.13              
+## [55] plyr_1.8.4               grid_3.6.0              
+## [57] blob_1.1.1               crayon_1.3.4            
+## [59] lattice_0.20-35          cowplot_0.9.3           
+## [61] locfit_1.5-9.1           pillar_1.3.0            
+## [63] igraph_1.2.2             reshape2_1.4.3          
+## [65] glue_1.3.0               evaluate_0.12           
+## [67] BiocManager_1.30.3       gtable_0.2.0            
+## [69] purrr_0.2.5              assertthat_0.2.0        
+## [71] xfun_0.4                 viridisLite_0.3.0       
+## [73] tibble_1.4.2             beeswarm_0.2.3          
+## [75] memoise_1.1.0            statmod_1.4.30
 ```
 
 # References
