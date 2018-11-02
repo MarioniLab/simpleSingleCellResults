@@ -7,5 +7,6 @@ rmarkdown::render("work-6-doublet.Rmd", output_dir=".", intermediates_dir=".", c
 rmarkdown::render("xtra-1-qc.Rmd", output_dir=".", intermediates_dir=".", clean=FALSE)
 rmarkdown::render("xtra-2-spike.Rmd", output_dir=".", intermediates_dir=".", clean=FALSE)
 rmarkdown::render("xtra-3-var.Rmd", output_dir=".", intermediates_dir=".", clean=FALSE)
+rmarkdown::render("xtra-3b-de.Rmd", output_dir=".", intermediates_dir=".", clean=FALSE)
 rmarkdown::render("xtra-4-misc.Rmd", output_dir=".", intermediates_dir=".", clean=FALSE)
 
