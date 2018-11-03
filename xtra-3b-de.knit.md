@@ -3,7 +3,7 @@ title: Detecting differental expression from single-cell RNA-seq data
 author: 
 - name: Aaron T. L. Lun
   affiliation: &CRUK Cancer Research UK Cambridge Institute, Li Ka Shing Centre, Robinson Way, Cambridge CB2 0RE, United Kingdom
-date: "2018-11-02"
+date: "2018-11-03"
 vignette: >
   %\VignetteIndexEntry{10. Detecting differential expression}
   %\VignetteEngine{knitr::rmarkdown}
@@ -179,6 +179,90 @@ plotExpression(sce.416b, x="cluster", colour_by="Plate",
 Wilcoxon tests provide a stronger guarantee of cluster separation than the $t$-tests in `findMarkers()` as the latter can have large effect sizes driven by a minority of cells.
 This promotes the identification of good marker genes that discriminate between clusters.
 The downside is that they are slower, the effect size is more difficult to interpret and the test result is not entirely robust to differences in scaling biases across clusters.
+
+# Using other DE analysis results
+
+It is possible to perform marker gene detection based on results from other DE analysis methods.
+For example, consider the `voom` approach in the *[limma](https://bioconductor.org/packages/3.9/limma)* package [@law2014voom].
+
+
+```r
+library(limma)
+design <- model.matrix(~0 + cluster + Plate, data=colData(sce.416b))
+colnames(design)
+```
+
+```
+## [1] "cluster1"      "cluster2"      "cluster3"      "cluster4"     
+## [5] "cluster5"      "Plate20160325"
+```
+
+```r
+keep <- calcAverage(sce.416b) > 1 # filter to remove very low-abundance genes.
+summary(keep)
+```
+
+```
+##    Mode   FALSE    TRUE 
+## logical   10630   13233
+```
+
+```r
+y <- convertTo(sce.416b, subset.row=keep)
+v <- voom(y, design)
+fit <- lmFit(v, design)
+```
+
+We perform pairwise moderated $t$-tests between clusters while blocking on the plate of origin.
+Here, we use the TREAT strategy [@mccarthy2009treat] to test for log-fold changes that are significantly greater than 0.5.
+
+
+```r
+clust.terms <- head(colnames(design), length(unique(sce.416b$cluster)))
+all.results <- all.pairs <- list()
+counter <- 1L
+
+for (x in seq_along(clust.terms)) {
+    for (y in seq_len(x-1L)) {
+        con <- integer(ncol(design))
+        con[x] <- 1
+        con[y] <- -1
+        fit2 <- contrasts.fit(fit, con)
+        fit2 <- treat(fit2, robust=TRUE, lfc=0.5)
+
+        res <- topTreat(fit2, n=Inf, sort.by="none")
+        all.results[[counter]] <- res
+        all.pairs[[counter]] <- c(clust.terms[x], clust.terms[y])
+        counter <- counter+1L
+
+        # Also filling the reverse comparison.
+        res$logFC <- -res$logFC
+        all.results[[counter]] <- res
+        all.pairs[[counter]] <- c(clust.terms[y], clust.terms[x])
+        counter <- counter+1L
+    }
+}
+```
+
+The results of this comparison are consolidated into a single marker list for each cluster with the `combineMarkers()` function.
+This yields an ordering of genes that can be interpreted in the same manner as discussed [previously](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/work-1-reads.html#detecting-marker-genes-between-clusters) for `findMarkers()` output.
+
+
+```r
+all.pairs <- do.call(rbind, all.pairs)
+combined <- combineMarkers(all.results, all.pairs, pval.field="P.Value")
+as.data.frame(head(combined[["cluster1"]][,1:3]))
+```
+
+```
+##        Top       p.value           FDR
+## CYTB     1 9.477285e-162 1.248443e-157
+## Pimreg   1  4.100254e-75  2.700632e-71
+## Myh11    1  6.196193e-69  2.720748e-65
+## Kif11    1  1.134306e-51  7.115338e-49
+## Rrm2     2  1.046397e-64  2.756836e-61
+## ND1      2  1.301922e-44  3.811158e-42
+```
 
 # Caveats with interpreting DE p-values
 
