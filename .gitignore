@@ -8,3 +8,4 @@ raw_data
 *.utf8.md
 *.gz
 *.xls
+.cloned
