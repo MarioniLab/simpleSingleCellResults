@@ -12,7 +12,7 @@ author:
   - *CRUK
   - *EMBL
   - Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
-date: "2018-11-02"
+date: "2018-11-10"
 vignette: >
   %\VignetteIndexEntry{02. Read count data}
   %\VignetteEngine{knitr::rmarkdown}
@@ -615,7 +615,7 @@ summary(to.keep)
 
 # Normalization of cell-specific biases
 
-## Using the deconvolution method to deal with zero counts
+## Using the pooling method to deal with zeroes
 
 Read counts are subject to differences in capture efficiency and sequencing depth between cells [@stegle2015computational].
 Normalization is required to eliminate these cell-specific biases prior to downstream quantitative analyses.
@@ -625,18 +625,18 @@ More specifically, "size factors" are calculated that represent the extent to wh
 
 Size factors can be computed with several different approaches, e.g., using the `estimateSizeFactorsFromMatrix` function in the *[DESeq2](https://bioconductor.org/packages/3.9/DESeq2)* package [@anders2010differential;@love2014moderated], or with the `calcNormFactors` function [@robinson2010scaling] in the *[edgeR](https://bioconductor.org/packages/3.9/edgeR)* package.
 However, single-cell data can be problematic for these bulk data-based methods due to the dominance of low and zero counts.
-To overcome this, we pool counts from many cells to increase the count size for accurate size factor estimation [@lun2016pooling].
-Pool-based size factors are then "deconvolved" into cell-based factors for cell-specific normalization.
+To overcome this, we pool counts from many cells to increase the size of the counts for accurate size factor estimation [@lun2016pooling].
+The `simpleSumFactors()` function will compute a size factor for each cell by sharing information with its neighbouring cells in expression space.
 
 
 ```r
-sce <- computeSumFactors(sce)
+sce <- simpleSumFactors(sce)
 summary(sizeFactors(sce))
 ```
 
 ```
 ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-##  0.3464  0.7117  0.9098  1.0000  1.1396  3.5695
+##  0.3515  0.7417  0.9226  1.0000  1.1552  3.5194
 ```
 
 The size factors are well-correlated with the library sizes for all cells (Figure \@ref(fig:normplot416b)).
@@ -655,33 +655,24 @@ legend("bottomright", col=c("red", "black"), pch=16, cex=1.2,
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/work-1-reads_files/figure-html/normplot416b-1.png" alt="Size factors from deconvolution, plotted against library sizes for all cells in the 416B dataset. Axes are shown on a log-scale. Wild-type cells are shown in black and oncogene-induced cells are shown in red." width="100%" />
-<p class="caption">(\#fig:normplot416b)Size factors from deconvolution, plotted against library sizes for all cells in the 416B dataset. Axes are shown on a log-scale. Wild-type cells are shown in black and oncogene-induced cells are shown in red.</p>
+<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/work-1-reads_files/figure-html/normplot416b-1.png" alt="Size factors from pooling, plotted against library sizes for all cells in the 416B dataset. Axes are shown on a log-scale. Wild-type cells are shown in black and oncogene-induced cells are shown in red." width="100%" />
+<p class="caption">(\#fig:normplot416b)Size factors from pooling, plotted against library sizes for all cells in the 416B dataset. Axes are shown on a log-scale. Wild-type cells are shown in black and oncogene-induced cells are shown in red.</p>
 </div>
 
 __Comments from Aaron:__
 
-- While the deconvolution approach is robust to the high frequency of zeroes in scRNA-seq data, it will eventually fail if too many counts are zero.
+- While the pooling approach is robust to the high frequency of zeroes in scRNA-seq data, it will eventually fail if too many counts are zero.
 This manifests as negative size factors that are obviously nonsensical.
-To avoid this, the `computeSumFactors` function will automatically remove low-abundance genes prior to the calculation of size factors.
+To avoid this, the `simpleSumFactors()` function will automatically remove low-abundance genes prior to the calculation of size factors.
 Genes with a library size-adjusted average count below a specified threshold (`min.mean`) are ignored.
     - For read count data, the default value of 1 is usually satisfactory.
       For UMI data, counts are lower so a threshold of 0.1 is recommended. 
     - While the library size-adjusted average is not entirely independent of the bias [@bourgon2010independent], this is a better filter statistic than the sample mean count.
       The latter would enrich for genes that are upregulated in cells with large library sizes, resulting in inflated size factor estimates for those cells.
 - Cell-based QC should always be performed prior to normalization, to remove cells with very low numbers of expressed genes.
-Otherwise, `computeSumFactors()` may yield negative size factors for low-quality cells.
+Otherwise, `simpleSumFactors()` may yield size factors of zero for low-quality cells.
 This is because too many zeroes are present in these cells, reducing the effectiveness of pooling to eliminate zeroes.
 Indeed, for some low-quality cells, the effect of cell damage on the transcriptome may already violate the non-DE assumption.
-- The `sizes` argument can be used to specify the number of pool sizes to use to compute the size factors.
-More `sizes` yields more precise estimates at the cost of some computational time and memory.
-In general, all `sizes` should not above 20 cells to ensure that there are sufficient non-zero expression values in each pool.
-The total number of cells should also be at least 100 for effective pooling.
-- For highly heterogeneous datasets, it is advisable to perform a rough clustering of the cells.
-This can be done with the `quickCluster` function and the results passed to `computeSumFactors` via the `cluster` argument.
-Cells in each cluster are normalized separately, and the size factors are rescaled to be comparable across clusters.
-This avoids the need to assume that most genes are non-DE across the entire population - only a non-DE majority is required between pairs of clusters.
-We demonstrate this approach later with a larger dataset in the next [workflow](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/work-2-umis.html#6_normalization_of_cell-specific_biases).
 
 ## Computing separate size factors for spike-in transcripts
 
@@ -750,20 +741,20 @@ head(var.out)
 ## DataFrame with 6 rows and 6 columns
 ##                                   mean               total
 ##                              <numeric>           <numeric>
-## ENSMUSG00000103377 0.00807160215879455  0.0119218654846046
-## ENSMUSG00000103147  0.0346526071354525  0.0722196159042111
-## ENSMUSG00000103161 0.00519472220098498 0.00493857694820362
-## ENSMUSG00000102331  0.0186660929969477  0.0329235917176291
-## ENSMUSG00000102948  0.0590569999301664  0.0881371252862064
-## Rp1                 0.0970243710886109   0.452338135126349
+## ENSMUSG00000103377  0.0077852662424069  0.0110910243874505
+## ENSMUSG00000103147  0.0342704714401078  0.0710324324735765
+## ENSMUSG00000103161 0.00533642721877204 0.00521168730727283
+## ENSMUSG00000102331  0.0186505112011929  0.0333123382277785
+## ENSMUSG00000102948  0.0588935602840672  0.0879186539054153
+## Rp1                 0.0968879289012201   0.452061385087204
 ##                                    bio               tech            p.value
 ##                              <numeric>          <numeric>          <numeric>
-## ENSMUSG00000103377 -0.0238255786081426 0.0357474440927472                  1
-## ENSMUSG00000103147 -0.0812680860365811  0.153487701940792  0.999999999992144
-## ENSMUSG00000103161 -0.0180705438097231 0.0230091207579267                  1
-## ENSMUSG00000102331 -0.0497487335708696 0.0826723252884987  0.999999999998056
-## ENSMUSG00000102948  -0.173441452289705  0.261578577575911                  1
-## Rp1                  0.022609672867438  0.429728462258911 0.0354980961109997
+## ENSMUSG00000103377  -0.023388297595791 0.0344793219832415                  1
+## ENSMUSG00000103147 -0.0807626662259436   0.15179509869952  0.999999999994025
+## ENSMUSG00000103161 -0.0184250912424976 0.0236367785497704                  1
+## ENSMUSG00000102331 -0.0492907999078551 0.0826031381356336  0.999999999991929
+## ENSMUSG00000102948  -0.172936034616191  0.260854688521607                  1
+## Rp1                 0.0229370314869193  0.429124353600285 0.0388338617653299
 ##                                  FDR
 ##                            <numeric>
 ## ENSMUSG00000103377                 1
@@ -771,7 +762,7 @@ head(var.out)
 ## ENSMUSG00000103161                 1
 ## ENSMUSG00000102331                 1
 ## ENSMUSG00000102948                 1
-## Rp1                0.153727769600592
+## Rp1                0.165280195841955
 ```
 
 We visually inspect the trend to confirm that it corresponds to the spike-in variances (Figure \@ref(fig:hvgplot416b))). 
@@ -1044,11 +1035,11 @@ table(my.clusters, sce$Plate)
 ```
 ##            
 ## my.clusters 20160113 20160325
-##           1       41       39
+##           1       40       39
 ##           2       19       20
-##           3       16       11
-##           4       10       14
-##           5        5        8
+##           3       17       11
+##           4        9       14
+##           5        6        8
 ```
 
 ```r
@@ -1058,11 +1049,11 @@ table(my.clusters, sce$Oncogene)
 ```
 ##            
 ## my.clusters induced control
-##           1      80       0
+##           1      79       0
 ##           2       0      39
-##           3       0      27
-##           4       0      24
-##           5      13       0
+##           3       0      28
+##           4       0      23
+##           5      14       0
 ```
 
 We visualize the cluster assignments for all cells on the _t_-SNE plot in Figure \@ref(fig:tsnecluster416b).
@@ -1150,30 +1141,30 @@ head(marker.set, 10)
 
 ```
 ## DataFrame with 10 rows and 7 columns
-##              Top              p.value                  FDR           logFC.2
-##        <integer>            <numeric>            <numeric>         <numeric>
-## Aurkb          1  6.6586365293815e-75 1.58362352578282e-70 -7.37163348746989
-## Tk1            1 6.41442400544287e-64 3.81385615303623e-60 -4.92754578116824
-## Myh11          1 4.95086470978904e-49  9.8122012827427e-46  4.42159319409116
-## Cdca8          1 2.22335011226212e-46   3.525195714662e-43 -6.84273524406495
-## Ccna2          2 1.16841256912409e-68 1.38941780657393e-64 -7.30797562717896
-## Rrm2           2 1.48873865795832e-56 5.05809592888897e-53 -5.52120320375744
-## Cks1b          2 3.83636250452745e-39 2.40105814329412e-36 -6.67921179963203
-## Pirb           2 1.83893780552265e-34 6.15992363785147e-32  5.25803750523071
-## Pimreg         3 7.41004852233185e-68 5.87443946688721e-64 -7.30454209124205
-## Pclaf          3 8.96517654145094e-51 2.13218793685327e-47 -5.60087983909796
-##                  logFC.3            logFC.4            logFC.5
-##                <numeric>          <numeric>          <numeric>
-## Aurkb  -6.72799344278974  -1.95039440707189  -6.91128801152809
-## Tk1    -7.74065112846769  -3.53749564918697  -4.63516272478573
-## Myh11   4.30812919188871    4.4523571874051   1.04131495610462
-## Cdca8  -4.88595091616654  -2.43821401649457  -7.12791470271152
-## Ccna2  -6.96768519428654  -2.46589325539015  -7.12692720839657
-## Rrm2   -7.94685698699535  -3.19173143336724  -5.42878090899579
-## Cks1b  -5.92137180544953  -4.37146346065968  -6.21459246147227
-## Pirb    5.18195597944541   5.87631058664443 0.0704964374472336
-## Pimreg -5.91099761451465 -0.874660675194747  -7.01798852550674
-## Pclaf  -7.56997892341564  -2.36631043047157  -5.16956926737242
+##             Top              p.value                  FDR           logFC.2
+##       <integer>            <numeric>            <numeric>         <numeric>
+## Ccna2         1 8.15866338646563e-75 1.94037491320315e-70  -7.4035538932362
+## Tk1           1 1.67131287379186e-63 1.32496113591305e-59 -4.91208143495012
+## Cdca8         1 3.86037199118432e-51 8.34647518784884e-48 -6.93355930210064
+## Myh11         1 1.26871606642083e-49 2.51448951730722e-46  4.42502562100238
+## Aurkb         2 1.74629670770991e-73 2.07660872997326e-69 -7.36601009865436
+## Rrm2          2 1.72481082811869e-57 5.12764699064332e-54 -5.50553785815817
+## Cks1b         2  2.6121236917169e-41 1.77497536457438e-38 -6.77393188247778
+## Pirb          2   4.382899005976e-33 1.27120106169668e-30  5.26003382317461
+## Ube2c         3 2.04654710978976e-62 1.21682574780326e-58 -7.82913879353078
+## Cdca3         3 2.42779315868868e-47 3.20778914961627e-44   -6.683431568165
+##                 logFC.3           logFC.4            logFC.5
+##               <numeric>         <numeric>          <numeric>
+## Ccna2 -7.06527608048857 -2.35889175525177  -7.26464026779608
+## Tk1   -7.72220251490933  -3.3169111113931  -4.21516233755713
+## Cdca8 -4.86539839607092 -2.56070018320789    -7.216437494504
+## Myh11  4.29470016224054   4.4832941696299   0.97911536159436
+## Aurkb -6.55431977909618 -1.94782944426412  -6.36273645411493
+## Rrm2  -7.96073508234567 -2.89873259467683  -4.91575254755212
+## Cks1b -5.99014288374405 -4.43043068733513  -6.36013792809878
+## Pirb   5.21025798348702  5.85346012597153 0.0425161472551708
+## Ube2c -3.84415150010976 -2.22719628257503  -6.62635407591045
+## Cdca3 -5.66473291994173 -2.84853574153547  -7.02416835471729
 ```
 
 
@@ -1280,25 +1271,25 @@ sessionInfo()
 ## other attached packages:
 ##  [1] cluster_2.0.7-1                       
 ##  [2] dynamicTreeCut_1.63-1                 
-##  [3] limma_3.39.0                          
+##  [3] limma_3.39.1                          
 ##  [4] scran_1.11.1                          
-##  [5] scater_1.11.1                         
+##  [5] scater_1.11.2                         
 ##  [6] ggplot2_3.1.0                         
 ##  [7] TxDb.Mmusculus.UCSC.mm10.ensGene_3.4.0
-##  [8] GenomicFeatures_1.33.6                
+##  [8] GenomicFeatures_1.35.1                
 ##  [9] org.Mm.eg.db_3.7.0                    
 ## [10] AnnotationDbi_1.45.0                  
 ## [11] SingleCellExperiment_1.5.0            
 ## [12] SummarizedExperiment_1.13.0           
 ## [13] DelayedArray_0.9.0                    
-## [14] BiocParallel_1.17.0                   
+## [14] BiocParallel_1.17.1                   
 ## [15] matrixStats_0.54.0                    
 ## [16] Biobase_2.43.0                        
 ## [17] GenomicRanges_1.35.0                  
 ## [18] GenomeInfoDb_1.19.0                   
 ## [19] IRanges_2.17.0                        
 ## [20] S4Vectors_0.21.0                      
-## [21] BiocGenerics_0.29.0                   
+## [21] BiocGenerics_0.29.1                   
 ## [22] bindrcpp_0.2.2                        
 ## [23] BiocFileCache_1.7.0                   
 ## [24] dbplyr_1.2.2                          
@@ -1317,7 +1308,7 @@ sessionInfo()
 ## [17] tidyselect_0.2.5         gridExtra_2.3           
 ## [19] prettyunits_1.0.2        bit_1.1-14              
 ## [21] curl_3.2                 compiler_3.6.0          
-## [23] BiocNeighbors_1.1.0      rtracklayer_1.43.0      
+## [23] BiocNeighbors_1.1.1      rtracklayer_1.43.0      
 ## [25] labeling_0.3             bookdown_0.7            
 ## [27] scales_1.0.0             rappdirs_0.3.1          
 ## [29] stringr_1.3.1            digest_0.6.18           
@@ -1328,7 +1319,7 @@ sessionInfo()
 ## [39] DelayedMatrixStats_1.5.0 bindr_0.1.1             
 ## [41] dplyr_0.7.7              RCurl_1.95-4.11         
 ## [43] magrittr_1.5             GenomeInfoDbData_1.2.0  
-## [45] Matrix_1.2-15            Rcpp_0.12.19            
+## [45] Matrix_1.2-15            Rcpp_1.0.0              
 ## [47] ggbeeswarm_0.6.0         munsell_0.5.0           
 ## [49] Rhdf5lib_1.5.0           viridis_0.5.1           
 ## [51] edgeR_3.25.0             stringi_1.2.4           
@@ -1336,7 +1327,7 @@ sessionInfo()
 ## [55] Rtsne_0.13               rhdf5_2.27.0            
 ## [57] plyr_1.8.4               grid_3.6.0              
 ## [59] blob_1.1.1               crayon_1.3.4            
-## [61] lattice_0.20-35          Biostrings_2.51.0       
+## [61] lattice_0.20-38          Biostrings_2.51.1       
 ## [63] cowplot_0.9.3            hms_0.4.2               
 ## [65] locfit_1.5-9.1           pillar_1.3.0            
 ## [67] igraph_1.2.2             reshape2_1.4.3          

@@ -3,7 +3,7 @@ title: Analyzing single-cell RNA sequencing data from droplet-based protocols
 author: 
 - name: Aaron T. L. Lun
   affiliation: Cancer Research UK Cambridge Institute, Li Ka Shing Centre, Robinson Way, Cambridge CB2 0RE, United Kingdom
-date: "2018-11-02"
+date: "2018-11-10"
 vignette: >
   %\VignetteIndexEntry{04. Droplet-based data}
   %\VignetteEngine{knitr::rmarkdown}
@@ -299,36 +299,20 @@ plotHighestExprs(sce)
 
 # Normalizing for cell-specific biases
 
-We perform some pre-clustering to break up obvious clusters, as described [previously](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/work-2-umis.html#normalization-of-cell-specific-biases).
-Recall that we need to set the seed when using `method="igraph"`.
+We apply the pooling method to compute size factors for all cells [@lun2016pooling].
+Refer to the [previous workflow](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/work-2-umis.html#normalization-of-cell-specific-biases) for an explanation of the arguments.
 
 
 ```r
 library(scran)
 set.seed(1000)
-clusters <- quickCluster(sce, method="igraph", min.mean=0.1,
-    irlba.args=list(maxit=1000)) # for convergence.
-table(clusters)
-```
-
-```
-## clusters
-##    1    2    3    4    5 
-##  937  269 1173 1109  549
-```
-
-We apply the deconvolution method to compute size factors for all cells [@lun2016pooling].
-The specification of `cluster=` ensures that we do not pool cells that are very different.
-
-
-```r
-sce <- computeSumFactors(sce, min.mean=0.1, cluster=clusters)
+sce <- simpleSumFactors(sce, min.mean=0.1, approximate=TRUE)
 summary(sizeFactors(sce))
 ```
 
 ```
-##      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
-##  0.005117  0.722562  0.884547  1.000000  1.105609 12.711794
+##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+##  0.02422  0.72241  0.88819  1.00000  1.11102 11.90446
 ```
 
 The size factors are well correlated against the library sizes (Figure \@ref(fig:sfplot)), indicating that capture efficiency and sequencing depth are the major biases.
@@ -354,15 +338,12 @@ sce <- normalize(sce)
 **Comments from Aaron:**
 
 - Larger droplet-based datasets will often be generated in separate batches or runs.
-In such cases, we can set `block=` in `quickCluster()` to cluster cells within each batch or run.
-This reduces computational work considerably without compromising performance, provided that the clusters within each batch are sufficiently large 
-(see comments [here](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/work-2-umis.html#6_normalization_of_cell-specific_biases)) for a discussion of the considerations involved in pre-clustering for normalization).
-- Even in the absence of any known batch structure, we can improve speed by setting an arbitrary factor, e.g., using `block=cut(seq_len(ncol(sce)), 10)` to split the cells into ten "batches" of roughly equal size.
-Recall that we are not interpreting the clusters themselves, so it is not a problem to have multiple redundant cluster labels.
-Again, this assumes that each cluster is large enough to support deconvolution.
-- On a similar note, both `quickCluster()` and `computeSumFactors()` can process blocks or clusters in parallel.
-This is achieved using the *[BiocParallel](https://bioconductor.org/packages/3.9/BiocParallel)* framework, which accommodates a range of parallelization strategies.
+In such cases, we can set `block=` in `simpleSumFactors()` to cluster cells within each batch or run.
+This reduces computational work considerably without compromising performance, provided that there are enough cells within each batch.
+Even in the absence of any known batch structure, we can improve speed by setting an arbitrary factor, e.g., using `block=cut(seq_len(ncol(sce)), 10)` to split the cells into ten "batches" of roughly equal size.
+- `simpleSumFactors()` can process batches in parallel via the *[BiocParallel](https://bioconductor.org/packages/3.9/BiocParallel)* framework.
 In this manner, size factors for large datasets can be computed in a scalable manner.
+Users can specify their desired parallelization strategy via the `BPPARAM` argument.
 
 # Modelling the mean-variance trend
 
@@ -410,12 +391,12 @@ head(top.dec)
 ## DataFrame with 6 rows and 6 columns
 ##                     mean            total              bio              tech
 ##                <numeric>        <numeric>        <numeric>         <numeric>
-## LYZ     2.00433282867795 5.27238976970295 4.63611169338538 0.636278076317563
-## S100A9  1.96814061490774 4.73501347757919 4.09335226800879 0.641661209570392
-## S100A8   1.7450872893628 4.62384461299396 3.95524147335823 0.668603139635734
-## HLA-DRA 2.10913349062558 3.74365888475255 3.12419870700643 0.619460177746116
-## CD74    2.88808019297542 3.34102575092047 2.86962155465658 0.471404196263887
-## CST3    1.51005991810233 3.04448800763578 2.36293668357704 0.681551324058745
+## LYZ     1.97992386599672 5.04758350184166 4.42646701548614 0.621116486355525
+## S100A9  1.94275391188573 4.48345548590875 3.85625709691355 0.627198388995197
+## S100A8  1.71716542258449 4.35481482061732 3.69773966459383 0.657075156023493
+## HLA-DRA 2.08871194500911 3.65874891889136 3.05691133124116 0.601837587650192
+## CD74    2.87463081496794  3.2858931296725 2.85201213739702 0.433880992275478
+## CST3    1.48554846515546 2.90534562815467 2.23397505720869 0.671370570945976
 ##           p.value       FDR
 ##         <numeric> <numeric>
 ## LYZ             0         0
@@ -460,7 +441,7 @@ ncol(reducedDim(sce, "PCA"))
 ```
 
 ```
-## [1] 11
+## [1] 9
 ```
 
 
@@ -516,8 +497,8 @@ table(sce$Cluster)
 
 ```
 ## 
-##   1   2   3   4   5   6   7   8   9  10  11  12  13  14 
-## 850 591 544 200 534  46 120  46 798  40 136  29  17  86
+##   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17 
+## 206 654 538 203 396 413  46 130  47 139 817 148  40  37  82  25 116
 ```
 
 We look at the ratio of the observed and expected edge weights to confirm that the clusters are modular.
@@ -561,12 +542,12 @@ Again, we only look at upregulated genes in each cluster, as these are more usef
 markers <- findMarkers(sce, clusters=sce$Cluster, direction="up")
 ```
 
-We examine the markers for cluster 8 in more detail.
+We examine the markers for cluster 7 in more detail.
 The upregulation of genes such as _PF4_ and _PPBP_ suggests that this cluster contains platelets or their precursors.
 
 
 ```r
-marker.set <- markers[["8"]]
+marker.set <- markers[["7"]]
 head(marker.set[,1:8], 10) # only first 8 columns, for brevity
 ```
 
@@ -574,40 +555,40 @@ head(marker.set[,1:8], 10) # only first 8 columns, for brevity
 ## DataFrame with 10 rows and 8 columns
 ##                 Top              p.value                  FDR
 ##           <integer>            <numeric>            <numeric>
-## TMSB4X            1 5.35760583326261e-35  1.8051917094595e-30
-## PF4               1 5.12050931325382e-30 8.62652204003868e-26
-## TAGLN2            2 9.84031158911545e-26 1.10519819561219e-21
-## SDPR              2 1.09264714960276e-22  9.2039132646789e-19
-## GPX1              3  8.8776256972845e-22  5.9824544048861e-18
-## PPBP              3 4.66923110355769e-21 2.62208454672122e-17
-## ACTB              4  2.1293693738595e-20 8.96837146035275e-17
-## NRGN              5 9.50068126106725e-21  4.5730850630057e-17
-## GNG11             7 3.99705163013454e-19 1.49640730695281e-15
-## HIST1H2AC         8  9.7347880763609e-19 3.28003949444905e-15
-##                    logFC.1          logFC.2          logFC.3
-##                  <numeric>        <numeric>        <numeric>
-## TMSB4X    2.28378175710327 2.72251442896142 2.76133648694816
-## PF4        6.3180410124472 6.36708295382423 6.37291217458349
-## TAGLN2    4.46385139989111 4.26174885894995 4.46325505239159
-## SDPR      5.28229555255907 5.33079013944103 5.33711366958133
-## GPX1      2.49875298171963 4.80932926423923 4.93623033629471
-## PPBP      6.09985681188489 6.19243453124335  6.1970659544121
-## ACTB      2.33529538395888 3.21038176116685  3.0073999346119
-## NRGN      4.36583495397255 4.59794551675681 4.60087668501509
-## GNG11     5.11648049930094 5.16755151142283 5.17120403573627
-## HIST1H2AC 5.10888323361265 5.14563307683107 5.14606795276647
+## PF4               1 1.52246216656546e-29 5.12978402402567e-25
+## SDPR              1 1.80345676150665e-23  2.0255224040735e-19
+## TAGLN2            2 2.60388916298921e-25 4.38677207288792e-21
+## TMSB4X            3 7.09884922918547e-22  5.9797156482044e-18
+## NRGN              3 1.68625131444467e-21 1.13633103577798e-17
+## PPBP              3 1.31956811229982e-20 7.41025466263834e-17
+## GPX1              5 3.46317168207059e-20 1.66697295222409e-16
+## GNG11             5  1.6070230077226e-19 6.76837915277567e-16
+## HIST1H2AC         6 4.50072933835277e-18 1.51647574326459e-14
+## CCL5              7 5.57774778403771e-18 1.70851485304878e-14
+##                     logFC.1           logFC.2          logFC.3
+##                   <numeric>         <numeric>        <numeric>
+## PF4        4.86838904299538  4.84154865723581 4.88956107724895
+## SDPR       3.90783019715795  3.87189335262589 3.92242075366489
+## TAGLN2     3.23086020088422   2.9769081993507  2.7561033165252
+## TMSB4X    0.812255416554243 0.789953099051888 1.01847029219279
+## NRGN       3.06025303599206  2.99228084471356 3.21555539992768
+## PPBP       4.77812691697305  4.73417884907321 4.82272729836338
+## GPX1       1.49142007303733  1.23592097048593 3.46021000227797
+## GNG11      3.83747201461002  3.81168709437904 3.86890822969646
+## HIST1H2AC  3.86587083366305  3.84508055355961 3.87791850222582
+## CCL5       3.66659118502384  3.59845218055659 3.05919312278678
 ##                    logFC.4          logFC.5
 ##                  <numeric>        <numeric>
-## TMSB4X    2.99168279631072 3.36484534862961
-## PF4       6.36659548548937 6.37432350301952
-## TAGLN2    4.41428250025306  4.1619645723748
-## SDPR      5.33711366958133 5.32700873954551
-## GPX1      5.00157378898467 4.51330365854975
-## PPBP       6.1973642133943 6.19154459691209
-## ACTB      2.81031789967064 3.59027478829347
-## NRGN      4.60388537827064 4.60053114511147
-## GNG11     5.17562678251855 5.14000969651157
-## HIST1H2AC 5.17054604083487 5.07232660241665
+## PF4       4.89035413320147  4.8970369493834
+## SDPR      3.92871943269302 3.91661839341957
+## TAGLN2    2.98188851766119 2.81338238225051
+## TMSB4X    1.42050800339446 1.79097879550964
+## NRGN      3.22647867215657 3.22233963910689
+## PPBP      4.83242852221629  4.8293217286241
+## GPX1      3.70067551860783 3.26840200973796
+## GNG11     3.87487166746363 3.85643724581724
+## HIST1H2AC 3.91164156017872 3.79389309546331
+## CCL5      1.42820066066005 3.63548793237723
 ```
 
 
@@ -669,16 +650,16 @@ sessionInfo()
 ## 
 ## other attached packages:
 ##  [1] pheatmap_1.0.10             scran_1.11.1               
-##  [3] EnsDb.Hsapiens.v86_2.99.0   ensembldb_2.7.0            
-##  [5] AnnotationFilter_1.7.0      GenomicFeatures_1.33.6     
-##  [7] AnnotationDbi_1.45.0        scater_1.11.1              
+##  [3] EnsDb.Hsapiens.v86_2.99.0   ensembldb_2.7.1            
+##  [5] AnnotationFilter_1.7.0      GenomicFeatures_1.35.1     
+##  [7] AnnotationDbi_1.45.0        scater_1.11.2              
 ##  [9] ggplot2_3.1.0               DropletUtils_1.3.1         
 ## [11] SingleCellExperiment_1.5.0  SummarizedExperiment_1.13.0
 ## [13] DelayedArray_0.9.0          matrixStats_0.54.0         
 ## [15] Biobase_2.43.0              GenomicRanges_1.35.0       
 ## [17] GenomeInfoDb_1.19.0         IRanges_2.17.0             
-## [19] S4Vectors_0.21.0            BiocGenerics_0.29.0        
-## [21] BiocParallel_1.17.0         bindrcpp_0.2.2             
+## [19] S4Vectors_0.21.0            BiocGenerics_0.29.1        
+## [21] BiocParallel_1.17.1         bindrcpp_0.2.2             
 ## [23] BiocFileCache_1.7.0         dbplyr_1.2.2               
 ## [25] knitr_1.20                  BiocStyle_2.11.0           
 ## 
@@ -688,34 +669,34 @@ sessionInfo()
 ##  [5] progress_1.2.0           httr_1.3.1              
 ##  [7] rprojroot_1.3-2          dynamicTreeCut_1.63-1   
 ##  [9] tools_3.6.0              backports_1.1.2         
-## [11] irlba_2.3.2              R6_2.3.0                
+## [11] irlba_2.3.3              R6_2.3.0                
 ## [13] HDF5Array_1.11.0         vipor_0.4.5             
 ## [15] DBI_1.0.0                lazyeval_0.2.1          
 ## [17] colorspace_1.3-2         withr_2.1.2             
 ## [19] tidyselect_0.2.5         gridExtra_2.3           
 ## [21] prettyunits_1.0.2        bit_1.1-14              
 ## [23] curl_3.2                 compiler_3.6.0          
-## [25] BiocNeighbors_1.1.0      labeling_0.3            
+## [25] BiocNeighbors_1.1.1      labeling_0.3            
 ## [27] rtracklayer_1.43.0       bookdown_0.7            
 ## [29] scales_1.0.0             rappdirs_0.3.1          
 ## [31] stringr_1.3.1            digest_0.6.18           
 ## [33] Rsamtools_1.35.0         rmarkdown_1.10          
 ## [35] XVector_0.23.0           pkgconfig_2.0.2         
 ## [37] htmltools_0.3.6          highr_0.7               
-## [39] limma_3.39.0             rlang_0.3.0.1           
+## [39] limma_3.39.1             rlang_0.3.0.1           
 ## [41] RSQLite_2.1.1            DelayedMatrixStats_1.5.0
 ## [43] bindr_0.1.1              dplyr_0.7.7             
 ## [45] RCurl_1.95-4.11          magrittr_1.5            
 ## [47] GenomeInfoDbData_1.2.0   Matrix_1.2-15           
-## [49] Rcpp_0.12.19             ggbeeswarm_0.6.0        
+## [49] Rcpp_1.0.0               ggbeeswarm_0.6.0        
 ## [51] munsell_0.5.0            Rhdf5lib_1.5.0          
 ## [53] viridis_0.5.1            stringi_1.2.4           
 ## [55] yaml_2.2.0               edgeR_3.25.0            
 ## [57] zlibbioc_1.29.0          Rtsne_0.13              
 ## [59] rhdf5_2.27.0             plyr_1.8.4              
 ## [61] grid_3.6.0               blob_1.1.1              
-## [63] crayon_1.3.4             lattice_0.20-35         
-## [65] cowplot_0.9.3            Biostrings_2.51.0       
+## [63] crayon_1.3.4             lattice_0.20-38         
+## [65] cowplot_0.9.3            Biostrings_2.51.1       
 ## [67] hms_0.4.2                locfit_1.5-9.1          
 ## [69] pillar_1.3.0             igraph_1.2.2            
 ## [71] reshape2_1.4.3           biomaRt_2.39.0          

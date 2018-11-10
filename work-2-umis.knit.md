@@ -12,7 +12,7 @@ author:
   - *CRUK
   - *EMBL
   - Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
-date: "2018-11-02"
+date: "2018-11-10"
 vignette: >
   %\VignetteIndexEntry{03. UMI count data}
   %\VignetteEngine{knitr::rmarkdown}
@@ -305,28 +305,24 @@ summary(to.keep)
 
 # Normalization of cell-specific biases
 
-For endogenous genes, normalization is performed using the `computeSumFactors` function as previously described.
-Here, we cluster similar cells together and normalize the cells in each cluster using the deconvolution method [@lun2016pooling].
-This improves normalization accuracy by reducing the number of DE genes between cells in the same cluster.
-Scaling is then performed to ensure that size factors of cells in different clusters are comparable.
+For endogenous genes, normalization is performed using the `simpleSumFactors()` function as [previously described](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/work-1-reads.html#normalization-of-cell-specific-biases) with some modifications:
+
+- We use a average count threshold of 0.1 to define high-abundance genes to use during normalization.
+This is lower than the default threshold of `min.mean=1`, reflecting the fact that UMI counts are generally smaller than read counts.
+- We set `approximate=TRUE` to speed up the dimensionality reduction preceding the nearest-neighbour search.
+This uses methods from the *[irlba](https://CRAN.R-project.org/package=irlba)* package, which require setting the random seed - see below for more detail.
 
 
 ```r
 set.seed(1000)
-clusters <- quickCluster(sce, min.mean=0.1, method="igraph")
-sce <- computeSumFactors(sce, cluster=clusters, min.mean=0.1)
+sce <- simpleSumFactors(sce, min.mean=0.1, approximate=TRUE)
 summary(sizeFactors(sce))
 ```
 
 ```
 ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-##  0.1255  0.4633  0.8207  1.0000  1.3366  4.7022
+##  0.1154  0.4296  0.8076  1.0000  1.3408  5.0403
 ```
-
-We use a average count threshold of 0.1 to define high-abundance genes to use during normalization.
-This is lower than the default threshold of `min.mean=1` in `computeSumFactors`, reflecting the fact that UMI counts are generally smaller than read counts.
-
-
 
 Compared to the 416B analysis, more scatter is observed around the trend between the total count and size factor for each cell (Figure \@ref(fig:normplotbrain)).
 This is consistent with an increased amount of DE between cells of different types, which compromises the accuracy of library size normalization [@robinson2010scaling].
@@ -339,8 +335,8 @@ plot(sizeFactors(sce), sce$total_counts/1e3, log="xy",
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/work-2-umis_files/figure-html/normplotbrain-1.png" alt="Size factors from deconvolution, plotted against library sizes for all cells in the brain dataset. Axes are shown on a log-scale." width="100%" />
-<p class="caption">(\#fig:normplotbrain)Size factors from deconvolution, plotted against library sizes for all cells in the brain dataset. Axes are shown on a log-scale.</p>
+<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/work-2-umis_files/figure-html/normplotbrain-1.png" alt="Size factors from pooling, plotted against library sizes for all cells in the brain dataset. Axes are shown on a log-scale." width="100%" />
+<p class="caption">(\#fig:normplotbrain)Size factors from pooling, plotted against library sizes for all cells in the brain dataset. Axes are shown on a log-scale.</p>
 </div>
 
 We also compute size factors specific to the spike-in set, as previously described.
@@ -359,27 +355,9 @@ sce <- normalize(sce)
 
 
 
-__Comments from Aaron:__
-
-- Only a rough clustering is required to avoid pooling together very different cell types in `computeSumFactors()`.
-This reduces the chance of violating the non-DE assumption that is made during any gene-based scaling normalization.
-We stress that there is no need for precise clustering at this step, as we will not be interpreting these clusters at all.
-Our normalization strategy is also robust to a moderate level of differential expression between cells in the same cluster, so careful definition of subclusters is not required.
-We do ask that there are sufficient cells in each cluster for pooling, which can be guaranteed with the `min.size=` argument in `quickCluster()`.
-- `quickCluster` uses distances based on Spearman's rank correlation for clustering.
-This ensures that scaling biases in the counts do not affect clustering, but yields very coarse clusters and is not recommended for biological interpretation.
-However, for the purposes of breaking up distinct cell types, this is more than sufficient.
-- For large datasets, using `method="igraph"` in `quickCluster` will speed up clustering. 
-This uses a graph-based clustering algorithm with a randomization step, hence the need for `set.seed()`.
-See `?buildSNNGraph` for more details.
-
 # Modelling and removing technical noise
 
-We model the technical noise by fitting a mean-variance trend to the spike-in transcripts, as previously described.
-In theory, we should block on the plate of origin for each cell.
-However, only 20-40 cells are available on each plate, and the population is also highly heterogeneous.
-This means that we cannot assume that the distribution of sampled cell types on each plate is the same.
-Thus, to avoid regressing out potential biology, we will not block on any factors in this analysis.
+We model the technical noise by fitting a mean-variance trend to the spike-in transcripts with the `trendVar()` function.
 
 
 ```r
@@ -439,6 +417,10 @@ ncol(reducedDim(sce, "PCA"))
 
 **Comments from Aaron:**
 
+- In theory, we should block on the plate of origin for each cell.
+However, only 20-40 cells are available on each plate, and the population is also highly heterogeneous.
+This means that we cannot assume that the distribution of sampled cell types on each plate is the same.
+Thus, to avoid regressing out potential biology, we will not block on any factors in this analysis.
 - The upper limit of PCs to retain in `denoisePCA()` is specified by the `max.rank=` argument.
 This is set to 100 by default to ensure that the approximate SVD runs quickly.
 A higher `max.rank` may be more appropriate for extremely heterogeneous populations, though the default setting is generally satisfactory for dimensionality reduction.
@@ -509,7 +491,7 @@ table(my.clusters)
 ```
 ## my.clusters
 ##   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16 
-## 201 186 129 230 105 414 171 643 395  82  83 213  28  36  12  61
+## 191 103 258 142 427 195  84 628 372  96 155  16  67 197  26  32
 ```
 
 We visualize the cluster assignments for all cells on the _t_-SNE plot in Figure \@ref(fig:tsneclusterbrain).
@@ -572,7 +554,7 @@ igraph::modularity(cluster.out)
 ```
 
 ```
-## [1] 0.7680668
+## [1] 0.7620557
 ```
 
 We further investigate the clusters by examining the total weight of edges for each pair of clusters.
@@ -639,40 +621,40 @@ head(marker.set[,1:8], 10) # only first 8 columns, for brevity
 ## DataFrame with 10 rows and 8 columns
 ##               Top               p.value                   FDR
 ##         <integer>             <numeric>             <numeric>
-## Snap25          1  1.5867064696874e-268 3.14754962391882e-264
-## Mllt11          1 2.31447867657062e-196 9.18246270142618e-193
-## Atp1a3          1 1.88672817822383e-177 5.34671812448942e-174
-## Gad1            1 4.97164699225956e-176 9.86225613854515e-173
-## Celf4           1 5.46552707358057e-160 6.02331447547864e-157
-## Gad2            1 2.49777876244356e-155  2.4774218655296e-152
-## Vstm2a          1 1.17315765416478e-111  4.4753708433975e-109
-## Synpr           1  2.97884331198009e-70  3.17695240751335e-68
-## Slc32a1         1  1.30132881331111e-66  1.18960643638953e-64
-## Ndrg4           2 2.36919621691788e-249 2.34988726775007e-245
-##                    logFC.2           logFC.3          logFC.4
-##                  <numeric>         <numeric>        <numeric>
-## Snap25  -0.354294095149351 0.340117299504504 3.65521123984669
-## Mllt11   0.365170419908248 0.924996225036646 2.98325911354461
-## Atp1a3   0.462504066481883  1.12674016284263 3.23363921881298
-## Gad1      4.18705718512123  3.57360914317586 3.98791017467217
-## Celf4   -0.187435032806592 0.704927320176858 2.70010040039546
-## Gad2      3.81079423774551  3.28063593061477 3.63281114318632
-## Vstm2a    2.14747846790715  2.35624004184546 2.89937207148961
-## Synpr      2.9288511065565  2.48276527902932 3.08673521450369
-## Slc32a1   1.72021427539416  1.57696733397569 1.70655532822886
-## Ndrg4    0.251601283679209  1.05192547512691  3.6272374874884
-##                     logFC.5            logFC.6
-##                   <numeric>          <numeric>
-## Snap25      1.2457243604206   0.79590537709112
-## Mllt11     1.49884172626987  0.622323985512458
-## Atp1a3  -0.0305212989553296 -0.115321746617353
-## Gad1       3.91590008743585   4.11434816863818
-## Celf4     0.430907554882714  0.195423912602373
-## Gad2       3.45750199364546   3.76682908641341
-## Vstm2a     2.68316613092912   2.79126151922907
-## Synpr      3.02164798455159   3.08438332201148
-## Slc32a1    1.61148118807856   1.69842283940163
-## Ndrg4     0.965091775807663  0.806032578350594
+## Snap25          1 9.06582265724655e-247 1.79838724051795e-242
+## Stmn3           1 1.48151043027221e-227 9.79624080177026e-224
+## Mllt11          1 9.96765090665941e-189   3.954565820708e-185
+## Atp1a3          1  1.3569606615153e-176 3.84543266321128e-173
+## Gad1            1 2.12325153881947e-175 5.26486759694537e-172
+## Celf4           1  1.2636795471009e-159 1.79054365541717e-156
+## Gad2            1 3.45753843044662e-149 3.60985209709312e-146
+## Synpr           1  1.30449948670192e-68  1.32027328151563e-66
+## Slc32a1         1  1.76557364683357e-63  1.47779259207753e-61
+## Ndrg4           2 3.30477875318499e-244 3.27784480634663e-240
+##                    logFC.2          logFC.3           logFC.4
+##                  <numeric>        <numeric>         <numeric>
+## Snap25     1.3102933294574 3.67885422751117 0.403639704950071
+## Stmn3     1.86788915329566  4.2513151429206 0.815234706482888
+## Mllt11    1.55596878340292  2.9995286542632  0.99728420679725
+## Atp1a3  -0.021648593444842 3.15854393477511  1.03983196847441
+## Gad1      3.93425585798682 3.94807826242109  3.71551267243338
+## Celf4    0.453659182829798 2.65992222812783 0.668580256801542
+## Gad2      3.48392466533017 3.62077807257973  3.43252457435389
+## Synpr     3.09028271979418 3.14172569545428  2.63270327805369
+## Slc32a1   1.61245964177241 1.67964652338466  1.60497417816311
+## Ndrg4    0.988861669432938 3.57938014339488   1.0816129140063
+##                     logFC.5             logFC.6
+##                   <numeric>           <numeric>
+## Snap25    0.857556811018151  -0.239275531487682
+## Stmn3      0.71894477165965   0.651187473570872
+## Mllt11    0.649270196231214   0.522270175431782
+## Atp1a3  -0.0878231868911228    0.60383350006185
+## Gad1       4.10090748924073     4.1686693205894
+## Celf4     0.219786791523493 -0.0636952794512924
+## Gad2       3.77577364642935    3.81154957979716
+## Synpr      3.14264697568839    2.97935449951718
+## Slc32a1     1.6774973365572     1.6962588509096
+## Ndrg4     0.847193725685283   0.358025472077401
 ```
 
 
@@ -749,14 +731,14 @@ sessionInfo()
 ## 
 ## other attached packages:
 ##  [1] pheatmap_1.0.10             scran_1.11.1               
-##  [3] scater_1.11.1               ggplot2_3.1.0              
+##  [3] scater_1.11.2               ggplot2_3.1.0              
 ##  [5] org.Mm.eg.db_3.7.0          AnnotationDbi_1.45.0       
 ##  [7] SingleCellExperiment_1.5.0  SummarizedExperiment_1.13.0
-##  [9] DelayedArray_0.9.0          BiocParallel_1.17.0        
+##  [9] DelayedArray_0.9.0          BiocParallel_1.17.1        
 ## [11] matrixStats_0.54.0          Biobase_2.43.0             
 ## [13] GenomicRanges_1.35.0        GenomeInfoDb_1.19.0        
 ## [15] IRanges_2.17.0              S4Vectors_0.21.0           
-## [17] BiocGenerics_0.29.0         bindrcpp_0.2.2             
+## [17] BiocGenerics_0.29.1         bindrcpp_0.2.2             
 ## [19] BiocFileCache_1.7.0         dbplyr_1.2.2               
 ## [21] knitr_1.20                  BiocStyle_2.11.0           
 ## 
@@ -765,24 +747,24 @@ sessionInfo()
 ##  [3] RColorBrewer_1.1-2       httr_1.3.1              
 ##  [5] rprojroot_1.3-2          dynamicTreeCut_1.63-1   
 ##  [7] tools_3.6.0              backports_1.1.2         
-##  [9] R6_2.3.0                 irlba_2.3.2             
+##  [9] R6_2.3.0                 irlba_2.3.3             
 ## [11] HDF5Array_1.11.0         vipor_0.4.5             
 ## [13] DBI_1.0.0                lazyeval_0.2.1          
 ## [15] colorspace_1.3-2         withr_2.1.2             
 ## [17] tidyselect_0.2.5         gridExtra_2.3           
 ## [19] bit_1.1-14               curl_3.2                
-## [21] compiler_3.6.0           BiocNeighbors_1.1.0     
+## [21] compiler_3.6.0           BiocNeighbors_1.1.1     
 ## [23] labeling_0.3             bookdown_0.7            
 ## [25] scales_1.0.0             rappdirs_0.3.1          
 ## [27] stringr_1.3.1            digest_0.6.18           
 ## [29] rmarkdown_1.10           XVector_0.23.0          
 ## [31] pkgconfig_2.0.2          htmltools_0.3.6         
-## [33] limma_3.39.0             highr_0.7               
+## [33] limma_3.39.1             highr_0.7               
 ## [35] rlang_0.3.0.1            RSQLite_2.1.1           
 ## [37] DelayedMatrixStats_1.5.0 bindr_0.1.1             
 ## [39] dplyr_0.7.7              RCurl_1.95-4.11         
 ## [41] magrittr_1.5             GenomeInfoDbData_1.2.0  
-## [43] Matrix_1.2-15            Rcpp_0.12.19            
+## [43] Matrix_1.2-15            Rcpp_1.0.0              
 ## [45] ggbeeswarm_0.6.0         munsell_0.5.0           
 ## [47] Rhdf5lib_1.5.0           viridis_0.5.1           
 ## [49] stringi_1.2.4            yaml_2.2.0              
@@ -790,7 +772,7 @@ sessionInfo()
 ## [53] rhdf5_2.27.0             Rtsne_0.13              
 ## [55] plyr_1.8.4               grid_3.6.0              
 ## [57] blob_1.1.1               crayon_1.3.4            
-## [59] lattice_0.20-35          cowplot_0.9.3           
+## [59] lattice_0.20-38          cowplot_0.9.3           
 ## [61] locfit_1.5-9.1           pillar_1.3.0            
 ## [63] igraph_1.2.2             reshape2_1.4.3          
 ## [65] glue_1.3.0               evaluate_0.12           
