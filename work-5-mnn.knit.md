@@ -5,7 +5,7 @@ author:
   affiliation: Cancer Research UK Cambridge Institute, Li Ka Shing Centre, Robinson Way, Cambridge CB2 0RE, United Kingdom
 - name: Michael D. Morgan
   affiliation: Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
-date: "2018-11-10"
+date: "2018-11-03"
 vignette: >
   %\VignetteIndexEntry{05. Correcting batch effects}
   %\VignetteEngine{knitr::rmarkdown}
@@ -186,19 +186,31 @@ summary(discard)
 ## logical    1292     436
 ```
 
-We compute size factors for the endogenous genes using the pooling method [@lun2016pooling].
+We compute size factors for the endogenous genes using the deconvolution method [@lun2016pooling].
+This is done with pre-clustering through `quickCluster()` to avoid pooling together very different cells.
 
 
 ```r
 library(scran)
 set.seed(1000)    
-sce.gse81076 <- simpleSumFactors(sce.gse81076, min.mean=0.1, approximate=TRUE)
+clusters <- quickCluster(sce.gse81076, method="igraph", min.mean=0.1)
+table(clusters)
+```
+
+```
+## clusters
+##   1   2   3 
+## 513 331 448
+```
+
+```r
+sce.gse81076 <- computeSumFactors(sce.gse81076, min.mean=0.1, clusters=clusters)
 summary(sizeFactors(sce.gse81076))
 ```
 
 ```
-##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-## 0.01505 0.45454 0.80960 1.00000 1.30065 7.43162
+##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+## 0.002648 0.442511 0.797307 1.000000 1.296612 9.507820
 ```
 
 We also compute size factors for the spike-in transcripts [@lun2017assessing].
@@ -262,20 +274,20 @@ head(dec.gse81076)
 ## DataFrame with 6 rows and 7 columns
 ##                             mean            total              bio
 ##                        <numeric>        <numeric>        <numeric>
-## ENSG00000254647 2.80443757119854 6.10588718378184  5.6614003792502
-## ENSG00000129965 1.86089532974054 5.76583825597333 5.31790792732777
-## ENSG00000115263 3.97238457747484 5.50022799061621 5.26792027365823
-## ENSG00000118271 3.62059046694063 5.47893502225471 5.17159561829033
-## ENSG00000115386 4.18911248455184 5.31046529940648  5.0710332050704
-## ENSG00000164266 3.00255241344342 5.30908800742638 4.89602691861382
+## ENSG00000254647 2.82926326785746 6.25972220963597 5.81569316868353
+## ENSG00000129965 1.87615109970638 5.92173614351272 5.47357562771187
+## ENSG00000115263  4.0061083232608 5.56338526078797 5.33005501611903
+## ENSG00000118271 3.65393642101131 5.54285843054711 5.24069541793799
+## ENSG00000115386 4.24556465621839 5.43121995552113 5.19578897834494
+## ENSG00000164266 3.03848794345203 5.45453660510261 5.04804616706545
 ##                              tech   p.value       FDR      Symbol
 ##                         <numeric> <numeric> <numeric> <character>
-## ENSG00000254647 0.444486804531633         0         0         INS
-## ENSG00000129965  0.44793032864556         0         0    INS-IGF2
-## ENSG00000115263 0.232307716957985         0         0         GCG
-## ENSG00000118271  0.30733940396438         0         0         TTR
-## ENSG00000115386 0.239432094336088         0         0       REG1A
-## ENSG00000164266 0.413061088812563         0         0      SPINK1
+## ENSG00000254647 0.444029040952447         0         0         INS
+## ENSG00000129965 0.448160515800855         0         0    INS-IGF2
+## ENSG00000115263 0.233330244668938         0         0         GCG
+## ENSG00000118271 0.302163012609113         0         0         TTR
+## ENSG00000115386 0.235430977176182         0         0       REG1A
+## ENSG00000164266 0.406490438037156         0         0      SPINK1
 ```
 
 
@@ -428,13 +440,24 @@ We compute size factors for the endogenous genes and spike-in transcripts, and u
 
 ```r
 set.seed(1000)
-sce.gse85241 <- simpleSumFactors(sce.gse85241, min.mean=0.1, approximate=TRUE)
+clusters <- quickCluster(sce.gse85241, min.mean=0.1, method="igraph")
+table(clusters)
+```
+
+```
+## clusters
+##   1   2   3   4   5   6 
+## 237 248 285 483 613 480
+```
+
+```r
+sce.gse85241 <- computeSumFactors(sce.gse85241, min.mean=0.1, clusters=clusters)
 summary(sizeFactors(sce.gse85241))
 ```
 
 ```
-##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-##  0.0789  0.5474  0.8259  1.0000  1.2151 13.6699
+##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+##  0.07856  0.53931  0.81986  1.00000  1.22044 14.33280
 ```
 
 ```r
@@ -487,20 +510,20 @@ head(dec.gse85241)
 ## DataFrame with 6 rows and 7 columns
 ##                             mean            total              bio
 ##                        <numeric>        <numeric>        <numeric>
-## ENSG00000115263 7.65807643621929 6.61750855587646 6.58864647624195
-## ENSG00000089199  4.6184680690989 6.41445571426988 6.29247034767915
-## ENSG00000169903 3.01326304648171  6.5395518200798 6.18472046552923
-## ENSG00000254647 2.00151038901661 6.40130132621179 5.84521274745049
-## ENSG00000118271 7.33108862683239 5.77095728458802 5.73945924146402
-## ENSG00000171951 4.18778479052864  5.5593871260377 5.39442164898793
+## ENSG00000115263 7.66453729345785 6.66863456231166 6.63983282674494
+## ENSG00000089199 4.62375793902937 6.46558866721711 6.34422879524315
+## ENSG00000169903 3.01813483888172 6.59298310984116 6.23983239174791
+## ENSG00000254647 2.00308741950834 6.43736230365307 5.88133815055707
+## ENSG00000118271 7.33751241351268 5.81792529163505  5.7864800378735
+## ENSG00000171951  4.1933909879622 5.60615948812391 5.44209845614432
 ##                               tech   p.value       FDR      Symbol
 ##                          <numeric> <numeric> <numeric> <character>
-## ENSG00000115263 0.0288620796345149         0         0         GCG
-## ENSG00000089199  0.121985366590727         0         0        CHGB
-## ENSG00000169903  0.354831354550577         0         0      TM4SF4
-## ENSG00000254647  0.556088578761307         0         0         INS
-## ENSG00000118271 0.0314980431239984         0         0         TTR
-## ENSG00000171951  0.164965477049769         0         0        SCG2
+## ENSG00000115263 0.0288017355667183         0         0         GCG
+## ENSG00000089199  0.121359871973959         0         0        CHGB
+## ENSG00000169903  0.353150718093246         0         0      TM4SF4
+## ENSG00000254647  0.556024153095996         0         0         INS
+## ENSG00000118271 0.0314452537615524         0         0         TTR
+## ENSG00000171951  0.164061031979585         0         0        SCG2
 ```
 
 
@@ -535,7 +558,7 @@ length(chosen)
 ```
 
 ```
-## [1] 14570
+## [1] 14758
 ```
 
 We also rescale each batch to adjust for differences in sequencing depth between batches.
@@ -612,7 +635,7 @@ mnn.out$pairs
 
 ```
 ## [[1]]
-## DataFrame with 6661 rows and 2 columns
+## DataFrame with 6635 rows and 2 columns
 ##          first    second
 ##      <integer> <integer>
 ## 1            1      1794
@@ -621,11 +644,11 @@ mnn.out$pairs
 ## 4           15      2512
 ## 5           15      2575
 ## ...        ...       ...
-## 6657      1290      2339
-## 6658      1290      2794
-## 6659      1290      2731
-## 6660      1290      1538
-## 6661      1290      2001
+## 6631      1290      2339
+## 6632      1290      2625
+## 6633      1290      1538
+## 6634      1290      2794
+## 6635      1290      2001
 ```
 
 As previously mentioned, we have only used two batches here to simplify the workflow.
@@ -675,7 +698,7 @@ mnn.out2$pairs # 'first' cells now come from GSE85241.
 
 ```
 ## [[1]]
-## DataFrame with 6661 rows and 2 columns
+## DataFrame with 6635 rows and 2 columns
 ##          first    second
 ##      <integer> <integer>
 ## 1         1294       748
@@ -684,11 +707,11 @@ mnn.out2$pairs # 'first' cells now come from GSE85241.
 ## 4         1294      1206
 ## 5         1294       921
 ## ...        ...       ...
-## 6657      3638       866
-## 6658      3638       597
-## 6659      3638      1188
-## 6660      3638      1197
-## 6661      3638      1274
+## 6631      3638       597
+## 6632      3638      1274
+## 6633      3638      1197
+## 6634      3638      1188
+## 6635      3638       724
 ```
 
 Using `auto.order=` will change the merge order without requiring a change to the supplied order of batches in `original`.
@@ -843,13 +866,13 @@ mnn.out3$batch
 ```
 
 ```r
-c(mnn.out.81076$batch, mnn.out.85241$batch) # by donor
+c(mnn.out.85241$batch, mnn.out.81076$batch) # by donor
 ```
 
 ```
 ## character-Rle of length 3638 with 8 runs
-##   Lengths:   162   464   320   346   340   604   689   713
-##   Values :   "A"   "B"   "C"   "D" "D28" "D29" "D30" "D31"
+##   Lengths:   340   604   689   713   162   464   320   346
+##   Values : "D28" "D29" "D30" "D31"   "A"   "B"   "C"   "D"
 ```
 
 **Comments from Aaron:**
@@ -864,11 +887,10 @@ This requires some extra account-keeping to match up the final corrected matrix 
 
     
     ```r
-    original.plate <- unlist(lapply(rescaled, "[[", i="Plate"))
-    original.names <- unlist(lapply(rescaled, colnames))
-    
-    # Needs unique names: trigger error otherwise.
-    stopifnot(anyDuplicated(original.names)==0L)
+    original.plate <- c(rescaled.gse81076$Plate,
+        rescaled.gse85241$Plate)
+    original.names <- c(colnames(rescaled.gse81076),
+        colnames(rescaled.gse85241))
     
     m <- match(rownames(mnn.out3$corrected), original.names)
     new.plate <- original.plate[m]
@@ -911,8 +933,6 @@ As such, we prefer manual definition of a merge order that makes better use of p
 
 # Examining the effect of correction
 
-## By visualization
-
 We create a new `SingleCellExperiment` object containing log-expression values for all cells, along with information regarding the batch of origin.
 The MNN-corrected values are stored as dimensionality reduction results, befitting the principal components analysis performed within `fastMNN()`. 
 
@@ -934,10 +954,10 @@ sce
 
 ```
 ## class: SingleCellExperiment 
-## dim: 14570 3638 
+## dim: 14758 3638 
 ## metadata(0):
 ## assays(1): logcounts
-## rownames(14570): GCG CHGB ... RPL13AP6 CSNK1A1L
+## rownames(14758): GCG CHGB ... RPP30 C8orf59
 ## rowData names(2): ENSEMBL SYMBOL
 ## colnames(3638): D2ex_1 D2ex_2 ... D30.8_93 D30.8_94
 ## colData names(1): Batch
@@ -989,32 +1009,6 @@ multiplot(ct.gcg, ct.ins, ct.sst, ct.ppy, cols=2)
 <p class="caption">(\#fig:tsne-markers)t-SNE plots after MNN correction, where each point represents a cell and is coloured by its corrected expression of key marker genes for known cell types in the pancreas.</p>
 </div>
 
-## With diagnostics
-
-One useful diagnostic is the proportion of variance within each batch that is lost during MNN correction.
-Specifically, this refers to the within-batch variance that is removed during orthogonalization with respect to the average correction vector at each merge step. 
-We set `compute.variances=TRUE` to indicate to `fastMNN()` that the variance loss should be computed and returned.
-
-
-```r
-set.seed(1000)
-with.var <- do.call(fastMNN, c(original, 
-    list(k=20, d=50, approximate=TRUE, 
-        compute.variances=TRUE)
-))
-with.var$lost.var
-```
-
-```
-## [1] 0.009460765 0.012827688
-```
-
-Large proportions of lost variance suggest that correction is removing genuine biological heterogeneity.
-This would occur due to violations of the assumption of orthogonality between the batch effect and the biological subspace [@haghverdi2018batch].
-In this case, the proportion of lost variance is small, indicating that non-orthogonality is not a major concern.
-
-
-
 # Using the corrected values in downstream analyses
 
 For downstream analyses, the MNN-corrected values can be treated in the same manner as any other dimensionality reduction result.
@@ -1030,19 +1024,18 @@ table(clusters$membership, sce$Batch)
 ```
 ##     
 ##      GSE81076 GSE85241
-##   1       309      282
-##   2       358      256
-##   3       216      847
-##   4       166      410
-##   5        63      197
-##   6        25      108
-##   7        22      127
-##   8        52       76
-##   9        32        0
-##   10       34        0
-##   11        0       18
-##   12        8        4
-##   13        7       21
+##   1        70        0
+##   2       322      280
+##   3       346      264
+##   4       216      847
+##   5        64      198
+##   6       149      395
+##   7        25      108
+##   8        63       84
+##   9        22      127
+##   10        0       18
+##   11        8        4
+##   12        7       21
 ```
 
 Figure \@ref(fig:tsne-cluster) shows strong correspondence between the cluster labels and separation in _t_-SNE space.
@@ -1067,48 +1060,45 @@ This will perform all comparisons between clusters _within_ each batch, and then
 ```r
 m.out <- findMarkers(sce, clusters$membership, block=sce$Batch,
     direction="up")        
-demo <- m.out[["3"]] # looking at cluster 3 (probably alpha cells).
+demo <- m.out[["4"]] # looking at cluster 4 (probably alpha cells).
 demo <- demo[demo$Top <= 5,]
 as.data.frame(demo[,1:3]) # only first three columns for brevity.
 ```
 
 ```
-##          Top       p.value           FDR
-## TM4SF4     1  0.000000e+00  0.000000e+00
-## PAX6       1  0.000000e+00  0.000000e+00
-## SCG5       1  0.000000e+00  0.000000e+00
-## GC         1  0.000000e+00  0.000000e+00
-## PPP1R1A    1  0.000000e+00  0.000000e+00
-## IRX2       1  0.000000e+00  0.000000e+00
-## FAP        1  0.000000e+00  0.000000e+00
-## CNTN1      1  0.000000e+00  0.000000e+00
-## ARX        1  0.000000e+00  0.000000e+00
-## CPE        2  0.000000e+00  0.000000e+00
-## CHGB       2  0.000000e+00  0.000000e+00
-## SLC22A17   2  0.000000e+00  0.000000e+00
-## PAM        2  0.000000e+00  0.000000e+00
-## CRYBA2     2  0.000000e+00  0.000000e+00
-## SYT7       2  0.000000e+00  0.000000e+00
-## LOXL4      2 2.384423e-292 4.511824e-290
-## PTPRN      3  0.000000e+00  0.000000e+00
-## KCTD12     3  0.000000e+00  0.000000e+00
-## SEZ6L2     3  0.000000e+00  0.000000e+00
-## TPD52      3  0.000000e+00  0.000000e+00
-## COX8A      3 7.260493e-202 6.450329e-200
-## PLCE1      3 1.848381e-194 1.504520e-192
-## MAFB       4  0.000000e+00  0.000000e+00
-## SCGN       4  0.000000e+00  0.000000e+00
-## SCG2       4  0.000000e+00  0.000000e+00
-## GCG        4  0.000000e+00  0.000000e+00
-## PTPRN2     4  0.000000e+00  0.000000e+00
-## RAB3B      4  0.000000e+00  0.000000e+00
-## SLC38A4    4  0.000000e+00  0.000000e+00
-## RCAN2      4 1.062830e-284 1.843504e-282
-## SLC30A8    5  0.000000e+00  0.000000e+00
-## DDR1       5  0.000000e+00  0.000000e+00
-## NAA20      5 1.211586e-278 2.052652e-276
-## FABP5      5 1.775700e-268 2.613329e-266
-## CFC1       5 3.044406e-266 4.435700e-264
+##         Top       p.value           FDR
+## TM4SF4    1  0.000000e+00  0.000000e+00
+## CHGB      1  0.000000e+00  0.000000e+00
+## SCG2      1  0.000000e+00  0.000000e+00
+## PPP1R1A   1  0.000000e+00  0.000000e+00
+## IRX2      1  0.000000e+00  0.000000e+00
+## FAP       1  0.000000e+00  0.000000e+00
+## CNTN1     1  0.000000e+00  0.000000e+00
+## ARX       1  0.000000e+00  0.000000e+00
+## CPE       2  0.000000e+00  0.000000e+00
+## PAX6      2  0.000000e+00  0.000000e+00
+## SCGN      2  0.000000e+00  0.000000e+00
+## GC        2  0.000000e+00  0.000000e+00
+## CRYBA2    2  0.000000e+00  0.000000e+00
+## PTPRN2    2  0.000000e+00  0.000000e+00
+## PAM       2  0.000000e+00  0.000000e+00
+## SYT7      2  0.000000e+00  0.000000e+00
+## LOXL4     2 3.096970e-292 6.094010e-290
+## PTPRN     3  0.000000e+00  0.000000e+00
+## SCG5      3  0.000000e+00  0.000000e+00
+## SEZ6L2    3  0.000000e+00  0.000000e+00
+## TPD52     3  0.000000e+00  0.000000e+00
+## PLCE1     3 2.725929e-193 2.298815e-191
+## MAFB      4  0.000000e+00  0.000000e+00
+## SLC30A8   4  0.000000e+00  0.000000e+00
+## SLC38A4   4  0.000000e+00  0.000000e+00
+## RAB3B     4  0.000000e+00  0.000000e+00
+## RCAN2     4 5.813127e-282 1.059137e-279
+## PCSK2     5  0.000000e+00  0.000000e+00
+## GCG       5  0.000000e+00  0.000000e+00
+## DDR1      5  0.000000e+00  0.000000e+00
+## FABP5     5 7.397093e-265 1.102690e-262
+## CFC1      5 3.011223e-264 4.356826e-262
 ```
 
 
@@ -1168,13 +1158,13 @@ sessionInfo()
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] scran_1.11.1                scater_1.11.2              
+##  [1] scran_1.11.1                scater_1.11.1              
 ##  [3] ggplot2_3.1.0               SingleCellExperiment_1.5.0 
 ##  [5] SummarizedExperiment_1.13.0 DelayedArray_0.9.0         
-##  [7] BiocParallel_1.17.1         matrixStats_0.54.0         
+##  [7] BiocParallel_1.17.0         matrixStats_0.54.0         
 ##  [9] GenomicRanges_1.35.0        GenomeInfoDb_1.19.0        
 ## [11] org.Hs.eg.db_3.7.0          AnnotationDbi_1.45.0       
-## [13] IRanges_2.17.1              S4Vectors_0.21.1           
+## [13] IRanges_2.17.0              S4Vectors_0.21.0           
 ## [15] Biobase_2.43.0              BiocGenerics_0.29.1        
 ## [17] bindrcpp_0.2.2              BiocFileCache_1.7.0        
 ## [19] dbplyr_1.2.2                knitr_1.20                 
@@ -1190,7 +1180,7 @@ sessionInfo()
 ## [13] vipor_0.4.5              GenomeInfoDbData_1.2.0  
 ## [15] yaml_2.2.0               pillar_1.3.0            
 ## [17] RSQLite_2.1.1            backports_1.1.2         
-## [19] lattice_0.20-38          limma_3.39.1            
+## [19] lattice_0.20-35          limma_3.39.1            
 ## [21] glue_1.3.0               digest_0.6.18           
 ## [23] XVector_0.23.0           colorspace_1.3-2        
 ## [25] cowplot_0.9.3            htmltools_0.3.6         
@@ -1198,26 +1188,26 @@ sessionInfo()
 ## [29] pkgconfig_2.0.2          bookdown_0.7            
 ## [31] zlibbioc_1.29.0          purrr_0.2.5             
 ## [33] scales_1.0.0             HDF5Array_1.11.0        
-## [35] Rtsne_0.15               tibble_1.4.2            
+## [35] Rtsne_0.13               tibble_1.4.2            
 ## [37] withr_2.1.2              lazyeval_0.2.1          
 ## [39] magrittr_1.5             crayon_1.3.4            
 ## [41] memoise_1.1.0            evaluate_0.12           
 ## [43] beeswarm_0.2.3           tools_3.6.0             
 ## [45] stringr_1.3.1            Rhdf5lib_1.5.0          
 ## [47] locfit_1.5-9.1           munsell_0.5.0           
-## [49] irlba_2.3.3              compiler_3.6.0          
+## [49] irlba_2.3.2              compiler_3.6.0          
 ## [51] rlang_0.3.0.1            rhdf5_2.27.0            
 ## [53] grid_3.6.0               RCurl_1.95-4.11         
-## [55] BiocNeighbors_1.1.1      rappdirs_0.3.1          
+## [55] BiocNeighbors_1.1.0      rappdirs_0.3.1          
 ## [57] igraph_1.2.2             labeling_0.3            
 ## [59] bitops_1.0-6             rmarkdown_1.10          
 ## [61] gtable_0.2.0             DBI_1.0.0               
 ## [63] curl_3.2                 reshape2_1.4.3          
 ## [65] R6_2.3.0                 gridExtra_2.3           
-## [67] dplyr_0.7.8              bit_1.1-14              
+## [67] dplyr_0.7.7              bit_1.1-14              
 ## [69] bindr_0.1.1              rprojroot_1.3-2         
 ## [71] stringi_1.2.4            ggbeeswarm_0.6.0        
-## [73] Rcpp_1.0.0               tidyselect_0.2.5        
+## [73] Rcpp_0.12.19             tidyselect_0.2.5        
 ## [75] xfun_0.4
 ```
 

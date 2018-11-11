@@ -12,7 +12,7 @@ author:
   - *CRUK
   - *EMBL
   - Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
-date: "2018-11-10"
+date: "2018-11-02"
 vignette: >
   %\VignetteIndexEntry{09. Advanced variance modelling}
   %\VignetteEngine{knitr::rmarkdown}
@@ -138,13 +138,13 @@ We then calculate log-transformed normalized expression values for further use.
 
 ```r
 library(scran)
-sce.hsc <- simpleSumFactors(sce.hsc)
+sce.hsc <- computeSumFactors(sce.hsc)
 summary(sizeFactors(sce.hsc))
 ```
 
 ```
 ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-##  0.4238  0.8177  0.9363  1.0000  1.1804  2.0151
+##  0.4075  0.8058  0.9604  1.0000  1.1503  2.0414
 ```
 
 ```r
@@ -192,7 +192,7 @@ nrow(hvg.out)
 ```
 
 ```
-## [1] 504
+## [1] 511
 ```
 
 We rank the results to focus on genes with larger biological components.
@@ -211,20 +211,20 @@ head(hvg.out)
 ## DataFrame with 6 rows and 6 columns
 ##                      mean            total              bio             tech
 ##                 <numeric>        <numeric>        <numeric>        <numeric>
-## Fos      6.46196799882072 19.5610328073659 12.8045771643956 6.75645564297032
-## Dusp1    6.82477646028322 15.5991684453524 10.0847547346845 5.51441371066791
-## Rgs1     5.30721777600443 20.2441159375576 9.92804397134609 10.3160719662115
-## Ppp1r15a 6.66598045859203 14.5028371912445 8.45276980013916 6.05006739110531
-## Ly6a     8.39740181201201 10.0467504816539 8.03818961156809 2.00856087008578
-## Egr1     6.71502634373587 13.8389703181346 7.95641515628638 5.88255516184822
+## Fos      6.46229730105568 19.5774140745205 12.8221002872227 6.75531378729785
+## Dusp1    6.82314467202067 15.6360357802411 10.1162290209377 5.51980675930337
+## Rgs1     5.31345464519062 20.3107030137294 10.0119450853634 10.2987579283659
+## Ppp1r15a  6.6657972702732 14.5266651233921 8.47596931197898 6.05069581141309
+## Ly6a     8.40354443081163 10.0583341434802 8.05800101082591 2.00033313265429
+## Egr1     6.71592505529894 13.8570278172783 7.97752723962234 5.87950057765595
 ##                       p.value                  FDR
 ##                     <numeric>            <numeric>
-## Fos      1.10398969403887e-18 7.56093753689073e-16
-## Dusp1    8.15129503928221e-18 4.80269775217264e-15
-## Rgs1     1.18496143793071e-07 1.35612234428254e-05
-## Ppp1r15a 1.91754808050171e-12 5.49322855056976e-10
-## Ly6a     7.87714321198765e-50 2.38688692384957e-46
-## Egr1     6.40390775621137e-12 1.65650350508536e-09
+## Fos      1.01066135261343e-18 7.14571265009451e-16
+## Dusp1    7.24908881759115e-18 4.15568710567367e-15
+## Rgs1     9.43425347577711e-08 1.10557983687684e-05
+## Ppp1r15a  1.7343225455171e-12 4.90489540172842e-10
+## Ly6a     2.99530585166056e-50 9.07620463136746e-47
+## Egr1     5.70569033977291e-12 1.49411602218424e-09
 ```
 
 We check the distribution of expression values for the genes with the largest biological components.
@@ -410,20 +410,20 @@ head(comb.out[,1:6])
 ## DataFrame with 6 rows and 6 columns
 ##                                   mean               total
 ##                              <numeric>           <numeric>
-## ENSMUSG00000103377  0.0077852662424069  0.0110910243874505
-## ENSMUSG00000103147  0.0342704714401078  0.0710324324735765
-## ENSMUSG00000103161 0.00533642721877204 0.00521168730727283
-## ENSMUSG00000102331  0.0186505112011929  0.0333123382277785
-## ENSMUSG00000102948  0.0588935602840672  0.0879186539054153
-## Rp1                 0.0968879289012201   0.452061385087204
+## ENSMUSG00000103377 0.00807160215879455  0.0119218654846046
+## ENSMUSG00000103147  0.0346526071354525  0.0722196159042111
+## ENSMUSG00000103161 0.00519472220098498 0.00493857694820362
+## ENSMUSG00000102331  0.0186660929969477  0.0329235917176291
+## ENSMUSG00000102948  0.0590569999301664  0.0881371252862064
+## Rp1                 0.0970243710886109   0.452338135126349
 ##                                    bio               tech           p.value
 ##                              <numeric>          <numeric>         <numeric>
-## ENSMUSG00000103377 -0.0272027560050436 0.0382937803924941                 1
-## ENSMUSG00000103147 -0.0757714743788675  0.146803906852444 0.999999999968904
-## ENSMUSG00000103161 -0.0176478876202435 0.0228595749275163                 1
-## ENSMUSG00000102331 -0.0537822238874146  0.087094562115193 0.999999999999963
-## ENSMUSG00000102948  -0.169169236387022  0.257087890292437                 1
-## Rp1                0.00876187354127483  0.443299511545929 0.175559732314035
+## ENSMUSG00000103377 -0.0277229724633449 0.0396448379479495                 1
+## ENSMUSG00000103147 -0.0764556945917083  0.148675310495919 0.999999999962404
+## ENSMUSG00000103161 -0.0173491250826678 0.0222877020308714                 1
+## ENSMUSG00000102331 -0.0540089342569103 0.0869325259745394 0.999999999999991
+## ENSMUSG00000102948  -0.169989420230668  0.258126545516874                 1
+## Rp1                0.00813766950901805  0.444200465617331 0.163473096868316
 ##                                  FDR
 ##                            <numeric>
 ## ENSMUSG00000103377                 1
@@ -431,7 +431,7 @@ head(comb.out[,1:6])
 ## ENSMUSG00000103161                 1
 ## ENSMUSG00000102331                 1
 ## ENSMUSG00000102948                 1
-## Rp1                0.569934085943856
+## Rp1                0.538786122896226
 ```
 
 We visualize the quality of the batch-specific trend fits by extracting the relevant statistics from `comb.out` (Figure \@ref(fig:hvgplotbatch416b)).
@@ -519,55 +519,81 @@ sessionInfo()
 ## other attached packages:
 ##  [1] gdata_2.18.0                R.utils_2.7.0              
 ##  [3] R.oo_1.22.0                 R.methodsS3_1.7.1          
-##  [5] scran_1.11.1                scater_1.11.2              
-##  [7] ggplot2_3.1.0               SingleCellExperiment_1.5.0 
-##  [9] SummarizedExperiment_1.13.0 DelayedArray_0.9.0         
-## [11] BiocParallel_1.17.1         matrixStats_0.54.0         
-## [13] Biobase_2.43.0              GenomicRanges_1.35.0       
-## [15] GenomeInfoDb_1.19.0         IRanges_2.17.1             
-## [17] S4Vectors_0.21.1            BiocGenerics_0.29.1        
-## [19] bindrcpp_0.2.2              BiocFileCache_1.7.0        
-## [21] dbplyr_1.2.2                knitr_1.20                 
-## [23] BiocStyle_2.11.0           
+##  [5] scran_1.11.1                bindrcpp_0.2.2             
+##  [7] BiocFileCache_1.7.0         dbplyr_1.2.2               
+##  [9] scRNAseq_1.9.0              edgeR_3.25.0               
+## [11] limma_3.39.0                scater_1.11.1              
+## [13] ggplot2_3.1.0               SingleCellExperiment_1.5.0 
+## [15] SummarizedExperiment_1.13.0 DelayedArray_0.9.0         
+## [17] BiocParallel_1.17.0         matrixStats_0.54.0         
+## [19] Biobase_2.43.0              GenomicRanges_1.35.0       
+## [21] GenomeInfoDb_1.19.0         IRanges_2.17.0             
+## [23] S4Vectors_0.21.0            BiocGenerics_0.29.0        
+## [25] knitr_1.20                  BiocStyle_2.11.0           
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] bitops_1.0-6             bit64_0.9-7             
-##  [3] httr_1.3.1               rprojroot_1.3-2         
-##  [5] dynamicTreeCut_1.63-1    tools_3.6.0             
-##  [7] backports_1.1.2          R6_2.3.0                
-##  [9] HDF5Array_1.11.0         vipor_0.4.5             
-## [11] DBI_1.0.0                lazyeval_0.2.1          
-## [13] colorspace_1.3-2         withr_2.1.2             
-## [15] tidyselect_0.2.5         gridExtra_2.3           
-## [17] bit_1.1-14               curl_3.2                
-## [19] compiler_3.6.0           BiocNeighbors_1.1.1     
-## [21] labeling_0.3             bookdown_0.7            
-## [23] scales_1.0.0             rappdirs_0.3.1          
-## [25] stringr_1.3.1            digest_0.6.18           
-## [27] rmarkdown_1.10           XVector_0.23.0          
-## [29] pkgconfig_2.0.2          htmltools_0.3.6         
-## [31] limma_3.39.1             highr_0.7               
-## [33] rlang_0.3.0.1            RSQLite_2.1.1           
-## [35] DelayedMatrixStats_1.5.0 bindr_0.1.1             
-## [37] gtools_3.8.1             dplyr_0.7.8             
-## [39] RCurl_1.95-4.11          magrittr_1.5            
-## [41] GenomeInfoDbData_1.2.0   Matrix_1.2-15           
-## [43] Rcpp_1.0.0               ggbeeswarm_0.6.0        
-## [45] munsell_0.5.0            Rhdf5lib_1.5.0          
-## [47] viridis_0.5.1            stringi_1.2.4           
-## [49] yaml_2.2.0               edgeR_3.25.0            
-## [51] zlibbioc_1.29.0          rhdf5_2.27.0            
-## [53] plyr_1.8.4               grid_3.6.0              
-## [55] blob_1.1.1               crayon_1.3.4            
-## [57] lattice_0.20-38          cowplot_0.9.3           
-## [59] locfit_1.5-9.1           pillar_1.3.0            
-## [61] igraph_1.2.2             reshape2_1.4.3          
-## [63] glue_1.3.0               evaluate_0.12           
-## [65] BiocManager_1.30.3       gtable_0.2.0            
-## [67] purrr_0.2.5              assertthat_0.2.0        
-## [69] xfun_0.4                 viridisLite_0.3.0       
-## [71] tibble_1.4.2             beeswarm_0.2.3          
-## [73] memoise_1.1.0            statmod_1.4.30
+##   [1] readxl_1.1.0             backports_1.1.2         
+##   [3] plyr_1.8.4               igraph_1.2.2            
+##   [5] lazyeval_0.2.1           sp_1.3-1                
+##   [7] splines_3.6.0            digest_0.6.18           
+##   [9] htmltools_0.3.6          viridis_0.5.1           
+##  [11] magrittr_1.5             memoise_1.1.0           
+##  [13] cluster_2.0.7-1          openxlsx_4.1.0          
+##  [15] colorspace_1.3-2         blob_1.1.1              
+##  [17] rappdirs_0.3.1           rrcov_1.4-4             
+##  [19] haven_1.1.2              xfun_0.4                
+##  [21] dplyr_0.7.7              crayon_1.3.4            
+##  [23] RCurl_1.95-4.11          bindr_0.1.1             
+##  [25] survival_2.43-1          zoo_1.8-4               
+##  [27] glue_1.3.0               gtable_0.2.0            
+##  [29] zlibbioc_1.29.0          XVector_0.23.0          
+##  [31] car_3.0-2                kernlab_0.9-27          
+##  [33] Rhdf5lib_1.5.0           prabclus_2.2-6          
+##  [35] DEoptimR_1.0-8           HDF5Array_1.11.0        
+##  [37] abind_1.4-5              VIM_4.7.0               
+##  [39] scales_1.0.0             sgeostat_1.0-27         
+##  [41] mvtnorm_1.0-8            DBI_1.0.0               
+##  [43] GGally_1.4.0             Rcpp_0.12.19            
+##  [45] sROC_0.1-2               viridisLite_0.3.0       
+##  [47] laeken_0.4.6             foreign_0.8-71          
+##  [49] bit_1.1-14               mclust_5.4.1            
+##  [51] vcd_1.4-4                truncnorm_1.0-8         
+##  [53] httr_1.3.1               RColorBrewer_1.1-2      
+##  [55] fpc_2.1-11.1             modeltools_0.2-22       
+##  [57] pkgconfig_2.0.2          reshape_0.8.8           
+##  [59] NADA_1.6-1               flexmix_2.3-14          
+##  [61] nnet_7.3-12              locfit_1.5-9.1          
+##  [63] dynamicTreeCut_1.63-1    labeling_0.3            
+##  [65] tidyselect_0.2.5         rlang_0.3.0.1           
+##  [67] reshape2_1.4.3           munsell_0.5.0           
+##  [69] cellranger_1.1.0         tools_3.6.0             
+##  [71] RSQLite_2.1.1            pls_2.7-0               
+##  [73] evaluate_0.12            stringr_1.3.1           
+##  [75] cvTools_0.3.2            yaml_2.2.0              
+##  [77] bit64_0.9-7              zip_1.0.0               
+##  [79] robustbase_0.93-3        purrr_0.2.5             
+##  [81] compiler_3.6.0           beeswarm_0.2.3          
+##  [83] curl_3.2                 e1071_1.7-0             
+##  [85] zCompositions_1.1.1-1    tibble_1.4.2            
+##  [87] statmod_1.4.30           robCompositions_2.0.8   
+##  [89] pcaPP_1.9-73             stringi_1.2.4           
+##  [91] highr_0.7                forcats_0.3.0           
+##  [93] lattice_0.20-35          trimcluster_0.1-2.1     
+##  [95] Matrix_1.2-15            pillar_1.3.0            
+##  [97] BiocManager_1.30.3       lmtest_0.9-36           
+##  [99] BiocNeighbors_1.1.0      cowplot_0.9.3           
+## [101] data.table_1.11.8        bitops_1.0-6            
+## [103] R6_2.3.0                 bookdown_0.7            
+## [105] gridExtra_2.3            rio_0.5.10              
+## [107] vipor_0.4.5              gtools_3.8.1            
+## [109] boot_1.3-20              MASS_7.3-51.1           
+## [111] assertthat_0.2.0         rhdf5_2.27.0            
+## [113] rprojroot_1.3-2          withr_2.1.2             
+## [115] GenomeInfoDbData_1.2.0   diptest_0.75-7          
+## [117] hms_0.4.2                grid_3.6.0              
+## [119] class_7.3-14             rmarkdown_1.10          
+## [121] DelayedMatrixStats_1.5.0 carData_3.0-2           
+## [123] mvoutlier_2.0.9          ggbeeswarm_0.6.0
 ```
 
 # References
