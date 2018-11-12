@@ -3,7 +3,7 @@ title: Detecting doublets in single-cell RNA-seq data
 author:
 - name: Aaron T. L. Lun
   affiliation: &CRUK Cancer Research UK Cambridge Institute, Li Ka Shing Centre, Robinson Way, Cambridge CB2 0RE, United Kingdom
-date: "2018-11-02"
+date: "2018-11-12"
 vignette: >
   %\VignetteIndexEntry{08. Detecting doublets}
   %\VignetteEngine{knitr::rmarkdown}
@@ -155,34 +155,34 @@ sce <- sce[,!discard]
 
 ## Normalization for cell-specific biases
 
-We apply the deconvolution method with pre-clustering [@lun2016pooling] to compute size factors for scaling normalization of cell-specific biases.
+ We apply the deconvolution method with pre-clustering [@lun2016pooling] to compute size factors for scaling normalization of cell-specific biases.
 
 
 ```r
 library(scran)
 set.seed(1000)
-clusters <- quickCluster(sce, method="igraph", min.mean=0.1)
+clusters <- quickCluster(sce, pc.approx=TRUE)
 table(clusters)
 ```
 
 ```
 ## clusters
-##    1    2    3 
-##  919 1045  808
+##   1   2   3   4   5   6   7   8   9 
+## 461 383 531 512 146 234 113 187 205
 ```
 
 ```r
-sce <- computeSumFactors(sce, clusters=clusters, min.mean=0.1)
+sce <- computeSumFactors(sce, clusters=clusters, min.mean=0.1) 
 summary(sizeFactors(sce))
 ```
 
 ```
 ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-##  0.2688  0.5310  0.7672  1.0000  1.1987 10.6856
+##  0.2676  0.5206  0.7547  1.0000  1.2048 10.7597
 ```
 
 We then compute log-normalized expression values for downstream use.
-This data set does not contain spike-in transcripts so separate normalziation with `computeSpikeFactors()` is not required.
+This data set does not contain spike-in transcripts so separate normalization with `computeSpikeFactors()` is not required.
 
 
 ```r
@@ -224,7 +224,7 @@ ncol(reducedDim(sce))
 ```
 
 ```
-## [1] 14
+## [1] 15
 ```
 
 ## Clustering into subpopulations
@@ -241,8 +241,8 @@ table(sce$Cluster)
 
 ```
 ## 
-##   1   2   3   4   5   6   7   8   9  10  11  12  13  14 
-## 475 411 398  54 378 271  84  74 289 219  33  22  25  39
+##   1   2   3   4   5   6   7   8   9  10  11  12  13 
+## 490 505 445 481  24 354  74  52 191  39  33  59  25
 ```
 
 We visualize the clustering on a _t_-SNE plot [@van2008visualizing].
@@ -281,49 +281,49 @@ dbl.out
 ```
 
 ```
-## DataFrame with 14 rows and 9 columns
+## DataFrame with 13 rows and 9 columns
 ##         source1     source2         N        best              p.value
 ##     <character> <character> <integer> <character>            <numeric>
-## 7             8           5         0       Fabp3   0.0516239051106075
-## 10           13           2        13        Xist 1.73868501814698e-29
-## 8            12           1        28         Ptn 1.10432261800312e-14
-## 5            12           7        49       Cotl1 7.90164177238926e-08
-## 6             7           2        56      Sec61b  1.3329887878903e-07
+## 7            12           6         0       Fabp3   0.0533315577969168
+## 2             7           3        15        Xist 1.55078432565813e-10
+## 12            5           1        31         Ptn 7.73976261463573e-16
+## 9             6           3        54       Plet1 5.71386767999541e-12
+## 6             7           5        75       Cotl1 8.83774748081932e-09
 ## ...         ...         ...       ...         ...                  ...
-## 2            12           6       182       Cdc20  1.4775692594461e-19
-## 13           14          12       198        Gpx3  1.1282711558589e-19
-## 4            14          12       270        C1qb 9.41841774529017e-49
-## 11           14          12       299       Fabp4 2.70725398963721e-32
-## 14           13          11       388         Dcn 4.93706079643116e-32
+## 13           10           5       197       Epcam 4.90533186350571e-20
+## 3             5           2       199       Abcg2 2.67654255078785e-15
+## 8            10           5       270    AF251705   3.296606994399e-24
+## 11           10           5       300       Fabp4 2.70725398963721e-32
+## 10           13          11       388         Dcn 4.93706079643116e-32
 ##             lib.size1         lib.size2                prop
 ##             <numeric>         <numeric>           <numeric>
-## 7   0.456830005034402 0.574593052525592  0.0303030303030303
-## 10  0.677851605758582  1.51240310077519   0.079004329004329
-## 8     0.9924694645973  1.18853889246028  0.0266955266955267
-## 5           0.7890625  1.74036214953271   0.136363636363636
-## 6   0.509882775733721 0.584281680499701  0.0977633477633478
+## 7    0.46406852248394 0.613704496788009  0.0266955266955267
+## 2   0.753809400826446  0.88100464876033   0.182178932178932
+## 12  0.997323735695829  1.19878183831672  0.0212842712842713
+## 9   0.606381178063643  1.15479011509817  0.0689033189033189
+## 6    1.62944870900209 0.754152128401954   0.127705627705628
 ## ...               ...               ...                 ...
-## 2   0.395657904371385  1.71150325840228   0.148268398268398
 ## 13  0.882698905407613 0.882780591406633 0.00901875901875902
-## 4   0.856192060850963 0.856271293875287  0.0194805194805195
+## 3   0.396005862953463  1.13506779039941   0.160533910533911
+## 8   0.856192060850963 0.856271293875287  0.0187590187590188
 ## 11  0.666050295857988 0.666111932938856  0.0119047619047619
-## 14   1.13288913566537  1.50138811771238  0.0140692640692641
-##                                         all.pairs
-##                                   <DataFrameList>
-## 7               8:5:0:...,6:1:1:...,9:1:3:...,...
-## 10        13:2:13:...,12:2:26:...,12:3:37:...,...
-## 8        12:1:28:...,11:1:97:...,13:1:143:...,...
-## 5         12:7:49:...,12:9:55:...,13:9:96:...,...
-## 6        7:2:56:...,10:9:145:...,10:7:146:...,...
-## ...                                           ...
-## 2      12:6:182:...,10:9:248:...,10:8:267:...,...
-## 13   14:12:198:...,14:10:200:...,12:3:202:...,...
-## 4   14:12:270:...,12:11:331:...,13:12:371:...,...
-## 11   14:12:299:...,14:13:329:...,12:1:338:...,...
-## 14     13:11:388:...,11:4:406:...,8:4:434:...,...
+## 10   1.13288913566537  1.50138811771238  0.0140692640692641
+##                                       all.pairs
+##                                 <DataFrameList>
+## 7            12:6:0:...,9:1:2:...,2:1:3:...,...
+## 2         7:3:15:...,6:3:38:...,13:3:46:...,...
+## 12     5:1:31:...,11:1:115:...,13:1:132:...,...
+## 9        6:3:54:...,7:3:125:...,7:5:177:...,...
+## 6        7:5:75:...,9:5:95:...,13:9:120:...,...
+## ...                                         ...
+## 13     10:5:197:...,5:4:220:...,7:5:236:...,...
+## 3     5:2:199:...,12:2:205:...,13:9:215:...,...
+## 8    10:5:270:...,11:5:338:...,13:5:366:...,...
+## 11   10:5:300:...,13:10:329:...,5:1:335:...,...
+## 10  13:11:388:...,11:8:403:...,12:8:416:...,...
 ```
 
-Examination of the output of `doubletCluster()` indicates that cluster 7 has the fewest unique genes and library sizes that are comparable to or greater than its parents.
+Examination of the output of `doubletCluster()` indicates that cluster 6 has the fewest unique genes and library sizes that are comparable to or greater than its parents.
 We see that every gene detected in this cluster is also expressed in either of the two proposed parent clusters (Figure \@ref(fig:heatclust)).
 
 
@@ -337,8 +337,8 @@ plotHeatmap(sce, columns=order(sce$Cluster), colour_columns_by="Cluster",
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/work-6-doublet_files/figure-html/heatclust-1.png" alt="Heatmap of mean-centred and normalized log-expression values for the top set of markers for cluster 7 in the 416B dataset. Column colours represent the cluster to which each cell is assigned, as indicated by the legend." width="100%" />
-<p class="caption">(\#fig:heatclust)Heatmap of mean-centred and normalized log-expression values for the top set of markers for cluster 7 in the 416B dataset. Column colours represent the cluster to which each cell is assigned, as indicated by the legend.</p>
+<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/work-6-doublet_files/figure-html/heatclust-1.png" alt="Heatmap of mean-centred and normalized log-expression values for the top set of markers for cluster 7 in the mammary gland dataset. Column colours represent the cluster to which each cell is assigned, as indicated by the legend." width="100%" />
+<p class="caption">(\#fig:heatclust)Heatmap of mean-centred and normalized log-expression values for the top set of markers for cluster 7 in the mammary gland dataset. Column colours represent the cluster to which each cell is assigned, as indicated by the legend.</p>
 </div>
 
 
@@ -402,7 +402,7 @@ summary(dbl.dens)
 
 ```
 ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-## 0.00000 0.01771 0.07163 0.15626 0.13794 7.55793
+## 0.00000 0.01682 0.06640 0.15185 0.12808 8.35571
 ```
 
 The highest doublet scores are concentrated in a single cluster of cells in the centre of Figure \@ref(fig:denstsne).
@@ -509,22 +509,22 @@ sessionInfo()
 ## other attached packages:
 ##  [1] scran_1.11.1                          
 ##  [2] TxDb.Mmusculus.UCSC.mm10.ensGene_3.4.0
-##  [3] GenomicFeatures_1.33.6                
+##  [3] GenomicFeatures_1.35.1                
 ##  [4] AnnotationDbi_1.45.0                  
 ##  [5] Matrix_1.2-15                         
-##  [6] scater_1.11.1                         
+##  [6] scater_1.11.2                         
 ##  [7] ggplot2_3.1.0                         
 ##  [8] SingleCellExperiment_1.5.0            
 ##  [9] SummarizedExperiment_1.13.0           
 ## [10] DelayedArray_0.9.0                    
-## [11] BiocParallel_1.17.0                   
+## [11] BiocParallel_1.17.1                   
 ## [12] matrixStats_0.54.0                    
 ## [13] Biobase_2.43.0                        
-## [14] GenomicRanges_1.35.0                  
+## [14] GenomicRanges_1.35.1                  
 ## [15] GenomeInfoDb_1.19.0                   
-## [16] IRanges_2.17.0                        
-## [17] S4Vectors_0.21.0                      
-## [18] BiocGenerics_0.29.0                   
+## [16] IRanges_2.17.1                        
+## [17] S4Vectors_0.21.3                      
+## [18] BiocGenerics_0.29.1                   
 ## [19] bindrcpp_0.2.2                        
 ## [20] BiocFileCache_1.7.0                   
 ## [21] dbplyr_1.2.2                          
@@ -536,37 +536,37 @@ sessionInfo()
 ##  [3] RColorBrewer_1.1-2       progress_1.2.0          
 ##  [5] httr_1.3.1               rprojroot_1.3-2         
 ##  [7] dynamicTreeCut_1.63-1    tools_3.6.0             
-##  [9] backports_1.1.2          irlba_2.3.2             
+##  [9] backports_1.1.2          irlba_2.3.3             
 ## [11] R6_2.3.0                 HDF5Array_1.11.0        
 ## [13] vipor_0.4.5              DBI_1.0.0               
 ## [15] lazyeval_0.2.1           colorspace_1.3-2        
 ## [17] withr_2.1.2              tidyselect_0.2.5        
 ## [19] gridExtra_2.3            prettyunits_1.0.2       
 ## [21] bit_1.1-14               curl_3.2                
-## [23] compiler_3.6.0           BiocNeighbors_1.1.0     
+## [23] compiler_3.6.0           BiocNeighbors_1.1.1     
 ## [25] labeling_0.3             rtracklayer_1.43.0      
 ## [27] bookdown_0.7             scales_1.0.0            
 ## [29] rappdirs_0.3.1           stringr_1.3.1           
 ## [31] digest_0.6.18            Rsamtools_1.35.0        
 ## [33] rmarkdown_1.10           XVector_0.23.0          
 ## [35] pkgconfig_2.0.2          htmltools_0.3.6         
-## [37] highr_0.7                limma_3.39.0            
+## [37] highr_0.7                limma_3.39.1            
 ## [39] rlang_0.3.0.1            RSQLite_2.1.1           
 ## [41] DelayedMatrixStats_1.5.0 bindr_0.1.1             
-## [43] dplyr_0.7.7              RCurl_1.95-4.11         
+## [43] dplyr_0.7.8              RCurl_1.95-4.11         
 ## [45] magrittr_1.5             GenomeInfoDbData_1.2.0  
-## [47] Rcpp_0.12.19             ggbeeswarm_0.6.0        
+## [47] Rcpp_1.0.0               ggbeeswarm_0.6.0        
 ## [49] munsell_0.5.0            Rhdf5lib_1.5.0          
 ## [51] viridis_0.5.1            edgeR_3.25.0            
 ## [53] stringi_1.2.4            yaml_2.2.0              
-## [55] zlibbioc_1.29.0          Rtsne_0.13              
+## [55] zlibbioc_1.29.0          Rtsne_0.15              
 ## [57] rhdf5_2.27.0             plyr_1.8.4              
 ## [59] grid_3.6.0               blob_1.1.1              
-## [61] crayon_1.3.4             lattice_0.20-35         
-## [63] cowplot_0.9.3            Biostrings_2.51.0       
+## [61] crayon_1.3.4             lattice_0.20-38         
+## [63] cowplot_0.9.3            Biostrings_2.51.1       
 ## [65] hms_0.4.2                locfit_1.5-9.1          
 ## [67] pillar_1.3.0             igraph_1.2.2            
-## [69] reshape2_1.4.3           biomaRt_2.39.0          
+## [69] reshape2_1.4.3           biomaRt_2.39.2          
 ## [71] XML_3.98-1.16            glue_1.3.0              
 ## [73] evaluate_0.12            BiocManager_1.30.3      
 ## [75] gtable_0.2.0             purrr_0.2.5             

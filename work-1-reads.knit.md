@@ -12,7 +12,7 @@ author:
   - *CRUK
   - *EMBL
   - Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
-date: "2018-11-02"
+date: "2018-11-11"
 vignette: >
   %\VignetteIndexEntry{02. Read count data}
   %\VignetteEngine{knitr::rmarkdown}
@@ -625,8 +625,8 @@ More specifically, "size factors" are calculated that represent the extent to wh
 
 Size factors can be computed with several different approaches, e.g., using the `estimateSizeFactorsFromMatrix` function in the *[DESeq2](https://bioconductor.org/packages/3.9/DESeq2)* package [@anders2010differential;@love2014moderated], or with the `calcNormFactors` function [@robinson2010scaling] in the *[edgeR](https://bioconductor.org/packages/3.9/edgeR)* package.
 However, single-cell data can be problematic for these bulk data-based methods due to the dominance of low and zero counts.
-To overcome this, we pool counts from many cells to increase the count size for accurate size factor estimation [@lun2016pooling].
-Pool-based size factors are then "deconvolved" into cell-based factors for cell-specific normalization.
+To overcome this, we pool counts from many cells to increase the size of the counts for accurate size factor estimation [@lun2016pooling].
+Pool-based size factors are then "deconvolved" into cell-based factors for normalization of each cell's expression profile.
 
 
 ```r
@@ -665,23 +665,18 @@ __Comments from Aaron:__
 This manifests as negative size factors that are obviously nonsensical.
 To avoid this, the `computeSumFactors` function will automatically remove low-abundance genes prior to the calculation of size factors.
 Genes with a library size-adjusted average count below a specified threshold (`min.mean`) are ignored.
-    - For read count data, the default value of 1 is usually satisfactory.
-      For UMI data, counts are lower so a threshold of 0.1 is recommended. 
-    - While the library size-adjusted average is not entirely independent of the bias [@bourgon2010independent], this is a better filter statistic than the sample mean count.
-      The latter would enrich for genes that are upregulated in cells with large library sizes, resulting in inflated size factor estimates for those cells.
+For read count data, the default value of 1 is usually satisfactory.
 - Cell-based QC should always be performed prior to normalization, to remove cells with very low numbers of expressed genes.
 Otherwise, `computeSumFactors()` may yield negative size factors for low-quality cells.
 This is because too many zeroes are present in these cells, reducing the effectiveness of pooling to eliminate zeroes.
-Indeed, for some low-quality cells, the effect of cell damage on the transcriptome may already violate the non-DE assumption.
+See `?computeSumFactors` for more details on how the function resolves negative size factors.
 - The `sizes` argument can be used to specify the number of pool sizes to use to compute the size factors.
 More `sizes` yields more precise estimates at the cost of some computational time and memory.
-In general, all `sizes` should not above 20 cells to ensure that there are sufficient non-zero expression values in each pool.
+In general, all `sizes` should be above 20 cells to ensure that there are sufficient non-zero expression values in each pool.
 The total number of cells should also be at least 100 for effective pooling.
-- For highly heterogeneous datasets, it is advisable to perform a rough clustering of the cells.
-This can be done with the `quickCluster` function and the results passed to `computeSumFactors` via the `cluster` argument.
-Cells in each cluster are normalized separately, and the size factors are rescaled to be comparable across clusters.
-This avoids the need to assume that most genes are non-DE across the entire population - only a non-DE majority is required between pairs of clusters.
-We demonstrate this approach later with a larger dataset in the next [workflow](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/work-2-umis.html#6_normalization_of_cell-specific_biases).
+- For highly heterogeneous datasets, it is advisable to perform a rough clustering of the cells to weaken the non-DE assumption.
+This can be done with the `quickCluster()` function and the results passed to `computeSumFactors()` via the `clusters` argument.
+We demonstrate this approach with a larger data set in the next [workflow](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/work-2-umis.html#6_normalization_of_cell-specific_biases).
 
 ## Computing separate size factors for spike-in transcripts
 
@@ -1280,25 +1275,25 @@ sessionInfo()
 ## other attached packages:
 ##  [1] cluster_2.0.7-1                       
 ##  [2] dynamicTreeCut_1.63-1                 
-##  [3] limma_3.39.0                          
+##  [3] limma_3.39.1                          
 ##  [4] scran_1.11.1                          
-##  [5] scater_1.11.1                         
+##  [5] scater_1.11.2                         
 ##  [6] ggplot2_3.1.0                         
 ##  [7] TxDb.Mmusculus.UCSC.mm10.ensGene_3.4.0
-##  [8] GenomicFeatures_1.33.6                
+##  [8] GenomicFeatures_1.35.1                
 ##  [9] org.Mm.eg.db_3.7.0                    
 ## [10] AnnotationDbi_1.45.0                  
 ## [11] SingleCellExperiment_1.5.0            
 ## [12] SummarizedExperiment_1.13.0           
 ## [13] DelayedArray_0.9.0                    
-## [14] BiocParallel_1.17.0                   
+## [14] BiocParallel_1.17.1                   
 ## [15] matrixStats_0.54.0                    
 ## [16] Biobase_2.43.0                        
 ## [17] GenomicRanges_1.35.0                  
 ## [18] GenomeInfoDb_1.19.0                   
-## [19] IRanges_2.17.0                        
-## [20] S4Vectors_0.21.0                      
-## [21] BiocGenerics_0.29.0                   
+## [19] IRanges_2.17.1                        
+## [20] S4Vectors_0.21.1                      
+## [21] BiocGenerics_0.29.1                   
 ## [22] bindrcpp_0.2.2                        
 ## [23] BiocFileCache_1.7.0                   
 ## [24] dbplyr_1.2.2                          
@@ -1317,7 +1312,7 @@ sessionInfo()
 ## [17] tidyselect_0.2.5         gridExtra_2.3           
 ## [19] prettyunits_1.0.2        bit_1.1-14              
 ## [21] curl_3.2                 compiler_3.6.0          
-## [23] BiocNeighbors_1.1.0      rtracklayer_1.43.0      
+## [23] BiocNeighbors_1.1.1      rtracklayer_1.43.0      
 ## [25] labeling_0.3             bookdown_0.7            
 ## [27] scales_1.0.0             rappdirs_0.3.1          
 ## [29] stringr_1.3.1            digest_0.6.18           
@@ -1326,21 +1321,21 @@ sessionInfo()
 ## [35] htmltools_0.3.6          highr_0.7               
 ## [37] rlang_0.3.0.1            RSQLite_2.1.1           
 ## [39] DelayedMatrixStats_1.5.0 bindr_0.1.1             
-## [41] dplyr_0.7.7              RCurl_1.95-4.11         
+## [41] dplyr_0.7.8              RCurl_1.95-4.11         
 ## [43] magrittr_1.5             GenomeInfoDbData_1.2.0  
-## [45] Matrix_1.2-15            Rcpp_0.12.19            
+## [45] Matrix_1.2-15            Rcpp_1.0.0              
 ## [47] ggbeeswarm_0.6.0         munsell_0.5.0           
 ## [49] Rhdf5lib_1.5.0           viridis_0.5.1           
 ## [51] edgeR_3.25.0             stringi_1.2.4           
 ## [53] yaml_2.2.0               zlibbioc_1.29.0         
-## [55] Rtsne_0.13               rhdf5_2.27.0            
+## [55] Rtsne_0.15               rhdf5_2.27.0            
 ## [57] plyr_1.8.4               grid_3.6.0              
 ## [59] blob_1.1.1               crayon_1.3.4            
-## [61] lattice_0.20-35          Biostrings_2.51.0       
+## [61] lattice_0.20-38          Biostrings_2.51.1       
 ## [63] cowplot_0.9.3            hms_0.4.2               
 ## [65] locfit_1.5-9.1           pillar_1.3.0            
 ## [67] igraph_1.2.2             reshape2_1.4.3          
-## [69] biomaRt_2.39.0           XML_3.98-1.16           
+## [69] biomaRt_2.39.2           XML_3.98-1.16           
 ## [71] glue_1.3.0               evaluate_0.12           
 ## [73] BiocManager_1.30.3       gtable_0.2.0            
 ## [75] purrr_0.2.5              assertthat_0.2.0        
