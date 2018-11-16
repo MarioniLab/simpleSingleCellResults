@@ -3,7 +3,7 @@ title: Detecting doublets in single-cell RNA-seq data
 author:
 - name: Aaron T. L. Lun
   affiliation: &CRUK Cancer Research UK Cambridge Institute, Li Ka Shing Centre, Robinson Way, Cambridge CB2 0RE, United Kingdom
-date: "2018-11-12"
+date: "2018-11-16"
 vignette: >
   %\VignetteIndexEntry{08. Detecting doublets}
   %\VignetteEngine{knitr::rmarkdown}
@@ -178,7 +178,7 @@ summary(sizeFactors(sce))
 
 ```
 ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-##  0.2676  0.5206  0.7547  1.0000  1.2048 10.7597
+##  0.2792  0.5237  0.7589  1.0000  1.2135 10.4998
 ```
 
 We then compute log-normalized expression values for downstream use.
@@ -241,8 +241,8 @@ table(sce$Cluster)
 
 ```
 ## 
-##   1   2   3   4   5   6   7   8   9  10  11  12  13 
-## 490 505 445 481  24 354  74  52 191  39  33  59  25
+##   1   2   3   4   5   6   7   8   9  10  11  12 
+## 788 470 295 550  24  79  89 328  52  39  33  25
 ```
 
 We visualize the clustering on a _t_-SNE plot [@van2008visualizing].
@@ -281,49 +281,51 @@ dbl.out
 ```
 
 ```
-## DataFrame with 13 rows and 9 columns
+## DataFrame with 12 rows and 9 columns
 ##         source1     source2         N        best              p.value
 ##     <character> <character> <integer> <character>            <numeric>
-## 7            12           6         0       Fabp3   0.0533315577969168
-## 2             7           3        15        Xist 1.55078432565813e-10
-## 12            5           1        31         Ptn 7.73976261463573e-16
-## 9             6           3        54       Plet1 5.71386767999541e-12
-## 6             7           5        75       Cotl1 8.83774748081932e-09
+## 7             3           2         0        Adal                    1
+## 6             5           2        31         Ptn 4.27308775063701e-10
+## 3             8           4        52      Malat1 1.61630002314031e-10
+## 1            12           4        69        Xist 2.18085859039006e-18
+## 8             7           5        78       Cotl1 8.10347268561654e-09
 ## ...         ...         ...       ...         ...                  ...
-## 13           10           5       197       Epcam 4.90533186350571e-20
-## 3             5           2       199       Abcg2 2.67654255078785e-15
-## 8            10           5       270    AF251705   3.296606994399e-24
+## 12           10           5       197       Epcam 4.90533186350571e-20
+## 9            10           5       270    AF251705   3.296606994399e-24
+## 4             5           3       293        Cd36  8.2051764208102e-68
 ## 11           10           5       300       Fabp4 2.70725398963721e-32
-## 10           13          11       388         Dcn 4.93706079643116e-32
+## 10           12          11       388         Dcn 4.93706079643116e-32
 ##             lib.size1         lib.size2                prop
 ##             <numeric>         <numeric>           <numeric>
-## 7    0.46406852248394 0.613704496788009  0.0266955266955267
-## 2   0.753809400826446  0.88100464876033   0.182178932178932
-## 12  0.997323735695829  1.19878183831672  0.0212842712842713
-## 9   0.606381178063643  1.15479011509817  0.0689033189033189
-## 6    1.62944870900209 0.754152128401954   0.127705627705628
+## 7    1.48444295751087 0.539478086316494  0.0321067821067821
+## 6   0.961305817470201  1.14748265433197  0.0284992784992785
+## 3   0.420582600856435 0.830685147622267   0.106421356421356
+## 1   0.679431679431679  1.63647463647464   0.284271284271284
+## 8    1.60171478330766 0.723893093978163   0.118326118326118
 ## ...               ...               ...                 ...
-## 13  0.882698905407613 0.882780591406633 0.00901875901875902
-## 3   0.396005862953463  1.13506779039941   0.160533910533911
-## 8   0.856192060850963 0.856271293875287  0.0187590187590188
+## 12  0.882698905407613 0.882780591406633 0.00901875901875902
+## 9   0.856192060850963 0.856271293875287  0.0187590187590188
+## 4   0.366512921386421  1.20382554432612   0.198412698412698
 ## 11  0.666050295857988 0.666111932938856  0.0119047619047619
 ## 10   1.13288913566537  1.50138811771238  0.0140692640692641
-##                                       all.pairs
-##                                 <DataFrameList>
-## 7            12:6:0:...,9:1:2:...,2:1:3:...,...
-## 2         7:3:15:...,6:3:38:...,13:3:46:...,...
-## 12     5:1:31:...,11:1:115:...,13:1:132:...,...
-## 9        6:3:54:...,7:3:125:...,7:5:177:...,...
-## 6        7:5:75:...,9:5:95:...,13:9:120:...,...
-## ...                                         ...
-## 13     10:5:197:...,5:4:220:...,7:5:236:...,...
-## 3     5:2:199:...,12:2:205:...,13:9:215:...,...
-## 8    10:5:270:...,11:5:338:...,13:5:366:...,...
-## 11   10:5:300:...,13:10:329:...,5:1:335:...,...
-## 10  13:11:388:...,11:8:403:...,12:8:416:...,...
+##                                      all.pairs
+##                                <DataFrameList>
+## 7            3:2:0:...,2:1:5:...,8:6:9:...,...
+## 6       5:2:31:...,11:2:77:...,4:2:131:...,...
+## 3       8:4:52:...,7:4:96:...,12:4:213:...,...
+## 1     12:4:69:...,5:4:118:...,11:4:144:...,...
+## 8       7:5:78:...,5:3:96:...,12:7:145:...,...
+## ...                                        ...
+## 12    10:5:197:...,5:1:240:...,7:5:240:...,...
+## 9   10:5:270:...,11:5:338:...,12:5:366:...,...
+## 4     5:3:293:...,12:3:327:...,6:3:519:...,...
+## 11  10:5:300:...,12:10:329:...,5:2:336:...,...
+## 10  12:11:388:...,11:9:403:...,9:6:437:...,...
 ```
 
-Examination of the output of `doubletCluster()` indicates that cluster 6 has the fewest unique genes and library sizes that are comparable to or greater than its parents.
+
+
+Examination of the output of `doubletCluster()` indicates that cluster 7 has the fewest unique genes and library sizes that are comparable to or greater than its parents.
 We see that every gene detected in this cluster is also expressed in either of the two proposed parent clusters (Figure \@ref(fig:heatclust)).
 
 
@@ -402,7 +404,7 @@ summary(dbl.dens)
 
 ```
 ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-## 0.00000 0.01682 0.06640 0.15185 0.12808 8.35571
+## 0.00000 0.01777 0.07082 0.14960 0.13231 7.82726
 ```
 
 The highest doublet scores are concentrated in a single cluster of cells in the centre of Figure \@ref(fig:denstsne).
@@ -507,50 +509,60 @@ sessionInfo()
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] scran_1.11.1                          
-##  [2] TxDb.Mmusculus.UCSC.mm10.ensGene_3.4.0
-##  [3] GenomicFeatures_1.35.1                
-##  [4] AnnotationDbi_1.45.0                  
-##  [5] Matrix_1.2-15                         
-##  [6] scater_1.11.2                         
-##  [7] ggplot2_3.1.0                         
-##  [8] SingleCellExperiment_1.5.0            
-##  [9] SummarizedExperiment_1.13.0           
-## [10] DelayedArray_0.9.0                    
-## [11] BiocParallel_1.17.1                   
-## [12] matrixStats_0.54.0                    
-## [13] Biobase_2.43.0                        
-## [14] GenomicRanges_1.35.1                  
-## [15] GenomeInfoDb_1.19.0                   
-## [16] IRanges_2.17.1                        
-## [17] S4Vectors_0.21.3                      
-## [18] BiocGenerics_0.29.1                   
-## [19] bindrcpp_0.2.2                        
-## [20] BiocFileCache_1.7.0                   
-## [21] dbplyr_1.2.2                          
-## [22] knitr_1.20                            
-## [23] BiocStyle_2.11.0                      
+##  [1] Matrix_1.2-15                         
+##  [2] org.Hs.eg.db_3.7.0                    
+##  [3] EnsDb.Hsapiens.v86_2.99.0             
+##  [4] ensembldb_2.7.2                       
+##  [5] AnnotationFilter_1.7.0                
+##  [6] DropletUtils_1.3.1                    
+##  [7] pheatmap_1.0.10                       
+##  [8] cluster_2.0.7-1                       
+##  [9] dynamicTreeCut_1.63-1                 
+## [10] limma_3.39.1                          
+## [11] scran_1.11.4                          
+## [12] scater_1.11.2                         
+## [13] ggplot2_3.1.0                         
+## [14] TxDb.Mmusculus.UCSC.mm10.ensGene_3.4.0
+## [15] GenomicFeatures_1.35.1                
+## [16] org.Mm.eg.db_3.7.0                    
+## [17] AnnotationDbi_1.45.0                  
+## [18] SingleCellExperiment_1.5.0            
+## [19] SummarizedExperiment_1.13.0           
+## [20] DelayedArray_0.9.0                    
+## [21] BiocParallel_1.17.1                   
+## [22] matrixStats_0.54.0                    
+## [23] Biobase_2.43.0                        
+## [24] GenomicRanges_1.35.1                  
+## [25] GenomeInfoDb_1.19.1                   
+## [26] IRanges_2.17.1                        
+## [27] S4Vectors_0.21.4                      
+## [28] BiocGenerics_0.29.1                   
+## [29] bindrcpp_0.2.2                        
+## [30] BiocFileCache_1.7.0                   
+## [31] dbplyr_1.2.2                          
+## [32] knitr_1.20                            
+## [33] BiocStyle_2.11.0                      
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] bitops_1.0-6             bit64_0.9-7             
-##  [3] RColorBrewer_1.1-2       progress_1.2.0          
-##  [5] httr_1.3.1               rprojroot_1.3-2         
-##  [7] dynamicTreeCut_1.63-1    tools_3.6.0             
+##  [1] ProtGenerics_1.15.0      bitops_1.0-6            
+##  [3] bit64_0.9-7              RColorBrewer_1.1-2      
+##  [5] progress_1.2.0           httr_1.3.1              
+##  [7] rprojroot_1.3-2          tools_3.6.0             
 ##  [9] backports_1.1.2          irlba_2.3.3             
-## [11] R6_2.3.0                 HDF5Array_1.11.0        
-## [13] vipor_0.4.5              DBI_1.0.0               
-## [15] lazyeval_0.2.1           colorspace_1.3-2        
-## [17] withr_2.1.2              tidyselect_0.2.5        
-## [19] gridExtra_2.3            prettyunits_1.0.2       
-## [21] bit_1.1-14               curl_3.2                
-## [23] compiler_3.6.0           BiocNeighbors_1.1.1     
-## [25] labeling_0.3             rtracklayer_1.43.0      
-## [27] bookdown_0.7             scales_1.0.0            
-## [29] rappdirs_0.3.1           stringr_1.3.1           
-## [31] digest_0.6.18            Rsamtools_1.35.0        
-## [33] rmarkdown_1.10           XVector_0.23.0          
-## [35] pkgconfig_2.0.2          htmltools_0.3.6         
-## [37] highr_0.7                limma_3.39.1            
+## [11] R6_2.3.0                 KernSmooth_2.23-15      
+## [13] HDF5Array_1.11.0         vipor_0.4.5             
+## [15] DBI_1.0.0                lazyeval_0.2.1          
+## [17] colorspace_1.3-2         withr_2.1.2             
+## [19] tidyselect_0.2.5         gridExtra_2.3           
+## [21] prettyunits_1.0.2        bit_1.1-14              
+## [23] curl_3.2                 compiler_3.6.0          
+## [25] BiocNeighbors_1.1.1      rtracklayer_1.43.0      
+## [27] labeling_0.3             bookdown_0.7            
+## [29] scales_1.0.0             rappdirs_0.3.1          
+## [31] stringr_1.3.1            digest_0.6.18           
+## [33] Rsamtools_1.35.0         rmarkdown_1.10          
+## [35] XVector_0.23.0           pkgconfig_2.0.2         
+## [37] htmltools_0.3.6          highr_0.7               
 ## [39] rlang_0.3.0.1            RSQLite_2.1.1           
 ## [41] DelayedMatrixStats_1.5.0 bindr_0.1.1             
 ## [43] dplyr_0.7.8              RCurl_1.95-4.11         
@@ -560,21 +572,20 @@ sessionInfo()
 ## [51] viridis_0.5.1            edgeR_3.25.0            
 ## [53] stringi_1.2.4            yaml_2.2.0              
 ## [55] zlibbioc_1.29.0          Rtsne_0.15              
-## [57] rhdf5_2.27.0             plyr_1.8.4              
+## [57] rhdf5_2.27.1             plyr_1.8.4              
 ## [59] grid_3.6.0               blob_1.1.1              
 ## [61] crayon_1.3.4             lattice_0.20-38         
-## [63] cowplot_0.9.3            Biostrings_2.51.1       
+## [63] Biostrings_2.51.1        cowplot_0.9.3           
 ## [65] hms_0.4.2                locfit_1.5-9.1          
 ## [67] pillar_1.3.0             igraph_1.2.2            
 ## [69] reshape2_1.4.3           biomaRt_2.39.2          
 ## [71] XML_3.98-1.16            glue_1.3.0              
-## [73] evaluate_0.12            BiocManager_1.30.3      
+## [73] evaluate_0.12            BiocManager_1.30.4      
 ## [75] gtable_0.2.0             purrr_0.2.5             
 ## [77] assertthat_0.2.0         xfun_0.4                
-## [79] viridisLite_0.3.0        pheatmap_1.0.10         
-## [81] tibble_1.4.2             GenomicAlignments_1.19.0
-## [83] beeswarm_0.2.3           memoise_1.1.0           
-## [85] statmod_1.4.30
+## [79] viridisLite_0.3.0        tibble_1.4.2            
+## [81] GenomicAlignments_1.19.0 beeswarm_0.2.3          
+## [83] memoise_1.1.0            statmod_1.4.30
 ```
 
 # References

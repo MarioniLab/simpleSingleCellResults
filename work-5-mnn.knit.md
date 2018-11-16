@@ -5,7 +5,7 @@ author:
   affiliation: Cancer Research UK Cambridge Institute, Li Ka Shing Centre, Robinson Way, Cambridge CB2 0RE, United Kingdom
 - name: Michael D. Morgan
   affiliation: Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
-date: "2018-11-12"
+date: "2018-11-16"
 vignette: >
   %\VignetteIndexEntry{05. Correcting batch effects}
   %\VignetteEngine{knitr::rmarkdown}
@@ -209,8 +209,8 @@ summary(sizeFactors(sce.gse81076))
 ```
 
 ```
-##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
-## 0.004797 0.440416 0.807623 1.000000 1.286949 9.280160
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+## 0.00469 0.42318 0.78835 1.00000 1.29216 8.62289
 ```
 
 We also compute size factors for the spike-in transcripts [@lun2017assessing].
@@ -274,20 +274,20 @@ head(dec.gse81076)
 ## DataFrame with 6 rows and 7 columns
 ##                             mean            total              bio
 ##                        <numeric>        <numeric>        <numeric>
-## ENSG00000254647  2.8315946130622  6.2596290686524 5.81587020560901
-## ENSG00000129965 1.87947594849805 5.92808498218961 5.48117348134824
-## ENSG00000115263 4.00591811511895  5.6071321059754 5.37347066043404
-## ENSG00000118271 3.65355239239685 5.57990280860774 5.27673546676465
-## ENSG00000115386  4.2324178932757 5.30725666845641 5.07174900715163
-## ENSG00000164266 3.02571891798823 5.33519541789068 4.92744504455445
+## ENSG00000254647 2.84354986788675 6.37223658453819 5.92885912197339
+## ENSG00000129965 1.88950987335824 6.02281611785607 5.57524591788433
+## ENSG00000115263 4.02102813554184 5.79923366454836 5.56593885619407
+## ENSG00000118271 3.67285962325439 5.80023170033878 5.49885083587672
+## ENSG00000115386 4.24317140825674 5.41270206612667 5.17694035036249
+## ENSG00000164266 3.03649146616406 5.43074151343319 5.02327614710772
 ##                              tech   p.value       FDR      Symbol
 ##                         <numeric> <numeric> <numeric> <character>
-## ENSG00000254647 0.443758863043396         0         0         INS
-## ENSG00000129965 0.446911500841377         0         0    INS-IGF2
-## ENSG00000115263 0.233661445541363         0         0         GCG
-## ENSG00000118271 0.303167341843091         0         0         TTR
-## ENSG00000115386  0.23550766130478         0         0       REG1A
-## ENSG00000164266 0.407750373336234         0         0      SPINK1
+## ENSG00000254647 0.443377462564809         0         0         INS
+## ENSG00000129965 0.447570199971736         0         0    INS-IGF2
+## ENSG00000115263  0.23329480835429         0         0         GCG
+## ENSG00000118271 0.301380864462058         0         0         TTR
+## ENSG00000115386 0.235761715764185         0         0       REG1A
+## ENSG00000164266 0.407465366325469         0         0      SPINK1
 ```
 
 
@@ -456,8 +456,8 @@ summary(sizeFactors(sce.gse85241))
 ```
 
 ```
-##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
-##  0.08781  0.54199  0.82370  1.00000  1.20927 14.62804
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##  0.0878  0.5442  0.8263  1.0000  1.2127 14.6260
 ```
 
 ```r
@@ -510,20 +510,20 @@ head(dec.gse85241)
 ## DataFrame with 6 rows and 7 columns
 ##                             mean            total              bio
 ##                        <numeric>        <numeric>        <numeric>
-## ENSG00000115263 7.66003207157013 6.60608067784105 6.57724910054942
-## ENSG00000089199 4.61685279306714 6.41804768924804 6.29619001544472
-## ENSG00000169903 3.01128842066828 6.54094414730894  6.1862434211445
-## ENSG00000254647  2.0013260514004 6.43822327257484  5.8819664642318
-## ENSG00000118271 7.33285228939114 5.74887333002641    5.71739998213
-## ENSG00000171951 4.18578714304079 5.56415881217284 5.39929147665404
+## ENSG00000115263 7.65841710442871  6.5830512952663 6.55421179060075
+## ENSG00000089199 4.61402548649295 6.40161547541309 6.27960849217962
+## ENSG00000169903 3.00902736622973 6.52426016019893 6.16908131917692
+## ENSG00000254647 1.99894035399136 6.41255303005657 5.85584323627252
+## ENSG00000118271  7.3311379562758 5.71978094825155 5.68830339385946
+## ENSG00000171951 4.18265117704755 5.54705848250118 5.38194664056256
 ##                               tech   p.value       FDR      Symbol
 ##                          <numeric> <numeric> <numeric> <character>
-## ENSG00000115263 0.0288315772916207         0         0         GCG
-## ENSG00000089199  0.121857673803328         0         0        CHGB
-## ENSG00000169903  0.354700726164439         0         0      TM4SF4
-## ENSG00000254647  0.556256808343033         0         0         INS
-## ENSG00000118271 0.0314733478964127         0         0         TTR
-## ENSG00000171951  0.164867335518797         0         0        SCG2
+## ENSG00000115263 0.0288395046655466         0         0         GCG
+## ENSG00000089199  0.122006983233466         0         0        CHGB
+## ENSG00000169903  0.355178841022013         0         0      TM4SF4
+## ENSG00000254647  0.556709793784048         0         0         INS
+## ENSG00000118271 0.0314775543920864         0         0         TTR
+## ENSG00000171951  0.165111841938628         0         0        SCG2
 ```
 
 
@@ -558,7 +558,7 @@ length(chosen)
 ```
 
 ```
-## [1] 14643
+## [1] 14749
 ```
 
 We also rescale each batch to adjust for differences in sequencing depth between batches.
@@ -957,10 +957,10 @@ sce
 
 ```
 ## class: SingleCellExperiment 
-## dim: 14643 3638 
+## dim: 14749 3638 
 ## metadata(0):
 ## assays(1): logcounts
-## rownames(14643): GCG CHGB ... MRPS7 C8orf59
+## rownames(14749): GCG CHGB ... MRPS7 C8orf59
 ## rowData names(2): ENSEMBL SYMBOL
 ## colnames(3638): D2ex_1 D2ex_2 ... D30.8_93 D30.8_94
 ## colData names(1): Batch
@@ -1029,7 +1029,7 @@ with.var$lost.var
 ```
 
 ```
-## [1] 0.009517512 0.012948079
+## [1] 0.009670787 0.013030252
 ```
 
 Large proportions of lost variance suggest that correction is removing genuine biological heterogeneity.
@@ -1053,22 +1053,18 @@ table(clusters$membership, sce$Batch)
 ```
 ##     
 ##      GSE81076 GSE85241
-##   1       345      261
-##   2       138        7
-##   3       218      241
-##   4        64      196
-##   5        25      108
-##   6       111      399
-##   7       115      110
-##   8       102      741
-##   9        22      126
-##   10       63       79
-##   11       21       35
-##   12       21        0
-##   13       32        0
-##   14        0       18
-##   15        8        4
-##   16        7       21
+##   1        72        1
+##   2       308      281
+##   3       357      259
+##   4       222      852
+##   5        65      198
+##   6       139      390
+##   7        25      108
+##   8        22      127
+##   9        67       87
+##   10        0       18
+##   11        8        4
+##   12        7       21
 ```
 
 Figure \@ref(fig:tsne-cluster) shows strong correspondence between the cluster labels and separation in _t_-SNE space.
@@ -1093,45 +1089,43 @@ This will perform all comparisons between clusters _within_ each batch, and then
 ```r
 m.out <- findMarkers(sce, clusters$membership, block=sce$Batch,
     direction="up")        
-demo <- m.out[["7"]] # looking at cluster 7 (probably alpha cells).
+demo <- m.out[["4"]] # probably alpha cells.
 demo <- demo[demo$Top <= 5,]
 as.data.frame(demo[,1:3]) # only first three columns for brevity.
 ```
 
 ```
-##          Top       p.value           FDR
-## TTR        1  0.000000e+00  0.000000e+00
-## GCG        1 1.009541e-280 7.391354e-277
-## SCG5       1 4.471081e-227 2.182335e-223
-## TM4SF4     1 1.149011e-156 2.403566e-153
-## MAFB       1 5.726811e-116 5.590513e-113
-## GC         1 2.387159e-100  1.747758e-97
-## PAX6       1  5.235013e-95  3.484377e-92
-## SLC22A17   1  4.444044e-66  1.587174e-63
-## PCSK2      2 7.593158e-195 2.779665e-191
-## PAM        2  1.016146e-94  6.469314e-92
-## PTPRN2     2  9.749206e-81  4.922677e-78
-## IRX2       2  8.868004e-68  3.329595e-65
-## MAB21L3    2  8.969907e-42  1.368191e-39
-## ALDH1A1    3 1.138401e-167 2.778268e-164
-## SCG2       3 9.554272e-144 1.554480e-140
-## NEUROD1    3  5.063625e-86  2.851795e-83
-## CRYBA2     3  2.266538e-85  1.229219e-82
-## SCG3       3  7.252348e-77  3.318629e-74
-## FXYD6      3  8.495386e-56  2.261781e-53
-## KCNQ1OT1   3  2.369656e-39  3.070696e-37
-## CPE        4 1.079108e-194 3.160277e-191
-## SLC7A2     4 3.360871e-128 4.101103e-125
-## PTPRN      4  1.977977e-81  1.034411e-78
-## PPP1R1A    4  1.085000e-75  4.814439e-73
-## SYT7       4  4.133184e-58  1.186710e-55
-## COX8A      4  2.355309e-54  6.050664e-52
-## UGDH-AS1   4  1.007988e-25  6.099161e-24
-## CLU        5 1.669017e-122 1.745672e-119
-## VGF        5 6.917721e-103 5.627566e-100
-## FAP        5  3.664490e-64  1.219526e-61
-## KCTD12     5  8.673994e-64  2.822518e-61
-## PLK2       5  1.804584e-34  1.785441e-32
+##         Top       p.value           FDR
+## TM4SF4    1  0.000000e+00  0.000000e+00
+## PAX6      1  0.000000e+00  0.000000e+00
+## SCG2      1  0.000000e+00  0.000000e+00
+## PPP1R1A   1  0.000000e+00  0.000000e+00
+## IRX2      1  0.000000e+00  0.000000e+00
+## FAP       1  0.000000e+00  0.000000e+00
+## CNTN1     1  0.000000e+00  0.000000e+00
+## ARX       1  0.000000e+00  0.000000e+00
+## PTPRN     2  0.000000e+00  0.000000e+00
+## CHGB      2  0.000000e+00  0.000000e+00
+## GC        2  0.000000e+00  0.000000e+00
+## PAM       2  0.000000e+00  0.000000e+00
+## CRYBA2    2  0.000000e+00  0.000000e+00
+## SYT7      2  0.000000e+00  0.000000e+00
+## LOXL4     2 1.460814e-289 2.872740e-287
+## CPE       3  0.000000e+00  0.000000e+00
+## TTR       3  0.000000e+00  0.000000e+00
+## SCG5      3  0.000000e+00  0.000000e+00
+## SEZ6L2    3  0.000000e+00  0.000000e+00
+## TPD52     3  0.000000e+00  0.000000e+00
+## PLCE1     3 1.777919e-192 1.507042e-190
+## MAFB      4  0.000000e+00  0.000000e+00
+## SCGN      4  0.000000e+00  0.000000e+00
+## GCG       4  0.000000e+00  0.000000e+00
+## PTPRN2    4  0.000000e+00  0.000000e+00
+## RAB3B     4  0.000000e+00  0.000000e+00
+## SLC38A4   4  0.000000e+00  0.000000e+00
+## RCAN2     4 6.174972e-283 1.124379e-280
+## DDR1      5  0.000000e+00  0.000000e+00
+## CFC1      5 5.010538e-262 7.316874e-260
 ```
 
 
@@ -1191,57 +1185,83 @@ sessionInfo()
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] scran_1.11.1                scater_1.11.2              
-##  [3] ggplot2_3.1.0               SingleCellExperiment_1.5.0 
-##  [5] SummarizedExperiment_1.13.0 DelayedArray_0.9.0         
-##  [7] BiocParallel_1.17.1         matrixStats_0.54.0         
-##  [9] GenomicRanges_1.35.1        GenomeInfoDb_1.19.0        
-## [11] org.Hs.eg.db_3.7.0          AnnotationDbi_1.45.0       
-## [13] IRanges_2.17.1              S4Vectors_0.21.3           
-## [15] Biobase_2.43.0              BiocGenerics_0.29.1        
-## [17] bindrcpp_0.2.2              BiocFileCache_1.7.0        
-## [19] dbplyr_1.2.2                knitr_1.20                 
-## [21] BiocStyle_2.11.0           
+##  [1] org.Hs.eg.db_3.7.0                    
+##  [2] EnsDb.Hsapiens.v86_2.99.0             
+##  [3] ensembldb_2.7.2                       
+##  [4] AnnotationFilter_1.7.0                
+##  [5] DropletUtils_1.3.1                    
+##  [6] pheatmap_1.0.10                       
+##  [7] cluster_2.0.7-1                       
+##  [8] dynamicTreeCut_1.63-1                 
+##  [9] limma_3.39.1                          
+## [10] scran_1.11.4                          
+## [11] scater_1.11.2                         
+## [12] ggplot2_3.1.0                         
+## [13] TxDb.Mmusculus.UCSC.mm10.ensGene_3.4.0
+## [14] GenomicFeatures_1.35.1                
+## [15] org.Mm.eg.db_3.7.0                    
+## [16] AnnotationDbi_1.45.0                  
+## [17] SingleCellExperiment_1.5.0            
+## [18] SummarizedExperiment_1.13.0           
+## [19] DelayedArray_0.9.0                    
+## [20] BiocParallel_1.17.1                   
+## [21] matrixStats_0.54.0                    
+## [22] Biobase_2.43.0                        
+## [23] GenomicRanges_1.35.1                  
+## [24] GenomeInfoDb_1.19.1                   
+## [25] IRanges_2.17.1                        
+## [26] S4Vectors_0.21.4                      
+## [27] BiocGenerics_0.29.1                   
+## [28] bindrcpp_0.2.2                        
+## [29] BiocFileCache_1.7.0                   
+## [30] dbplyr_1.2.2                          
+## [31] knitr_1.20                            
+## [32] BiocStyle_2.11.0                      
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] dynamicTreeCut_1.63-1    viridis_0.5.1           
-##  [3] httr_1.3.1               edgeR_3.25.0            
-##  [5] bit64_0.9-7              viridisLite_0.3.0       
-##  [7] DelayedMatrixStats_1.5.0 assertthat_0.2.0        
-##  [9] statmod_1.4.30           highr_0.7               
-## [11] BiocManager_1.30.3       blob_1.1.1              
-## [13] vipor_0.4.5              GenomeInfoDbData_1.2.0  
-## [15] yaml_2.2.0               pillar_1.3.0            
-## [17] RSQLite_2.1.1            backports_1.1.2         
-## [19] lattice_0.20-38          limma_3.39.1            
-## [21] glue_1.3.0               digest_0.6.18           
-## [23] XVector_0.23.0           colorspace_1.3-2        
-## [25] cowplot_0.9.3            htmltools_0.3.6         
-## [27] Matrix_1.2-15            plyr_1.8.4              
-## [29] pkgconfig_2.0.2          bookdown_0.7            
-## [31] zlibbioc_1.29.0          purrr_0.2.5             
-## [33] scales_1.0.0             HDF5Array_1.11.0        
-## [35] Rtsne_0.15               tibble_1.4.2            
-## [37] withr_2.1.2              lazyeval_0.2.1          
-## [39] magrittr_1.5             crayon_1.3.4            
-## [41] memoise_1.1.0            evaluate_0.12           
-## [43] beeswarm_0.2.3           tools_3.6.0             
-## [45] stringr_1.3.1            Rhdf5lib_1.5.0          
-## [47] locfit_1.5-9.1           munsell_0.5.0           
-## [49] irlba_2.3.3              compiler_3.6.0          
-## [51] rlang_0.3.0.1            rhdf5_2.27.0            
-## [53] grid_3.6.0               RCurl_1.95-4.11         
-## [55] BiocNeighbors_1.1.1      rappdirs_0.3.1          
-## [57] igraph_1.2.2             labeling_0.3            
-## [59] bitops_1.0-6             rmarkdown_1.10          
-## [61] gtable_0.2.0             DBI_1.0.0               
-## [63] curl_3.2                 reshape2_1.4.3          
-## [65] R6_2.3.0                 gridExtra_2.3           
-## [67] dplyr_0.7.8              bit_1.1-14              
-## [69] bindr_0.1.1              rprojroot_1.3-2         
-## [71] stringi_1.2.4            ggbeeswarm_0.6.0        
-## [73] Rcpp_1.0.0               tidyselect_0.2.5        
-## [75] xfun_0.4
+##  [1] ProtGenerics_1.15.0      bitops_1.0-6            
+##  [3] bit64_0.9-7              RColorBrewer_1.1-2      
+##  [5] progress_1.2.0           httr_1.3.1              
+##  [7] rprojroot_1.3-2          tools_3.6.0             
+##  [9] backports_1.1.2          irlba_2.3.3             
+## [11] R6_2.3.0                 KernSmooth_2.23-15      
+## [13] HDF5Array_1.11.0         vipor_0.4.5             
+## [15] DBI_1.0.0                lazyeval_0.2.1          
+## [17] colorspace_1.3-2         withr_2.1.2             
+## [19] tidyselect_0.2.5         gridExtra_2.3           
+## [21] prettyunits_1.0.2        bit_1.1-14              
+## [23] curl_3.2                 compiler_3.6.0          
+## [25] BiocNeighbors_1.1.1      rtracklayer_1.43.0      
+## [27] labeling_0.3             bookdown_0.7            
+## [29] scales_1.0.0             rappdirs_0.3.1          
+## [31] stringr_1.3.1            digest_0.6.18           
+## [33] Rsamtools_1.35.0         rmarkdown_1.10          
+## [35] XVector_0.23.0           pkgconfig_2.0.2         
+## [37] htmltools_0.3.6          highr_0.7               
+## [39] rlang_0.3.0.1            RSQLite_2.1.1           
+## [41] DelayedMatrixStats_1.5.0 bindr_0.1.1             
+## [43] dplyr_0.7.8              RCurl_1.95-4.11         
+## [45] magrittr_1.5             GenomeInfoDbData_1.2.0  
+## [47] Matrix_1.2-15            Rcpp_1.0.0              
+## [49] ggbeeswarm_0.6.0         munsell_0.5.0           
+## [51] Rhdf5lib_1.5.0           viridis_0.5.1           
+## [53] edgeR_3.25.0             stringi_1.2.4           
+## [55] yaml_2.2.0               zlibbioc_1.29.0         
+## [57] Rtsne_0.15               rhdf5_2.27.1            
+## [59] plyr_1.8.4               grid_3.6.0              
+## [61] blob_1.1.1               crayon_1.3.4            
+## [63] lattice_0.20-38          Biostrings_2.51.1       
+## [65] cowplot_0.9.3            hms_0.4.2               
+## [67] locfit_1.5-9.1           pillar_1.3.0            
+## [69] igraph_1.2.2             reshape2_1.4.3          
+## [71] biomaRt_2.39.2           XML_3.98-1.16           
+## [73] glue_1.3.0               evaluate_0.12           
+## [75] BiocManager_1.30.4       gtable_0.2.0            
+## [77] purrr_0.2.5              assertthat_0.2.0        
+## [79] xfun_0.4                 viridisLite_0.3.0       
+## [81] tibble_1.4.2             GenomicAlignments_1.19.0
+## [83] beeswarm_0.2.3           memoise_1.1.0           
+## [85] statmod_1.4.30
 ```
 
 # References

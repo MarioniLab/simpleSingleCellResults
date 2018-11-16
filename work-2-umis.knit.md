@@ -12,7 +12,7 @@ author:
   - *CRUK
   - *EMBL
   - Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
-date: "2018-11-11"
+date: "2018-11-16"
 vignette: >
   %\VignetteIndexEntry{03. UMI count data}
   %\VignetteEngine{knitr::rmarkdown}
@@ -325,7 +325,7 @@ summary(sizeFactors(sce))
 
 ```
 ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-##  0.1204  0.4386  0.8055  1.0000  1.3347  5.2532
+##  0.1286  0.4615  0.8105  1.0000  1.3221  4.8475
 ```
 
 Compared to the 416B analysis, more scatter is observed around the trend between the total count and size factor for each cell (Figure \@ref(fig:normplotbrain)).
@@ -507,7 +507,7 @@ table(my.clusters)
 ```
 ## my.clusters
 ##   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16 
-## 105 188 237 146 187 436 637  74 174 373  17  92 208  52  36  27
+## 103 200 234 191 194 355 161 658 384  85  90  16 209  38  45  26
 ```
 
 We visualize the cluster assignments for all cells on the _t_-SNE plot in Figure \@ref(fig:tsneclusterbrain).
@@ -570,7 +570,7 @@ igraph::modularity(cluster.out)
 ```
 
 ```
-## [1] 0.7587211
+## [1] 0.7589898
 ```
 
 We further investigate the clusters by examining the total weight of edges for each pair of clusters.
@@ -619,9 +619,11 @@ We use the ratio instead as this is guaranteed to be positive and does not exhib
 
 # Detecting marker genes between subpopulations
 
+
+
 We use the `findMarkers` function with `direction="up"` to identify upregulated marker genes for each cluster.
 As previously mentioned, we focus on upregulated genes as these can quickly provide positive identification of cell type in a heterogeneous population.
-We examine the table for cluster 2, in which log-fold changes are reported between cluster 2 and every other cluster.
+We examine the table for cluster 4, in which log-fold changes are reported between cluster 4 and every other cluster.
 The same output is provided for each cluster in order to identify genes that discriminate between clusters.
 
 
@@ -629,7 +631,7 @@ The same output is provided for each cluster in order to identify genes that dis
 
 ```r
 markers <- findMarkers(sce, my.clusters, direction="up")
-marker.set <- markers[["2"]]
+marker.set <- markers[["4"]]
 head(marker.set[,1:8], 10) # only first 8 columns, for brevity
 ```
 
@@ -637,40 +639,40 @@ head(marker.set[,1:8], 10) # only first 8 columns, for brevity
 ## DataFrame with 10 rows and 8 columns
 ##               Top               p.value                   FDR
 ##         <integer>             <numeric>             <numeric>
-## Snap25          1 1.01483368844317e-258 2.01312558776466e-254
-## Stmn3           1 2.02524374814998e-197 1.00436900580125e-193
-## Mllt11          1 2.85253694659373e-190 1.13171550819158e-186
-## Gad1            1 1.13712885201787e-171 2.81965312968488e-168
-## Atp1a3          1  8.3043332401385e-165 1.47210857988608e-161
-## Celf4           1 1.64035930551258e-157 2.32427196738949e-154
-## Gad2            1 3.09283115653509e-149 2.92154722153269e-146
-## Rab3a           1 6.81062481761115e-128 4.50341215023169e-125
-## Synpr           1  7.62134420253374e-77  1.04989308990043e-74
-## Slc32a1         1    3.784705155763e-65  3.27848018230879e-63
-##                   logFC.1          logFC.3           logFC.4
-##                 <numeric>        <numeric>         <numeric>
-## Snap25   1.40036143326775 3.72856037733635 0.423671549898574
-## Stmn3    1.91553152267369 4.26106123255564  0.82298050186912
-## Mllt11    1.6641519787992 3.04801063488452  1.02085372814965
-## Gad1     3.96690835279317 4.03362399116257  3.66033788978809
-## Atp1a3  0.153758693063991 3.32013592378228  1.17659913588203
-## Celf4   0.592500776262102 2.75872337230658 0.772813334450241
-## Gad2      3.5254446633584 3.68709410150589   3.3818917001511
-## Rab3a   0.723958269926801 2.71472942790257 0.900160459245324
-## Synpr    3.25438462171639 3.31729733443417  2.75648820522219
-## Slc32a1  1.70302090039396 1.79613445252764   1.6802189543607
-##                     logFC.5            logFC.6
-##                   <numeric>          <numeric>
-## Snap25   -0.257397576897453   0.90784957778213
-## Stmn3     0.613303762702424  0.773473121669699
-## Mllt11    0.514809688829429  0.735146293212324
-## Gad1       4.21166514157818   4.13671704351652
-## Atp1a3    0.615119756969472 0.0614607306872879
-## Celf4   -0.0306245806293837   0.35796022111721
-## Gad2       3.84631827238684   3.80624864612358
-## Rab3a   -0.0121238008474802  0.373978976302593
-## Synpr      3.12885743056999   3.29660263997927
-## Slc32a1    1.80232083856807   1.78668731685636
+## Snap25          1  2.6436828195046e-260 5.24427360905115e-256
+## Mllt11          1 2.64835618578792e-189 1.05070883314949e-185
+## Gad1            1 6.21481316278381e-174 1.54104060887682e-170
+## Atp1a3          1 2.42819725183299e-171 5.35201654273444e-168
+## Celf4           1  2.1901645927764e-161 2.89641966846033e-158
+## Rcan2           1  4.64612038923461e-99  1.35536897295951e-96
+## Synpr           1  4.34116077754636e-75  5.66550041738068e-73
+## Slc32a1         1  1.84158661555892e-65  1.63818626425301e-63
+## Ndrg4           2 2.35144138055514e-242 2.33227713330369e-238
+## Stmn3           2 6.36954591686139e-195  3.1588170588194e-191
+##                     logFC.1           logFC.2          logFC.3
+##                   <numeric>         <numeric>        <numeric>
+## Snap25      1.2501919230692  0.67652736125569 3.68263627661648
+## Mllt11     1.54667484840171  1.09590198758324 2.99539448469482
+## Gad1       3.91523916973606  3.65238977769234 3.98295747045627
+## Atp1a3  0.00896823664721724 0.962530545122529 3.26123555545746
+## Celf4      0.44643142748766 0.740188939705178 2.71368354840561
+## Rcan2      2.20233550942963  1.69523449324012 1.85629710950148
+## Synpr      3.14964318830122  2.80066779182528 3.23587929298924
+## Slc32a1    1.64312498454162  1.64133992421794 1.74089829213631
+## Ndrg4      1.00144003064511  1.20871495924897 3.67086401750027
+## Stmn3      1.77997011413237  1.01476517703874 4.20227407178467
+##                    logFC.5            logFC.6
+##                  <numeric>          <numeric>
+## Snap25  -0.298729905898302  0.717172380132666
+## Mllt11   0.446025722578893  0.495996491073405
+## Gad1       4.1518488345932   4.13283704263783
+## Atp1a3   0.549478199572573 -0.211309991972772
+## Celf4   -0.100730536941031  0.120453982728159
+## Rcan2     1.15269900728503   2.30454808040103
+## Synpr     3.04938017855904   3.25850885734223
+## Slc32a1   1.74737321385146    1.7380206484717
+## Ndrg4      0.3445857243819  0.754609477952267
+## Stmn3    0.546398537343761  0.524932745209836
 ```
 
 
@@ -685,10 +687,10 @@ write.table(marker.set, file=gzout, sep="\t", quote=FALSE, col.names=NA)
 close(gzout)
 ```
 
-Figure \@ref(fig:heatmapmarkerbrain) indicates that most of the top markers are strongly DE in cells of cluster 1 compared to some or all of the other clusters.
-We can use these markers to identify cells from cluster 1 in validation studies with an independent population of cells.
-A quick look at the markers suggest that cluster 1 represents interneurons based on expression of *Gad1* and *Slc6a1* [@zeng2012largescale],
-differing from closely related cells in cluster 10 by virtue of high *Synpr* expression.
+Figure \@ref(fig:heatmapmarkerbrain) indicates that most of the top markers are strongly DE in cells of cluster 4 compared to some or all of the other clusters.
+We can use these markers to identify cells from cluster 4 in validation studies with an independent population of cells.
+A quick look at the markers suggest that cluster 4 represents interneurons based on expression of *Gad1* and *Slc6a1* [@zeng2012largescale],
+differing from closely related cells in cluster 11 by virtue of high *Synpr* expression.
 
 
 ```r
@@ -699,8 +701,8 @@ plotHeatmap(sce, features=top.markers, columns=order(my.clusters),
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/work-2-umis_files/figure-html/heatmapmarkerbrain-1.png" alt="Heatmap of mean-centred and normalized log-expression values for the top set of markers for cluster 1 in the brain dataset. Column colours represent the cluster to which each cell is assigned, as indicated by the legend." width="100%"  class="widefigure" />
-<p class="caption">(\#fig:heatmapmarkerbrain)Heatmap of mean-centred and normalized log-expression values for the top set of markers for cluster 1 in the brain dataset. Column colours represent the cluster to which each cell is assigned, as indicated by the legend.</p>
+<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/work-2-umis_files/figure-html/heatmapmarkerbrain-1.png" alt="Heatmap of mean-centred and normalized log-expression values for the top set of markers for cluster 4 in the brain dataset. Column colours represent the cluster to which each cell is assigned, as indicated by the legend." width="100%"  class="widefigure" />
+<p class="caption">(\#fig:heatmapmarkerbrain)Heatmap of mean-centred and normalized log-expression values for the top set of markers for cluster 4 in the brain dataset. Column colours represent the cluster to which each cell is assigned, as indicated by the legend.</p>
 </div>
 
 # Concluding remarks
@@ -746,57 +748,77 @@ sessionInfo()
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] pheatmap_1.0.10             scran_1.11.1               
-##  [3] scater_1.11.2               ggplot2_3.1.0              
-##  [5] org.Mm.eg.db_3.7.0          AnnotationDbi_1.45.0       
-##  [7] SingleCellExperiment_1.5.0  SummarizedExperiment_1.13.0
-##  [9] DelayedArray_0.9.0          BiocParallel_1.17.1        
-## [11] matrixStats_0.54.0          Biobase_2.43.0             
-## [13] GenomicRanges_1.35.0        GenomeInfoDb_1.19.0        
-## [15] IRanges_2.17.1              S4Vectors_0.21.1           
-## [17] BiocGenerics_0.29.1         bindrcpp_0.2.2             
-## [19] BiocFileCache_1.7.0         dbplyr_1.2.2               
-## [21] knitr_1.20                  BiocStyle_2.11.0           
+##  [1] pheatmap_1.0.10                       
+##  [2] cluster_2.0.7-1                       
+##  [3] dynamicTreeCut_1.63-1                 
+##  [4] limma_3.39.1                          
+##  [5] scran_1.11.4                          
+##  [6] scater_1.11.2                         
+##  [7] ggplot2_3.1.0                         
+##  [8] TxDb.Mmusculus.UCSC.mm10.ensGene_3.4.0
+##  [9] GenomicFeatures_1.35.1                
+## [10] org.Mm.eg.db_3.7.0                    
+## [11] AnnotationDbi_1.45.0                  
+## [12] SingleCellExperiment_1.5.0            
+## [13] SummarizedExperiment_1.13.0           
+## [14] DelayedArray_0.9.0                    
+## [15] BiocParallel_1.17.1                   
+## [16] matrixStats_0.54.0                    
+## [17] Biobase_2.43.0                        
+## [18] GenomicRanges_1.35.1                  
+## [19] GenomeInfoDb_1.19.1                   
+## [20] IRanges_2.17.1                        
+## [21] S4Vectors_0.21.4                      
+## [22] BiocGenerics_0.29.1                   
+## [23] bindrcpp_0.2.2                        
+## [24] BiocFileCache_1.7.0                   
+## [25] dbplyr_1.2.2                          
+## [26] knitr_1.20                            
+## [27] BiocStyle_2.11.0                      
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] bitops_1.0-6             bit64_0.9-7             
-##  [3] RColorBrewer_1.1-2       httr_1.3.1              
-##  [5] rprojroot_1.3-2          dynamicTreeCut_1.63-1   
+##  [3] RColorBrewer_1.1-2       progress_1.2.0          
+##  [5] httr_1.3.1               rprojroot_1.3-2         
 ##  [7] tools_3.6.0              backports_1.1.2         
-##  [9] R6_2.3.0                 irlba_2.3.3             
-## [11] HDF5Array_1.11.0         vipor_0.4.5             
-## [13] DBI_1.0.0                lazyeval_0.2.1          
-## [15] colorspace_1.3-2         withr_2.1.2             
-## [17] tidyselect_0.2.5         gridExtra_2.3           
-## [19] bit_1.1-14               curl_3.2                
-## [21] compiler_3.6.0           BiocNeighbors_1.1.1     
-## [23] labeling_0.3             bookdown_0.7            
-## [25] scales_1.0.0             rappdirs_0.3.1          
-## [27] stringr_1.3.1            digest_0.6.18           
-## [29] rmarkdown_1.10           XVector_0.23.0          
-## [31] pkgconfig_2.0.2          htmltools_0.3.6         
-## [33] limma_3.39.1             highr_0.7               
-## [35] rlang_0.3.0.1            RSQLite_2.1.1           
-## [37] DelayedMatrixStats_1.5.0 bindr_0.1.1             
-## [39] dplyr_0.7.8              RCurl_1.95-4.11         
-## [41] magrittr_1.5             GenomeInfoDbData_1.2.0  
-## [43] Matrix_1.2-15            Rcpp_1.0.0              
-## [45] ggbeeswarm_0.6.0         munsell_0.5.0           
-## [47] Rhdf5lib_1.5.0           viridis_0.5.1           
-## [49] stringi_1.2.4            yaml_2.2.0              
-## [51] edgeR_3.25.0             zlibbioc_1.29.0         
-## [53] rhdf5_2.27.0             Rtsne_0.15              
-## [55] plyr_1.8.4               grid_3.6.0              
-## [57] blob_1.1.1               crayon_1.3.4            
-## [59] lattice_0.20-38          cowplot_0.9.3           
-## [61] locfit_1.5-9.1           pillar_1.3.0            
-## [63] igraph_1.2.2             reshape2_1.4.3          
-## [65] glue_1.3.0               evaluate_0.12           
-## [67] BiocManager_1.30.3       gtable_0.2.0            
-## [69] purrr_0.2.5              assertthat_0.2.0        
-## [71] xfun_0.4                 viridisLite_0.3.0       
-## [73] tibble_1.4.2             beeswarm_0.2.3          
-## [75] memoise_1.1.0            statmod_1.4.30
+##  [9] irlba_2.3.3              R6_2.3.0                
+## [11] KernSmooth_2.23-15       HDF5Array_1.11.0        
+## [13] vipor_0.4.5              DBI_1.0.0               
+## [15] lazyeval_0.2.1           colorspace_1.3-2        
+## [17] withr_2.1.2              tidyselect_0.2.5        
+## [19] gridExtra_2.3            prettyunits_1.0.2       
+## [21] bit_1.1-14               curl_3.2                
+## [23] compiler_3.6.0           BiocNeighbors_1.1.1     
+## [25] rtracklayer_1.43.0       labeling_0.3            
+## [27] bookdown_0.7             scales_1.0.0            
+## [29] rappdirs_0.3.1           stringr_1.3.1           
+## [31] digest_0.6.18            Rsamtools_1.35.0        
+## [33] rmarkdown_1.10           XVector_0.23.0          
+## [35] pkgconfig_2.0.2          htmltools_0.3.6         
+## [37] highr_0.7                rlang_0.3.0.1           
+## [39] RSQLite_2.1.1            DelayedMatrixStats_1.5.0
+## [41] bindr_0.1.1              dplyr_0.7.8             
+## [43] RCurl_1.95-4.11          magrittr_1.5            
+## [45] GenomeInfoDbData_1.2.0   Matrix_1.2-15           
+## [47] Rcpp_1.0.0               ggbeeswarm_0.6.0        
+## [49] munsell_0.5.0            Rhdf5lib_1.5.0          
+## [51] viridis_0.5.1            edgeR_3.25.0            
+## [53] stringi_1.2.4            yaml_2.2.0              
+## [55] zlibbioc_1.29.0          Rtsne_0.15              
+## [57] rhdf5_2.27.1             plyr_1.8.4              
+## [59] grid_3.6.0               blob_1.1.1              
+## [61] crayon_1.3.4             lattice_0.20-38         
+## [63] Biostrings_2.51.1        cowplot_0.9.3           
+## [65] hms_0.4.2                locfit_1.5-9.1          
+## [67] pillar_1.3.0             igraph_1.2.2            
+## [69] reshape2_1.4.3           biomaRt_2.39.2          
+## [71] XML_3.98-1.16            glue_1.3.0              
+## [73] evaluate_0.12            BiocManager_1.30.4      
+## [75] gtable_0.2.0             purrr_0.2.5             
+## [77] assertthat_0.2.0         xfun_0.4                
+## [79] viridisLite_0.3.0        tibble_1.4.2            
+## [81] GenomicAlignments_1.19.0 beeswarm_0.2.3          
+## [83] memoise_1.1.0            statmod_1.4.30
 ```
 
 # References
