@@ -9,3 +9,4 @@ raw_data
 *.gz
 *.xls
 .cloned
+src/
