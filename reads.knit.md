@@ -12,7 +12,7 @@ author:
   - *CRUK
   - *EMBL
   - Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
-date: "2018-11-16"
+date: "2019-01-02"
 vignette: >
   %\VignetteIndexEntry{02. Read count data}
   %\VignetteEngine{knitr::rmarkdown}
@@ -238,12 +238,8 @@ The code below will replace missing symbols with the Ensembl identifier and conc
 
 
 ```r
-new.names <- rowData(sce)$SYMBOL
-missing.name <- is.na(new.names)
-new.names[missing.name] <- rowData(sce)$ENSEMBL[missing.name]
-dup.name <- new.names %in% new.names[duplicated(new.names)]
-new.names[dup.name] <- paste0(new.names, "_", rowData(sce)$ENSEMBL)[dup.name]
-rownames(sce) <- new.names
+library(scater)
+rownames(sce) <- uniquifyFeatureNames(rowData(sce)$ENSEMBL, rowData(sce)$SYMBOL)
 head(rownames(sce))
 ```
 
@@ -295,7 +291,6 @@ These are stored in the row- and column-wise metadata of the `SingleCellExperime
 
 
 ```r
-library(scater)
 mito <- which(rowData(sce)$CHR=="chrM")
 sce <- calculateQCMetrics(sce, feature_controls=list(Mt=mito))
 head(colnames(colData(sce)), 10)
@@ -325,7 +320,7 @@ multiplot(
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/work-1-reads_files/figure-html/qcplot416b-1.png" alt="Distributions of various QC metrics for all cells in the 416B dataset. This includes the library sizes, number of expressed genes, and proportion of reads mapped to spike-in transcripts or mitochondrial genes." width="100%"  class="widefigure" />
+<img src="reads_files/figure-html/qcplot416b-1.png" alt="Distributions of various QC metrics for all cells in the 416B dataset. This includes the library sizes, number of expressed genes, and proportion of reads mapped to spike-in transcripts or mitochondrial genes." width="100%"  class="widefigure" />
 <p class="caption">(\#fig:qcplot416b)Distributions of various QC metrics for all cells in the 416B dataset. This includes the library sizes, number of expressed genes, and proportion of reads mapped to spike-in transcripts or mitochondrial genes.</p>
 </div>
 
@@ -345,7 +340,7 @@ plot(sce$total_features_by_counts, sce$pct_counts_Mt, xlab="Number of expressed 
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/work-1-reads_files/figure-html/qcbiplot416b-1.png" alt="Behaviour of each QC metric compared to the total number of expressed features. Each point represents a cell in the 416B dataset." width="960" />
+<img src="reads_files/figure-html/qcbiplot416b-1.png" alt="Behaviour of each QC metric compared to the total number of expressed features. Each point represents a cell in the 416B dataset." width="960" />
 <p class="caption">(\#fig:qcbiplot416b)Behaviour of each QC metric compared to the total number of expressed features. Each point represents a cell in the 416B dataset.</p>
 </div>
 
@@ -419,7 +414,7 @@ dim(sce)
 
 **Comments from Aaron:**
 
-- See [this section](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/xtra-1-qc.html#assumptions-of-outlier-identification) for a more detailed discussion of the assumptions underlying the outlier-based detection of low-quality cells.
+- See [this section](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/qc.html#assumptions-of-outlier-identification) for a more detailed discussion of the assumptions underlying the outlier-based detection of low-quality cells.
 - `isOutlier()` will also return the exact filter thresholds for each metric (within each batch, if `batch=` is specified).
 These may be useful for checking whether the automatically selected thresholds are appropriate.
 
@@ -475,7 +470,7 @@ plot(assignments$score$G1, assignments$score$G2M,
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/work-1-reads_files/figure-html/phaseplot416b-1.png" alt="Cell cycle phase scores from applying the pair-based classifier on the 416B dataset. Each point represents a cell, plotted according to its scores for G1 and G2/M phases." width="100%" />
+<img src="reads_files/figure-html/phaseplot416b-1.png" alt="Cell cycle phase scores from applying the pair-based classifier on the 416B dataset. Each point represents a cell, plotted according to its scores for G1 and G2/M phases." width="100%" />
 <p class="caption">(\#fig:phaseplot416b)Cell cycle phase scores from applying the pair-based classifier on the 416B dataset. Each point represents a cell, plotted according to its scores for G1 and G2/M phases.</p>
 </div>
 
@@ -530,7 +525,7 @@ plotHighestExprs(sce, n=50) + fontsize
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/work-1-reads_files/figure-html/topgene416b-1.png" alt="Percentage of total counts assigned to the top 50 most highly-abundant features in the 416B dataset. For each feature, each bar represents the percentage assigned to that feature for a single cell, while the circle represents the average across all cells. Bars are coloured by the total number of expressed features in each cell, while circles are coloured according to whether the feature is labelled as a control feature." width="100%"  class="widefigure" />
+<img src="reads_files/figure-html/topgene416b-1.png" alt="Percentage of total counts assigned to the top 50 most highly-abundant features in the 416B dataset. For each feature, each bar represents the percentage assigned to that feature for a single cell, while the circle represents the average across all cells. Bars are coloured by the total number of expressed features in each cell, while circles are coloured according to whether the feature is labelled as a control feature." width="100%"  class="widefigure" />
 <p class="caption">(\#fig:topgene416b)Percentage of total counts assigned to the top 50 most highly-abundant features in the 416B dataset. For each feature, each bar represents the percentage assigned to that feature for a single cell, while the circle represents the average across all cells. Bars are coloured by the total number of expressed features in each cell, while circles are coloured according to whether the feature is labelled as a control feature.</p>
 </div>
 
@@ -559,7 +554,7 @@ hist(log10(ave.counts), breaks=100, main="", col="grey80",
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/work-1-reads_files/figure-html/abhist416b-1.png" alt="Histogram of log-average counts for all genes in the 416B dataset." width="100%" />
+<img src="reads_files/figure-html/abhist416b-1.png" alt="Histogram of log-average counts for all genes in the 416B dataset." width="100%" />
 <p class="caption">(\#fig:abhist416b)Histogram of log-average counts for all genes in the 416B dataset.</p>
 </div>
 
@@ -592,7 +587,7 @@ smoothScatter(log10(ave.counts), num.cells, ylab="Number of cells",
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/work-1-reads_files/figure-html/nexprshist416b-1.png" alt="The number of cells expressing each gene in the 416B dataset, plotted against the log-average count. Intensity of colour corresponds to the number of genes at any given location." width="100%" />
+<img src="reads_files/figure-html/nexprshist416b-1.png" alt="The number of cells expressing each gene in the 416B dataset, plotted against the log-average count. Intensity of colour corresponds to the number of genes at any given location." width="100%" />
 <p class="caption">(\#fig:nexprshist416b)The number of cells expressing each gene in the 416B dataset, plotted against the log-average count. Intensity of colour corresponds to the number of genes at any given location.</p>
 </div>
 
@@ -655,7 +650,7 @@ legend("bottomright", col=c("red", "black"), pch=16, cex=1.2,
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/work-1-reads_files/figure-html/normplot416b-1.png" alt="Size factors from deconvolution, plotted against library sizes for all cells in the 416B dataset. Axes are shown on a log-scale. Wild-type cells are shown in black and oncogene-induced cells are shown in red." width="100%" />
+<img src="reads_files/figure-html/normplot416b-1.png" alt="Size factors from deconvolution, plotted against library sizes for all cells in the 416B dataset. Axes are shown on a log-scale. Wild-type cells are shown in black and oncogene-induced cells are shown in red." width="100%" />
 <p class="caption">(\#fig:normplot416b)Size factors from deconvolution, plotted against library sizes for all cells in the 416B dataset. Axes are shown on a log-scale. Wild-type cells are shown in black and oncogene-induced cells are shown in red.</p>
 </div>
 
@@ -676,7 +671,7 @@ In general, all `sizes` should be above 20 cells to ensure that there are suffic
 The total number of cells should also be at least 100 for effective pooling.
 - For highly heterogeneous datasets, it is advisable to perform a rough clustering of the cells to weaken the non-DE assumption.
 This can be done with the `quickCluster()` function and the results passed to `computeSumFactors()` via the `clusters` argument.
-We demonstrate this approach with a larger data set in the next [workflow](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/work-2-umis.html#6_normalization_of_cell-specific_biases).
+We demonstrate this approach with a larger data set in the next [workflow](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/umis.html#normalization-of-cell-specific-biases).
 
 ## Computing separate size factors for spike-in transcripts
 
@@ -784,7 +779,7 @@ points(var.out$mean[cur.spike], var.out$total[cur.spike], col="red", pch=16)
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/work-1-reads_files/figure-html/hvgplot416b-1.png" alt="Variance of normalized log-expression values for each gene in the 416B dataset, plotted against the mean log-expression. The blue line represents the mean-dependent trend fitted to the variances of the spike-in transcripts (red)." width="100%" />
+<img src="reads_files/figure-html/hvgplot416b-1.png" alt="Variance of normalized log-expression values for each gene in the 416B dataset, plotted against the mean log-expression. The blue line represents the mean-dependent trend fitted to the variances of the spike-in transcripts (red)." width="100%" />
 <p class="caption">(\#fig:hvgplot416b)Variance of normalized log-expression values for each gene in the 416B dataset, plotted against the mean log-expression. The blue line represents the mean-dependent trend fitted to the variances of the spike-in transcripts (red).</p>
 </div>
 
@@ -798,16 +793,16 @@ plotExpression(sce, features=rownames(var.out)[chosen.genes]) + fontsize
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/work-1-reads_files/figure-html/hvgvioplot416b-1.png" alt="Violin plots of normalized log-expression values for the top 10 genes with the largest biological components in the 416B dataset. Each point represents the log-expression value in a single cell." width="100%" />
+<img src="reads_files/figure-html/hvgvioplot416b-1.png" alt="Violin plots of normalized log-expression values for the top 10 genes with the largest biological components in the 416B dataset. Each point represents the log-expression value in a single cell." width="100%" />
 <p class="caption">(\#fig:hvgvioplot416b)Violin plots of normalized log-expression values for the top 10 genes with the largest biological components in the 416B dataset. Each point represents the log-expression value in a single cell.</p>
 </div>
 
 **Comments from Aaron:**
 
 - In practice, trend fitting is complicated by the small number of spike-in transcripts and the uneven distribution of their abundances.
-See [here](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/xtra-3-var.html#details-of-trend-fitting-parameters) for more details on how to refine the fit.
-- In the absence of spike-ins, users can set `use.spikes=FALSE` to fit a trend to the variances of the endogenous genes (see [here](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/xtra-3-var.html#when-spike-ins-are-unavailable)).
-Alternatively, we can create a trend based on the assumption of Poisson technical noise, as described [here](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/work-3-tenx.html#modelling-the-mean-variance-trend).
+See [here](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/var.html#details-of-trend-fitting-parameters) for more details on how to refine the fit.
+- In the absence of spike-ins, users can set `use.spikes=FALSE` to fit a trend to the variances of the endogenous genes (see [here](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/var.html#wwhen-spike-ins-are-unavailable)).
+Alternatively, we can create a trend based on the assumption of Poisson technical noise, as described [here](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/tenx.html#modelling-the-mean-variance-trend).
 - Negative biological components are often obtained from `decomposeVar`. 
 These are intuitively meaningless as it is impossible for a gene to have total variance below technical noise.
 Nonetheless, such values occur due to imprecise estimation of the total variance, especially for low numbers of cells.
@@ -911,7 +906,7 @@ plotReducedDim(sce, use_dimred="PCA", ncomponents=3,
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/work-1-reads_files/figure-html/pcaplot416b-onco-1.png" alt="Pairwise PCA plots of the first three PCs in the 416B dataset, constructed from normalized log-expression values of genes with positive biological components. Each point represents a cell, coloured according to oncogene induction status." width="864" />
+<img src="reads_files/figure-html/pcaplot416b-onco-1.png" alt="Pairwise PCA plots of the first three PCs in the 416B dataset, constructed from normalized log-expression values of genes with positive biological components. Each point represents a cell, coloured according to oncogene induction status." width="864" />
 <p class="caption">(\#fig:pcaplot416b-onco)Pairwise PCA plots of the first three PCs in the 416B dataset, constructed from normalized log-expression values of genes with positive biological components. Each point represents a cell, coloured according to oncogene induction status.</p>
 </div>
 
@@ -925,7 +920,7 @@ plotReducedDim(sce, use_dimred="PCA", ncomponents=3,
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/work-1-reads_files/figure-html/pcaplot416b-batch-1.png" alt="Pairwise PCA plots of the first three PCs in the 416B dataset, constructed from normalized log-expression values of genes with positive biological components. Each point represents a cell, coloured according to the plate of origin." width="864" />
+<img src="reads_files/figure-html/pcaplot416b-batch-1.png" alt="Pairwise PCA plots of the first three PCs in the 416B dataset, constructed from normalized log-expression values of genes with positive biological components. Each point represents a cell, coloured according to the plate of origin." width="864" />
 <p class="caption">(\#fig:pcaplot416b-batch)Pairwise PCA plots of the first three PCs in the 416B dataset, constructed from normalized log-expression values of genes with positive biological components. Each point represents a cell, coloured according to the plate of origin.</p>
 </div>
 
@@ -969,7 +964,7 @@ multiplot(out5, out10, out20, cols=3)
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/work-1-reads_files/figure-html/tsneplot416b-1.png" alt="_t_-SNE plots constructed from the denoised PCs in the 416B dataset, using a range of perplexity values. Each point represents a cell, coloured according to its oncogene induction status. Bars represent the coordinates of the cells on each axis." width="1440" />
+<img src="reads_files/figure-html/tsneplot416b-1.png" alt="_t_-SNE plots constructed from the denoised PCs in the 416B dataset, using a range of perplexity values. Each point represents a cell, coloured according to its oncogene induction status. Bars represent the coordinates of the cells on each axis." width="1440" />
 <p class="caption">(\#fig:tsneplot416b)_t_-SNE plots constructed from the denoised PCs in the 416B dataset, using a range of perplexity values. Each point represents a cell, coloured according to its oncogene induction status. Bars represent the coordinates of the cells on each axis.</p>
 </div>
 
@@ -1070,7 +1065,7 @@ plotTSNE(sce, colour_by="cluster") + fontsize
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/work-1-reads_files/figure-html/tsnecluster416b-1.png" alt="_t_-SNE plot of the denoised PCs of the 416B dataset. Each point represents a cell and is coloured according to the cluster identity to which it was assigned." width="100%" />
+<img src="reads_files/figure-html/tsnecluster416b-1.png" alt="_t_-SNE plot of the denoised PCs of the 416B dataset. Each point represents a cell and is coloured according to the cluster identity to which it was assigned." width="100%" />
 <p class="caption">(\#fig:tsnecluster416b)_t_-SNE plot of the denoised PCs of the 416B dataset. Each point represents a cell and is coloured according to the cluster identity to which it was assigned.</p>
 </div>
 
@@ -1091,7 +1086,7 @@ plot(sil, main = paste(length(unique(my.clusters)), "clusters"),
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/work-1-reads_files/figure-html/silhouette416b-1.png" alt="Barplot of silhouette widths for cells in each cluster. Each cluster is assigned a colour and cells with positive widths are coloured according to the colour of its assigned cluster. Any cell with a negative width is coloured according to the colour of the cluster that it is closest to. The average width for all cells in each cluster is shown, along with the average width for all cells in the dataset." width="100%" />
+<img src="reads_files/figure-html/silhouette416b-1.png" alt="Barplot of silhouette widths for cells in each cluster. Each cluster is assigned a colour and cells with positive widths are coloured according to the colour of its assigned cluster. Any cell with a negative width is coloured according to the colour of the cluster that it is closest to. The average width for all cells in each cluster is shown, along with the average width for all cells in the dataset." width="100%" />
 <p class="caption">(\#fig:silhouette416b)Barplot of silhouette widths for cells in each cluster. Each cluster is assigned a colour and cells with positive widths are coloured according to the colour of its assigned cluster. Any cell with a negative width is coloured according to the colour of the cluster that it is closest to. The average width for all cells in each cluster is shown, along with the average width for all cells in the dataset.</p>
 </div>
 
@@ -1122,7 +1117,7 @@ Of course, it is simple (and recommended) to try other approaches provided that 
 
 Once putative subpopulations are identified by clustering, we can identify marker genes for each cluster using the `findMarkers` function.
 This performs Welch $t$-tests on the log-expression values for every gene and between every pair of clusters [@soneson2018bias].
-The aim is to test for DE in each cluster compared to the others while blocking on uninteresting factors such as the plate of origin (see [here](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/xtra-3b-de.html#blocking-on-uninteresting-factors-of-variation) for details).
+The aim is to test for DE in each cluster compared to the others while blocking on uninteresting factors such as the plate of origin (see [here](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/de.html#blocking-on-uninteresting-factors-of-variation) for details).
 The top DE genes are likely to be good candidate markers as they can effectively distinguish between cells in different clusters.
 
 
@@ -1196,7 +1191,7 @@ plotHeatmap(sce, features=top.markers, columns=order(sce$cluster),
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/work-1-reads_files/figure-html/heatmapmarker416b-1.png" alt="Heatmap of mean-centred and normalized log-expression values for the top set of markers for cluster 1 in the 416B dataset. Column colours represent the cluster to which each cell is assigned, the plate of origin or the oncogene induction status of each cell, as indicated by the legend." width="960" />
+<img src="reads_files/figure-html/heatmapmarker416b-1.png" alt="Heatmap of mean-centred and normalized log-expression values for the top set of markers for cluster 1 in the 416B dataset. Column colours represent the cluster to which each cell is assigned, the plate of origin or the oncogene induction status of each cell, as indicated by the legend." width="960" />
 <p class="caption">(\#fig:heatmapmarker416b)Heatmap of mean-centred and normalized log-expression values for the top set of markers for cluster 1 in the 416B dataset. Column colours represent the cluster to which each cell is assigned, the plate of origin or the oncogene induction status of each cell, as indicated by the legend.</p>
 </div>
 
@@ -1221,7 +1216,7 @@ This should be done by setting `pval.type="all"`, which defines the p-value for 
 Combined with `direction="up"`, this can be used to identify unique markers for each cluster.
 However, this is sensitive to overclustering, as unique marker genes will no longer exist if a cluster is split into two smaller subclusters.
 - It must be stressed that the (adjusted) _p_-values computed here cannot be properly interpreted as measures of significance.
-This is because the clusters have been empirically identified from the data, see [simpleSingleCell](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/xtra-3b-de.html#misinterpretation-of-de-p-values).
+This is because the clusters have been empirically identified from the data, see [here](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/de.html#misinterpretation-of-de-p-values).
 
 # Concluding remarks
 
@@ -1252,21 +1247,16 @@ sessionInfo()
 ```
 
 ```
-## R Under development (unstable) (2018-11-02 r75535)
-## Platform: x86_64-pc-linux-gnu (64-bit)
-## Running under: Ubuntu 16.04.5 LTS
+## R Under development (unstable) (2018-12-07 r75787)
+## Platform: x86_64-apple-darwin15.6.0 (64-bit)
+## Running under: OS X El Capitan 10.11.6
 ## 
 ## Matrix products: default
-## BLAS: /home/cri.camres.org/lun01/Software/R/trunk/lib/libRblas.so
-## LAPACK: /home/cri.camres.org/lun01/Software/R/trunk/lib/libRlapack.so
+## BLAS: /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRblas.0.dylib
+## LAPACK: /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRlapack.dylib
 ## 
 ## locale:
-##  [1] LC_CTYPE=en_GB.UTF-8       LC_NUMERIC=C              
-##  [3] LC_TIME=en_GB.UTF-8        LC_COLLATE=en_GB.UTF-8    
-##  [5] LC_MONETARY=en_GB.UTF-8    LC_MESSAGES=en_GB.UTF-8   
-##  [7] LC_PAPER=en_GB.UTF-8       LC_NAME=C                 
-##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
-## [11] LC_MEASUREMENT=en_GB.UTF-8 LC_IDENTIFICATION=C       
+## [1] en_GB.UTF-8/en_GB.UTF-8/en_GB.UTF-8/C/en_GB.UTF-8/en_GB.UTF-8
 ## 
 ## attached base packages:
 ## [1] parallel  stats4    stats     graphics  grDevices utils     datasets 
@@ -1275,66 +1265,66 @@ sessionInfo()
 ## other attached packages:
 ##  [1] cluster_2.0.7-1                       
 ##  [2] dynamicTreeCut_1.63-1                 
-##  [3] limma_3.39.1                          
-##  [4] scran_1.11.4                          
-##  [5] scater_1.11.2                         
+##  [3] limma_3.39.3                          
+##  [4] scran_1.11.10                         
+##  [5] scater_1.11.5                         
 ##  [6] ggplot2_3.1.0                         
 ##  [7] TxDb.Mmusculus.UCSC.mm10.ensGene_3.4.0
-##  [8] GenomicFeatures_1.35.1                
+##  [8] GenomicFeatures_1.35.4                
 ##  [9] org.Mm.eg.db_3.7.0                    
 ## [10] AnnotationDbi_1.45.0                  
-## [11] SingleCellExperiment_1.5.0            
+## [11] SingleCellExperiment_1.5.1            
 ## [12] SummarizedExperiment_1.13.0           
-## [13] DelayedArray_0.9.0                    
-## [14] BiocParallel_1.17.1                   
+## [13] DelayedArray_0.9.4                    
+## [14] BiocParallel_1.17.3                   
 ## [15] matrixStats_0.54.0                    
 ## [16] Biobase_2.43.0                        
 ## [17] GenomicRanges_1.35.1                  
 ## [18] GenomeInfoDb_1.19.1                   
-## [19] IRanges_2.17.1                        
-## [20] S4Vectors_0.21.4                      
+## [19] IRanges_2.17.3                        
+## [20] S4Vectors_0.21.8                      
 ## [21] BiocGenerics_0.29.1                   
 ## [22] bindrcpp_0.2.2                        
 ## [23] BiocFileCache_1.7.0                   
 ## [24] dbplyr_1.2.2                          
-## [25] knitr_1.20                            
+## [25] knitr_1.21                            
 ## [26] BiocStyle_2.11.0                      
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] bitops_1.0-6             bit64_0.9-7             
 ##  [3] RColorBrewer_1.1-2       progress_1.2.0          
-##  [5] httr_1.3.1               rprojroot_1.3-2         
-##  [7] tools_3.6.0              backports_1.1.2         
-##  [9] R6_2.3.0                 KernSmooth_2.23-15      
-## [11] HDF5Array_1.11.0         vipor_0.4.5             
-## [13] DBI_1.0.0                lazyeval_0.2.1          
-## [15] colorspace_1.3-2         withr_2.1.2             
-## [17] tidyselect_0.2.5         gridExtra_2.3           
-## [19] prettyunits_1.0.2        bit_1.1-14              
-## [21] curl_3.2                 compiler_3.6.0          
-## [23] BiocNeighbors_1.1.1      rtracklayer_1.43.0      
-## [25] labeling_0.3             bookdown_0.7            
-## [27] scales_1.0.0             rappdirs_0.3.1          
-## [29] stringr_1.3.1            digest_0.6.18           
-## [31] Rsamtools_1.35.0         rmarkdown_1.10          
-## [33] XVector_0.23.0           pkgconfig_2.0.2         
-## [35] htmltools_0.3.6          highr_0.7               
-## [37] rlang_0.3.0.1            RSQLite_2.1.1           
-## [39] DelayedMatrixStats_1.5.0 bindr_0.1.1             
-## [41] dplyr_0.7.8              RCurl_1.95-4.11         
-## [43] magrittr_1.5             GenomeInfoDbData_1.2.0  
-## [45] Matrix_1.2-15            Rcpp_1.0.0              
-## [47] ggbeeswarm_0.6.0         munsell_0.5.0           
-## [49] Rhdf5lib_1.5.0           viridis_0.5.1           
-## [51] edgeR_3.25.0             stringi_1.2.4           
-## [53] yaml_2.2.0               zlibbioc_1.29.0         
-## [55] Rtsne_0.15               rhdf5_2.27.1            
-## [57] plyr_1.8.4               grid_3.6.0              
-## [59] blob_1.1.1               crayon_1.3.4            
-## [61] lattice_0.20-38          Biostrings_2.51.1       
-## [63] cowplot_0.9.3            hms_0.4.2               
-## [65] locfit_1.5-9.1           pillar_1.3.0            
-## [67] igraph_1.2.2             reshape2_1.4.3          
+##  [5] httr_1.4.0               tools_3.6.0             
+##  [7] R6_2.3.0                 KernSmooth_2.23-15      
+##  [9] HDF5Array_1.11.10        vipor_0.4.5             
+## [11] DBI_1.0.0                lazyeval_0.2.1          
+## [13] colorspace_1.3-2         withr_2.1.2             
+## [15] tidyselect_0.2.5         gridExtra_2.3           
+## [17] prettyunits_1.0.2        bit_1.1-14              
+## [19] curl_3.2                 compiler_3.6.0          
+## [21] BiocNeighbors_1.1.7      rtracklayer_1.43.1      
+## [23] labeling_0.3             bookdown_0.9            
+## [25] scales_1.0.0             rappdirs_0.3.1          
+## [27] stringr_1.3.1            digest_0.6.18           
+## [29] Rsamtools_1.35.0         rmarkdown_1.11          
+## [31] XVector_0.23.0           pkgconfig_2.0.2         
+## [33] htmltools_0.3.6          highr_0.7               
+## [35] rlang_0.3.0.1            RSQLite_2.1.1           
+## [37] DelayedMatrixStats_1.5.0 bindr_0.1.1             
+## [39] dplyr_0.7.8              RCurl_1.95-4.11         
+## [41] magrittr_1.5             simpleSingleCell_1.7.8  
+## [43] GenomeInfoDbData_1.2.0   Matrix_1.2-15           
+## [45] Rcpp_1.0.0               ggbeeswarm_0.6.0        
+## [47] munsell_0.5.0            Rhdf5lib_1.5.1          
+## [49] viridis_0.5.1            edgeR_3.25.2            
+## [51] stringi_1.2.4            yaml_2.2.0              
+## [53] zlibbioc_1.29.0          Rtsne_0.15              
+## [55] rhdf5_2.27.4             plyr_1.8.4              
+## [57] grid_3.6.0               blob_1.1.1              
+## [59] crayon_1.3.4             lattice_0.20-38         
+## [61] Biostrings_2.51.1        cowplot_0.9.3           
+## [63] hms_0.4.2                locfit_1.5-9.1          
+## [65] pillar_1.3.1             igraph_1.2.2            
+## [67] reshape2_1.4.3           codetools_0.2-16        
 ## [69] biomaRt_2.39.2           XML_3.98-1.16           
 ## [71] glue_1.3.0               evaluate_0.12           
 ## [73] BiocManager_1.30.4       gtable_0.2.0            

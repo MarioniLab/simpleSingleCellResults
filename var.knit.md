@@ -12,7 +12,7 @@ author:
   - *CRUK
   - *EMBL
   - Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
-date: "2018-11-16"
+date: "2019-01-02"
 vignette: >
   %\VignetteIndexEntry{09. Advanced variance modelling}
   %\VignetteEngine{knitr::rmarkdown}
@@ -24,6 +24,8 @@ output:
 bibliography: ref.bib
 ---
     
+
+
 
 
 # Overview
@@ -65,10 +67,11 @@ In this case, some work is required to retrieve the data from the Gzip-compresse
 
 
 ```r
-library(gdata)
-all.counts <- read.xls(wilson.name2, sheet=1, header=TRUE)
-rownames(all.counts) <- all.counts$ID
+library(readxl)
+all.counts <- read_excel(wilson.name2)
+gene.names <- all.counts$ID
 all.counts <- as.matrix(all.counts[,-1])
+rownames(all.counts) <- gene.names
 ```
 
 We store the results in a `SingleCellExperiment` object and identify the rows corresponding to the spike-ins based on the row names.
@@ -178,7 +181,7 @@ points(var.out$mean[cur.spike], var.out$total[cur.spike], col="red", pch=16)
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/xtra-3-var_files/figure-html/hvgplothsc-1.png" alt="Variance of normalized log-expression values for each gene in the HSC dataset, plotted against the mean log-expression. The blue line represents the mean-dependent trend fitted to the variances of the spike-in transcripts (red)." width="100%" />
+<img src="var_files/figure-html/hvgplothsc-1.png" alt="Variance of normalized log-expression values for each gene in the HSC dataset, plotted against the mean log-expression. The blue line represents the mean-dependent trend fitted to the variances of the spike-in transcripts (red)." width="100%" />
 <p class="caption">(\#fig:hvgplothsc)Variance of normalized log-expression values for each gene in the HSC dataset, plotted against the mean log-expression. The blue line represents the mean-dependent trend fitted to the variances of the spike-in transcripts (red).</p>
 </div>
 
@@ -214,17 +217,17 @@ head(hvg.out)
 ## Fos      6.46229730082989 19.5774140760543 12.8221002879735 6.75531378808077
 ## Dusp1    6.82314467206793 15.6360357795109 10.1162290203638 5.51980675914714
 ## Rgs1     5.31345464503953 20.3107030102909 10.0119450815048  10.298757928786
-## Ppp1r15a 6.66579727019324 14.5266651189811 8.47596930729373 6.05069581168739
+## Ppp1r15a 6.66579727019324 14.5266651189811 8.47596930729374 6.05069581168738
 ## Ly6a     8.40354443058819   10.05833414214 8.05800100918705 2.00033313295293
 ## Egr1     6.71592505528811  13.857027821927 7.97752724423428 5.87950057769273
 ##                       p.value                  FDR
 ##                     <numeric>            <numeric>
-## Fos      1.01066135594786e-18 7.14571267367002e-16
-## Dusp1    7.24908882891304e-18 4.15568711216418e-15
-## Rgs1      9.4342535672312e-08 1.10557984759415e-05
-## Ppp1r15a 1.73432258509514e-12 4.90489551366039e-10
+## Fos       1.0106613559478e-18 7.14571267366961e-16
+## Dusp1    7.24908882891273e-18   4.155687112164e-15
+## Rgs1     9.43425356723099e-08 1.10557984759412e-05
+## Ppp1r15a 1.73432258509506e-12 4.90489551366018e-10
 ## Ly6a     2.99530600782523e-50  9.0762051045687e-47
-## Egr1     5.70569022066076e-12 1.49411599099303e-09
+## Egr1      5.7056902206606e-12 1.49411599099299e-09
 ```
 
 We check the distribution of expression values for the genes with the largest biological components.
@@ -237,7 +240,7 @@ plotExpression(sce.hsc, features=rownames(hvg.out)[1:10]) + fontsize
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/xtra-3-var_files/figure-html/hvgvioplothsc-1.png" alt="Violin plots of normalized log-expression values for the top 10 genes with the largest biological components in the HSC dataset. Each point represents the log-expression value in a single cell." width="100%" />
+<img src="var_files/figure-html/hvgvioplothsc-1.png" alt="Violin plots of normalized log-expression values for the top 10 genes with the largest biological components in the HSC dataset. Each point represents the log-expression value in a single cell." width="100%" />
 <p class="caption">(\#fig:hvgvioplothsc)Violin plots of normalized log-expression values for the top 10 genes with the largest biological components in the HSC dataset. Each point represents the log-expression value in a single cell.</p>
 </div>
 
@@ -321,7 +324,7 @@ points(var.out.nospike$mean[cur.spike], var.out.nospike$total[cur.spike], col="r
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/xtra-3-var_files/figure-html/hvgplot416b2-1.png" alt="Variance of normalized log-expression values for each gene in the 416B dataset, plotted against the mean log-expression. The blue line represents the mean-dependent trend fitted to the variances of the endogenous genes (black), with spike-in transcripts shown in red." width="100%" />
+<img src="var_files/figure-html/hvgplot416b2-1.png" alt="Variance of normalized log-expression values for each gene in the 416B dataset, plotted against the mean log-expression. The blue line represents the mean-dependent trend fitted to the variances of the endogenous genes (black), with spike-in transcripts shown in red." width="100%" />
 <p class="caption">(\#fig:hvgplot416b2)Variance of normalized log-expression values for each gene in the 416B dataset, plotted against the mean log-expression. The blue line represents the mean-dependent trend fitted to the variances of the endogenous genes (black), with spike-in transcripts shown in red.</p>
 </div>
 
@@ -355,7 +358,7 @@ curve(var.fit$trend(x), add=TRUE, col="red")
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/xtra-3-var_files/figure-html/trendplotblock-416b-1.png" alt="Plate-specific variance estimates for all spike-in transcripts in the 416B dataset, plotted against the plate-specific means. Each point represents a spike-in transcript, numbered by the plate from which the values were estimated. The red line denotes the fitted mean-variance trend." width="100%" />
+<img src="var_files/figure-html/trendplotblock-416b-1.png" alt="Plate-specific variance estimates for all spike-in transcripts in the 416B dataset, plotted against the plate-specific means. Each point represents a spike-in transcript, numbered by the plate from which the values were estimated. The red line denotes the fitted mean-variance trend." width="100%" />
 <p class="caption">(\#fig:trendplotblock-416b)Plate-specific variance estimates for all spike-in transcripts in the 416B dataset, plotted against the plate-specific means. Each point represents a spike-in transcript, numbered by the plate from which the values were estimated. The red line denotes the fitted mean-variance trend.</p>
 </div>
 
@@ -374,7 +377,7 @@ multiplot(p1, p2, cols=2)
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/xtra-3-var_files/figure-html/sizefacplot-416b-1.png" alt="Plate-specific distribution of the size factors for endogenous genes (left) and spike-in transcripts (right)." width="960" />
+<img src="var_files/figure-html/sizefacplot-416b-1.png" alt="Plate-specific distribution of the size factors for endogenous genes (left) and spike-in transcripts (right)." width="960" />
 <p class="caption">(\#fig:sizefacplot-416b)Plate-specific distribution of the size factors for endogenous genes (left) and spike-in transcripts (right).</p>
 </div>
 
@@ -418,12 +421,12 @@ head(comb.out[,1:6])
 ## Rp1                 0.0970243712569606    0.45233813529556
 ##                                    bio               tech           p.value
 ##                              <numeric>          <numeric>         <numeric>
-## ENSMUSG00000103377 -0.0277229724196103 0.0396448379056754                 1
-## ENSMUSG00000103147 -0.0764556948275004  0.148675311081024 0.999999999962404
-## ENSMUSG00000103161 -0.0173491251755451 0.0222877021707557                 1
-## ENSMUSG00000102331 -0.0540089343559534 0.0869325262165264 0.999999999999991
-## ENSMUSG00000102948  -0.169989420924752  0.258126546698334                 1
-## Rp1                0.00813766887883806  0.444200466416722 0.163473096421542
+## ENSMUSG00000103377 -0.0277229724173977 0.0396448379034627                 1
+## ENSMUSG00000103147 -0.0764556948465832  0.148675311100107 0.999999999962404
+## ENSMUSG00000103161 -0.0173491251784058 0.0222877021736163                 1
+## ENSMUSG00000102331 -0.0540089343571418 0.0869325262177148 0.999999999999991
+## ENSMUSG00000102948  -0.169989420950973  0.258126546724555                 1
+## Rp1                0.00813766886247711  0.444200466433083 0.163473096322238
 ##                                  FDR
 ##                            <numeric>
 ## ENSMUSG00000103377                 1
@@ -431,7 +434,7 @@ head(comb.out[,1:6])
 ## ENSMUSG00000103161                 1
 ## ENSMUSG00000102331                 1
 ## ENSMUSG00000102948                 1
-## Rp1                0.538786121423717
+## Rp1                0.538786121096424
 ```
 
 We visualize the quality of the batch-specific trend fits by extracting the relevant statistics from `comb.out` (Figure \@ref(fig:hvgplotbatch416b)).
@@ -450,7 +453,7 @@ for (plate in levels(sce.416B.2$Plate)) {
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/xtra-3-var_files/figure-html/hvgplotbatch416b-1.png" alt="Variance of normalized log-expression values for each gene in each plate of the 416B dataset, plotted against the mean log-expression. The blue line represents the mean-dependent trend fitted to the variances of the spike-in transcripts (red)." width="960" />
+<img src="var_files/figure-html/hvgplotbatch416b-1.png" alt="Variance of normalized log-expression values for each gene in each plate of the 416B dataset, plotted against the mean log-expression. The blue line represents the mean-dependent trend fitted to the variances of the spike-in transcripts (red)." width="960" />
 <p class="caption">(\#fig:hvgplotbatch416b)Variance of normalized log-expression values for each gene in each plate of the 416B dataset, plotted against the mean log-expression. The blue line represents the mean-dependent trend fitted to the variances of the spike-in transcripts (red).</p>
 </div>
 
@@ -496,135 +499,73 @@ sessionInfo()
 ```
 
 ```
-## R Under development (unstable) (2018-11-02 r75535)
-## Platform: x86_64-pc-linux-gnu (64-bit)
-## Running under: Ubuntu 16.04.5 LTS
+## R Under development (unstable) (2018-12-07 r75787)
+## Platform: x86_64-apple-darwin15.6.0 (64-bit)
+## Running under: OS X El Capitan 10.11.6
 ## 
 ## Matrix products: default
-## BLAS: /home/cri.camres.org/lun01/Software/R/trunk/lib/libRblas.so
-## LAPACK: /home/cri.camres.org/lun01/Software/R/trunk/lib/libRlapack.so
+## BLAS: /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRblas.0.dylib
+## LAPACK: /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRlapack.dylib
 ## 
 ## locale:
-##  [1] LC_CTYPE=en_GB.UTF-8       LC_NUMERIC=C              
-##  [3] LC_TIME=en_GB.UTF-8        LC_COLLATE=en_GB.UTF-8    
-##  [5] LC_MONETARY=en_GB.UTF-8    LC_MESSAGES=en_GB.UTF-8   
-##  [7] LC_PAPER=en_GB.UTF-8       LC_NAME=C                 
-##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
-## [11] LC_MEASUREMENT=en_GB.UTF-8 LC_IDENTIFICATION=C       
+## [1] en_GB.UTF-8/en_GB.UTF-8/en_GB.UTF-8/C/en_GB.UTF-8/en_GB.UTF-8
 ## 
 ## attached base packages:
 ## [1] parallel  stats4    stats     graphics  grDevices utils     datasets 
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] gdata_2.18.0                          
-##  [2] R.utils_2.7.0                         
-##  [3] R.oo_1.22.0                           
-##  [4] R.methodsS3_1.7.1                     
-##  [5] scRNAseq_1.9.0                        
-##  [6] edgeR_3.25.0                          
-##  [7] Matrix_1.2-15                         
-##  [8] org.Hs.eg.db_3.7.0                    
-##  [9] EnsDb.Hsapiens.v86_2.99.0             
-## [10] ensembldb_2.7.2                       
-## [11] AnnotationFilter_1.7.0                
-## [12] DropletUtils_1.3.1                    
-## [13] pheatmap_1.0.10                       
-## [14] cluster_2.0.7-1                       
-## [15] dynamicTreeCut_1.63-1                 
-## [16] limma_3.39.1                          
-## [17] scran_1.11.4                          
-## [18] scater_1.11.2                         
-## [19] ggplot2_3.1.0                         
-## [20] TxDb.Mmusculus.UCSC.mm10.ensGene_3.4.0
-## [21] GenomicFeatures_1.35.1                
-## [22] org.Mm.eg.db_3.7.0                    
-## [23] AnnotationDbi_1.45.0                  
-## [24] SingleCellExperiment_1.5.0            
-## [25] SummarizedExperiment_1.13.0           
-## [26] DelayedArray_0.9.0                    
-## [27] BiocParallel_1.17.1                   
-## [28] matrixStats_0.54.0                    
-## [29] Biobase_2.43.0                        
-## [30] GenomicRanges_1.35.1                  
-## [31] GenomeInfoDb_1.19.1                   
-## [32] IRanges_2.17.1                        
-## [33] S4Vectors_0.21.4                      
-## [34] BiocGenerics_0.29.1                   
-## [35] bindrcpp_0.2.2                        
-## [36] BiocFileCache_1.7.0                   
-## [37] dbplyr_1.2.2                          
-## [38] knitr_1.20                            
-## [39] BiocStyle_2.11.0                      
+##  [1] scran_1.11.11               scater_1.11.5              
+##  [3] ggplot2_3.1.0               SingleCellExperiment_1.5.1 
+##  [5] SummarizedExperiment_1.13.0 DelayedArray_0.9.4         
+##  [7] BiocParallel_1.17.3         matrixStats_0.54.0         
+##  [9] Biobase_2.43.0              GenomicRanges_1.35.1       
+## [11] GenomeInfoDb_1.19.1         IRanges_2.17.3             
+## [13] S4Vectors_0.21.8            BiocGenerics_0.29.1        
+## [15] readxl_1.2.0                R.utils_2.7.0              
+## [17] R.oo_1.22.0                 R.methodsS3_1.7.1          
+## [19] bindrcpp_0.2.2              BiocFileCache_1.7.0        
+## [21] dbplyr_1.2.2                knitr_1.21                 
+## [23] BiocStyle_2.11.0           
 ## 
 ## loaded via a namespace (and not attached):
-##   [1] tidyselect_0.2.5         RSQLite_2.1.1           
-##   [3] grid_3.6.0               trimcluster_0.1-2.1     
-##   [5] Rtsne_0.15               munsell_0.5.0           
-##   [7] statmod_1.4.30           sROC_0.1-2              
-##   [9] withr_2.1.2              colorspace_1.3-2        
-##  [11] highr_0.7                robustbase_0.93-3       
-##  [13] vcd_1.4-4                VIM_4.7.0               
-##  [15] labeling_0.3             GenomeInfoDbData_1.2.0  
-##  [17] cvTools_0.3.2            bit64_0.9-7             
-##  [19] rhdf5_2.27.1             rprojroot_1.3-2         
-##  [21] xfun_0.4                 diptest_0.75-7          
-##  [23] R6_2.3.0                 ggbeeswarm_0.6.0        
-##  [25] robCompositions_2.0.9    locfit_1.5-9.1          
-##  [27] mvoutlier_2.0.9          flexmix_2.3-14          
-##  [29] bitops_1.0-6             reshape_0.8.8           
-##  [31] assertthat_0.2.0         scales_1.0.0            
-##  [33] nnet_7.3-12              beeswarm_0.2.3          
-##  [35] gtable_0.2.0             rlang_0.3.0.1           
-##  [37] splines_3.6.0            rtracklayer_1.43.0      
-##  [39] lazyeval_0.2.1           BiocManager_1.30.4      
-##  [41] yaml_2.2.0               reshape2_1.4.3          
-##  [43] abind_1.4-5              backports_1.1.2         
-##  [45] tools_3.6.0              bookdown_0.7            
-##  [47] zCompositions_1.1.2      RColorBrewer_1.1-2      
-##  [49] Rcpp_1.0.0               plyr_1.8.4              
-##  [51] progress_1.2.0           zlibbioc_1.29.0         
-##  [53] purrr_0.2.5              RCurl_1.95-4.11         
-##  [55] prettyunits_1.0.2        viridis_0.5.1           
-##  [57] cowplot_0.9.3            zoo_1.8-4               
-##  [59] haven_1.1.2              magrittr_1.5            
-##  [61] data.table_1.11.8        openxlsx_4.1.0          
-##  [63] lmtest_0.9-36            truncnorm_1.0-8         
-##  [65] mvtnorm_1.0-8            ProtGenerics_1.15.0     
-##  [67] hms_0.4.2                evaluate_0.12           
-##  [69] XML_3.98-1.16            rio_0.5.10              
-##  [71] mclust_5.4.1             readxl_1.1.0            
-##  [73] gridExtra_2.3            compiler_3.6.0          
-##  [75] biomaRt_2.39.2           tibble_1.4.2            
-##  [77] KernSmooth_2.23-15       crayon_1.3.4            
-##  [79] htmltools_0.3.6          pcaPP_1.9-73            
-##  [81] rrcov_1.4-4              DBI_1.0.0               
-##  [83] MASS_7.3-51.1            fpc_2.1-11.1            
-##  [85] rappdirs_0.3.1           boot_1.3-20             
-##  [87] car_3.0-2                sgeostat_1.0-27         
-##  [89] bindr_0.1.1              igraph_1.2.2            
-##  [91] forcats_0.3.0            pkgconfig_2.0.2         
-##  [93] GenomicAlignments_1.19.0 foreign_0.8-71          
-##  [95] laeken_0.4.6             sp_1.3-1                
-##  [97] vipor_0.4.5              XVector_0.23.0          
-##  [99] NADA_1.6-1               stringr_1.3.1           
-## [101] digest_0.6.18            pls_2.7-0               
-## [103] Biostrings_2.51.1        rmarkdown_1.10          
-## [105] cellranger_1.1.0         DelayedMatrixStats_1.5.0
-## [107] curl_3.2                 kernlab_0.9-27          
-## [109] gtools_3.8.1             Rsamtools_1.35.0        
-## [111] modeltools_0.2-22        Rhdf5lib_1.5.0          
-## [113] carData_3.0-2            BiocNeighbors_1.1.1     
-## [115] viridisLite_0.3.0        pillar_1.3.0            
-## [117] lattice_0.20-38          GGally_1.4.0            
-## [119] httr_1.3.1               DEoptimR_1.0-8          
-## [121] survival_2.43-1          glue_1.3.0              
-## [123] zip_1.0.0                prabclus_2.2-6          
-## [125] bit_1.1-14               class_7.3-14            
-## [127] stringi_1.2.4            HDF5Array_1.11.0        
-## [129] blob_1.1.1               memoise_1.1.0           
-## [131] dplyr_0.7.8              irlba_2.3.3             
-## [133] e1071_1.7-0
+##  [1] dynamicTreeCut_1.63-1    viridis_0.5.1           
+##  [3] httr_1.4.0               edgeR_3.19.3            
+##  [5] viridisLite_0.3.0        bit64_0.9-7             
+##  [7] DelayedMatrixStats_1.5.0 assertthat_0.2.0        
+##  [9] statmod_1.4.30           highr_0.7               
+## [11] BiocManager_1.30.4       blob_1.1.1              
+## [13] vipor_0.4.5              GenomeInfoDbData_1.2.0  
+## [15] cellranger_1.1.0         yaml_2.2.0              
+## [17] pillar_1.3.1             RSQLite_2.1.1           
+## [19] lattice_0.20-38          limma_3.33.7            
+## [21] glue_1.3.0               digest_0.6.18           
+## [23] XVector_0.23.0           colorspace_1.3-2        
+## [25] cowplot_0.9.3            htmltools_0.3.6         
+## [27] Matrix_1.2-15            plyr_1.8.4              
+## [29] pkgconfig_2.0.2          bookdown_0.9            
+## [31] zlibbioc_1.29.0          purrr_0.2.5             
+## [33] scales_1.0.0             HDF5Array_1.11.10       
+## [35] tibble_1.4.2             withr_2.1.2             
+## [37] lazyeval_0.2.1           magrittr_1.5            
+## [39] crayon_1.3.4             memoise_1.1.0           
+## [41] evaluate_0.12            simpleSingleCell_1.7.8  
+## [43] beeswarm_0.2.3           tools_3.6.0             
+## [45] stringr_1.3.1            Rhdf5lib_1.5.1          
+## [47] locfit_1.5-9.1           munsell_0.5.0           
+## [49] compiler_3.6.0           rlang_0.3.0.1           
+## [51] rhdf5_2.27.4             grid_3.6.0              
+## [53] RCurl_1.95-4.11          BiocNeighbors_1.1.7     
+## [55] rappdirs_0.3.1           igraph_1.2.2            
+## [57] labeling_0.3             bitops_1.0-6            
+## [59] rmarkdown_1.11           gtable_0.2.0            
+## [61] codetools_0.2-16         DBI_1.0.0               
+## [63] curl_3.2                 R6_2.3.0                
+## [65] gridExtra_2.3            dplyr_0.7.8             
+## [67] bit_1.1-14               bindr_0.1.1             
+## [69] stringi_1.2.4            ggbeeswarm_0.6.0        
+## [71] Rcpp_1.0.0               tidyselect_0.2.5        
+## [73] xfun_0.4
 ```
 
 # References

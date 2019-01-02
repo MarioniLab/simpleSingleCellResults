@@ -3,7 +3,7 @@ title: Detecting differental expression from single-cell RNA-seq data
 author: 
 - name: Aaron T. L. Lun
   affiliation: &CRUK Cancer Research UK Cambridge Institute, Li Ka Shing Centre, Robinson Way, Cambridge CB2 0RE, United Kingdom
-date: "2018-11-16"
+date: "2018-12-25"
 vignette: >
   %\VignetteIndexEntry{10. Detecting differential expression}
   %\VignetteEngine{knitr::rmarkdown}
@@ -15,6 +15,8 @@ output:
 bibliography: ref.bib
 ---
     
+
+
 
 
 # Overview
@@ -29,7 +31,7 @@ This includes the basis of blocking on uninteresting factors of variation in `fi
 
 ## Using the `block=` argument
 
-Previous workflows ([here](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/work-1-reads.html#detecting-marker-genes-between-clusters) and [here](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/work-5-mnn.html#using-the-corrected-values-in-downstream-analyses)) used the `block=` argument in `findMarkers()` to account for uninteresting factors of variation.
+Previous workflows ([here](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/reads.html#detecting-marker-genes-between-clusters) and [here](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/batch.html#using-the-corrected-values-in-downstream-analyses)) used the `block=` argument in `findMarkers()` to account for uninteresting factors of variation.
 This will instruct `findMarkers()` to perform pairwise $t$-tests between clusters using only cells on the same level of the blocking factor. 
 It will then combine $p$-values from different plates using Stouffer's Z method to obtain a single $p$-value per gene.
 
@@ -48,27 +50,27 @@ as.data.frame(demo[demo$Top <= 5,1:3])
 
 ```
 ##           Top      p.value          FDR
-## KCNQ1OT1    1 3.938748e-56 5.809259e-52
-## PGM5P2      1 9.973107e-50 4.903112e-46
+## KCNQ1OT1    1 7.216182e-56 1.064315e-51
+## PGM5P2      1 1.317269e-47 6.476132e-44
 ## TMEM212     1 5.507935e-34 1.353942e-30
-## TLCD2       1 1.159434e-28 1.900055e-25
-## SMG1        1 1.411506e-26 1.301144e-23
-## TSIX        1 1.256427e-16 1.748212e-14
-## UGDH-AS1    2 3.066164e-54 2.261143e-50
-## LOC643406   2 7.330958e-32 1.544633e-28
+## TLCD2       1 9.972736e-28 1.337163e-24
+## SMG1        1 1.411506e-26 1.387887e-23
+## TSIX        1 1.256427e-16 1.799130e-14
+## UGDH-AS1    2 5.509461e-54 4.062952e-50
+## LOC643406   2 5.464592e-30 1.007466e-26
 ## NLRP12      2 3.128190e-25 2.306884e-22
-## ODF2L       2 4.193889e-24 2.577320e-21
-## ARMC9       2 5.531674e-16 6.633062e-14
-## MAB21L3     3 9.131242e-44 3.366917e-40
-## FBXL20      3 6.670172e-23 2.981163e-20
+## ODF2L       2 4.193889e-24 2.689377e-21
+## ARMC9       2 5.531674e-16 6.798889e-14
+## MAB21L3     3 4.411577e-42 1.626659e-38
+## FBXL20      3 6.670172e-23 3.074324e-20
 ## GPR155      3 1.300526e-14 1.245550e-12
-## TFDP2       4 8.851044e-28 1.186764e-24
-## LRRC57      4 4.148010e-22 1.699417e-19
-## TUBA3FP     4 3.278619e-14 2.878354e-12
-## FBLIM1      5 1.730417e-40 5.104383e-37
-## CCL5        5 1.322838e-26 1.300703e-23
-## PNPT1       5 7.818870e-21 2.745726e-18
-## TRPM7       5 2.002259e-14 1.834243e-12
+## TFDP2       4 8.851044e-28 1.305440e-24
+## LRRC57      4 4.148010e-22 1.747971e-19
+## TUBA3FP     4 3.278619e-14 2.930688e-12
+## FBLIM1      5 4.896706e-39 1.444430e-35
+## CCL5        5 2.583585e-26 2.381581e-23
+## PNPT1       5 7.818870e-21 2.812695e-18
+## TRPM7       5 2.614253e-14 2.380100e-12
 ```
 
 Intra-batch comparisons with `block=` are robust to difference in the log-fold changes or variance between batches.
@@ -98,17 +100,16 @@ as.data.frame(demo[demo$Top <= 5,1:3])
 ```
 ##         Top       p.value           FDR
 ## CCL5      1  0.000000e+00  0.000000e+00
-## PGM5P2    1 3.831712e-314 1.412848e-310
-## PCDH11Y   2  0.000000e+00  0.000000e+00
-## LPAL2     2 5.313572e-318 2.612330e-314
-## TMEM212   2 3.302215e-300 8.117395e-297
-## LAIR1     3 3.407370e-304 1.005106e-300
-## VSTM4     3 1.288202e-296 2.374962e-293
-## TFDP2     3 3.422123e-296 5.608100e-293
-## ZNF665    4 8.652004e-298 1.822977e-294
-## LRRC57    4 1.925200e-258 7.472310e-256
-## LPP       5 1.184317e-262 5.634675e-260
-## FBXL20    5 1.342461e-248 4.829257e-246
+## PCDH11Y   1  0.000000e+00  0.000000e+00
+## PGM5P2    1 2.341939e-314 8.635313e-311
+## LPAL2     2 3.371227e-317 1.657407e-313
+## TMEM212   2 1.115951e-299 2.351309e-296
+## LAIR1     3 1.924973e-305 5.678287e-302
+## TFDP2     3 8.637836e-300 2.123324e-296
+## ZNF665    3 7.120647e-297 1.312780e-293
+## VSTM4     3 4.535077e-296 7.431984e-293
+## LRRC57    4 3.121177e-259 1.353948e-256
+## FBXL20    5 1.327894e-252 4.776857e-250
 ```
 
 The use of a linear model makes a few some strong assumptions, necessitating some caution when interpreting the results.
@@ -124,7 +125,7 @@ Thus, we generally recommend the use of `block=` where possible.
 The `overlapExprs()` function uses the Wilcoxon rank sum test to detect uneven mixing of the distributions of expression values between clusters.
 The effect size is reported as the probability of randomly sampling one observation in one cluster that is greater than a random observation in another cluster.
 This prioritizes genes where there is clear separation between the distributions of expression values of different clusters.
-We demonstrate the use of `overlapExprs()` on the 416B data set from the [previous workflow](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/work-1-reads.html),
+We demonstrate the use of `overlapExprs()` on the 416B data set from the [previous workflow](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/reads),
 detecting DE genes between clusters while blocking on the plate of origin.
 
 
@@ -173,7 +174,7 @@ plotExpression(sce.416b, x="cluster", colour_by="Plate",
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/xtra-3b-de_files/figure-html/viol-de-wilcox-1.png" alt="Distribution of log-normalized expression values for the top 10 DE genes involving cluster 1 with the Wilcoxon rank sum test, stratified by cluster assignment and coloured by the plate of origin for each cell." width="100%" />
+<img src="de_files/figure-html/viol-de-wilcox-1.png" alt="Distribution of log-normalized expression values for the top 10 DE genes involving cluster 1 with the Wilcoxon rank sum test, stratified by cluster assignment and coloured by the plate of origin for each cell." width="100%" />
 <p class="caption">(\#fig:viol-de-wilcox)Distribution of log-normalized expression values for the top 10 DE genes involving cluster 1 with the Wilcoxon rank sum test, stratified by cluster assignment and coloured by the plate of origin for each cell.</p>
 </div>
 
@@ -246,7 +247,7 @@ for (x in seq_along(clust.terms)) {
 ```
 
 The results of this comparison are consolidated into a single marker list for each cluster with the `combineMarkers()` function.
-This yields an ordering of genes that can be interpreted in the same manner as discussed [previously](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/work-1-reads.html#detecting-marker-genes-between-clusters) for `findMarkers()` output.
+This yields an ordering of genes that can be interpreted in the same manner as discussed [previously](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/reads.html#detecting-marker-genes-between-clusters) for `findMarkers()` output.
 
 
 ```r
@@ -291,7 +292,7 @@ hist(out[[1]]$p.value, col="grey80", xlab="p-value")
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/xtra-3b-de_files/figure-html/pval-dist-1.png" alt="Distribution of p-values from a DE analysis between two clusters in a simulation with no true subpopulation structure." width="100%" />
+<img src="de_files/figure-html/pval-dist-1.png" alt="Distribution of p-values from a DE analysis between two clusters in a simulation with no true subpopulation structure." width="100%" />
 <p class="caption">(\#fig:pval-dist)Distribution of p-values from a DE analysis between two clusters in a simulation with no true subpopulation structure.</p>
 </div>
 
@@ -319,7 +320,7 @@ However, these are difficult to implement from both a theoretical and practical 
 A faster approach is to use a summation strategy [@lun2017overcoming], where all cells in each combination of sample and condition (or cluster) are summed together.
 This yields a single pseudo-bulk count profile per combination, to which standard methods like *[edgeR](https://bioconductor.org/packages/3.9/edgeR)* or *[limma](https://bioconductor.org/packages/3.9/limma)* can be applied.
 
-We demonstrate this procedure on the [416B data set](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/work-1-reads.html) again.
+We demonstrate this procedure on the [416B data set](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/reads) again.
 We first create a factor containing all combinations of the per-cell factors of interest.
 Here, the factors of interest are the assigned cluster and the plate of origin for each cell^[Cluster is nested in oncogene induction status so that latter will not be used here.].
 All cells from one plate with the same oncogene induction status were obtained from the same biological sample.
@@ -444,7 +445,7 @@ plotExpression(sub.sce, x="cluster", colour_by="Plate",
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/xtra-3b-de_files/figure-html/violde-1.png" alt="Distribution of log-normalized expression values for the top 10 DE genes between clusters 1 and 2 from the summation strategy, stratified by cluster assignment and coloured by the plate of origin for each cell." width="100%" />
+<img src="de_files/figure-html/violde-1.png" alt="Distribution of log-normalized expression values for the top 10 DE genes between clusters 1 and 2 from the summation strategy, stratified by cluster assignment and coloured by the plate of origin for each cell." width="100%" />
 <p class="caption">(\#fig:violde)Distribution of log-normalized expression values for the top 10 DE genes between clusters 1 and 2 from the summation strategy, stratified by cluster assignment and coloured by the plate of origin for each cell.</p>
 </div>
 

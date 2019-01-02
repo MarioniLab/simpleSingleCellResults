@@ -12,7 +12,7 @@ author:
   - *CRUK
   - *EMBL
   - Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
-date: "2018-11-16"
+date: "2018-12-25"
 vignette: >
   %\VignetteIndexEntry{03. UMI count data}
   %\VignetteEngine{knitr::rmarkdown}
@@ -182,7 +182,7 @@ hist(sce$pct_counts_Mt, xlab="Mitochondrial proportion (%)",
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/work-2-umis_files/figure-html/libplotbrain-1.png" alt="Histograms of QC metrics including the library sizes, number of expressed genes and proportion of UMIs assigned to spike-in transcripts or mitochondrial genes for all cells in the brain dataset." width="100%"  class="widefigure" />
+<img src="umis_files/figure-html/libplotbrain-1.png" alt="Histograms of QC metrics including the library sizes, number of expressed genes and proportion of UMIs assigned to spike-in transcripts or mitochondrial genes for all cells in the brain dataset." width="100%"  class="widefigure" />
 <p class="caption">(\#fig:libplotbrain)Histograms of QC metrics including the library sizes, number of expressed genes and proportion of UMIs assigned to spike-in transcripts or mitochondrial genes for all cells in the brain dataset.</p>
 </div>
 
@@ -233,7 +233,7 @@ table(assignments$phase)
 ```
 ## 
 ##   G1  G2M    S 
-## 2981    7    1
+## 2980    8    1
 ```
 
 ```r
@@ -241,7 +241,7 @@ plot(assignments$score$G1, assignments$score$G2M, xlab="G1 score", ylab="G2/M sc
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/work-2-umis_files/figure-html/phaseplotbrain-1.png" alt="Cell cycle phase scores from applying the pair-based classifier on the brain dataset, where each point represents a cell." width="100%" />
+<img src="umis_files/figure-html/phaseplotbrain-1.png" alt="Cell cycle phase scores from applying the pair-based classifier on the brain dataset, where each point represents a cell." width="100%" />
 <p class="caption">(\#fig:phaseplotbrain)Cell cycle phase scores from applying the pair-based classifier on the brain dataset, where each point represents a cell.</p>
 </div>
 
@@ -266,7 +266,7 @@ plotHighestExprs(sce, n=50) + fontsize
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/work-2-umis_files/figure-html/topgenebrain-1.png" alt="Percentage of total counts assigned to the top 50 most highly-abundant features in the brain dataset. For each feature, each bar represents the percentage assigned to that feature for a single cell, while the circle represents the average across all cells. Bars are coloured by the total number of expressed features in each cell, while circles are coloured according to whether the feature is labelled as a control feature." width="100%"  class="widefigure" />
+<img src="umis_files/figure-html/topgenebrain-1.png" alt="Percentage of total counts assigned to the top 50 most highly-abundant features in the brain dataset. For each feature, each bar represents the percentage assigned to that feature for a single cell, while the circle represents the average across all cells. Bars are coloured by the total number of expressed features in each cell, while circles are coloured according to whether the feature is labelled as a control feature." width="100%"  class="widefigure" />
 <p class="caption">(\#fig:topgenebrain)Percentage of total counts assigned to the top 50 most highly-abundant features in the brain dataset. For each feature, each bar represents the percentage assigned to that feature for a single cell, while the circle represents the average across all cells. Bars are coloured by the total number of expressed features in each cell, while circles are coloured according to whether the feature is labelled as a control feature.</p>
 </div>
 
@@ -281,7 +281,7 @@ hist(log10(ave.counts), breaks=100, main="", col="grey",
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/work-2-umis_files/figure-html/abhistbrain-1.png" alt="Histogram of log-average counts for all genes in the brain dataset." width="100%" />
+<img src="umis_files/figure-html/abhistbrain-1.png" alt="Histogram of log-average counts for all genes in the brain dataset." width="100%" />
 <p class="caption">(\#fig:abhistbrain)Histogram of log-average counts for all genes in the brain dataset.</p>
 </div>
 
@@ -318,7 +318,7 @@ This uses methods from the *[irlba](https://CRAN.R-project.org/package=irlba)* p
 
 ```r
 set.seed(1000)
-clusters <- quickCluster(sce, pc.approx=TRUE)
+clusters <- quickCluster(sce, use.ranks=FALSE, pc.approx=TRUE)
 sce <- computeSumFactors(sce, cluster=clusters, min.mean=0.1)
 summary(sizeFactors(sce))
 ```
@@ -339,7 +339,7 @@ plot(sizeFactors(sce), sce$total_counts/1e3, log="xy",
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/work-2-umis_files/figure-html/normplotbrain-1.png" alt="Size factors from pooling, plotted against library sizes for all cells in the brain dataset. Axes are shown on a log-scale." width="100%" />
+<img src="umis_files/figure-html/normplotbrain-1.png" alt="Size factors from pooling, plotted against library sizes for all cells in the brain dataset. Axes are shown on a log-scale." width="100%" />
 <p class="caption">(\#fig:normplotbrain)Size factors from pooling, plotted against library sizes for all cells in the brain dataset. Axes are shown on a log-scale.</p>
 </div>
 
@@ -365,7 +365,7 @@ There is no need for precise clustering at this step, as we will not be interpre
 `computeSumFactors()` is robust to a moderate level of differential expression between cells in the same cluster, so careful definition of subclusters is not required.
 That said, there does need to be sufficient cells in each cluster for pooling, which can be guaranteed with the `min.size=` argument in `quickCluster()`.
 - Older versions of `quickCluster()` performed clustering based on rank correlations between cells.
-The current version uses graph-based clustering on principal components obtained from log-expression values.
+The current version (with `use.ranks=FALSE`) uses graph-based clustering on principal components obtained from log-expression values.
 This is faster and yields higher resolution clusters than before.
 Nonetheless, the previous behaviour can be recovered by setting the arguments appropriately, see `?quickCluster` for more details.
 
@@ -396,7 +396,7 @@ curve(var.fit$trend(x), col="dodgerblue", add=TRUE, lwd=2)
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/work-2-umis_files/figure-html/hvgplotbrain-1.png" alt="Variance of normalized log-expression values against the mean for each gene, calculated across all cells in the brain dataset after blocking on the sex effect. The blue line represents the mean-dependent trend in the technical variance of the spike-in transcripts (also highlighted as red points)." width="100%" />
+<img src="umis_files/figure-html/hvgplotbrain-1.png" alt="Variance of normalized log-expression values against the mean for each gene, calculated across all cells in the brain dataset after blocking on the sex effect. The blue line represents the mean-dependent trend in the technical variance of the spike-in transcripts (also highlighted as red points)." width="100%" />
 <p class="caption">(\#fig:hvgplotbrain)Variance of normalized log-expression values against the mean for each gene, calculated across all cells in the brain dataset after blocking on the sex effect. The blue line represents the mean-dependent trend in the technical variance of the spike-in transcripts (also highlighted as red points).</p>
 </div>
 
@@ -411,7 +411,7 @@ plotExpression(sce, rownames(var.out)[chosen.genes],
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/work-2-umis_files/figure-html/hvgvioplotbrain-1.png" alt="Violin plots of normalized log-expression values for the top 10 HVGs in the brain dataset. For each gene, each point represents the log-expression value for an individual cell." width="100%" />
+<img src="umis_files/figure-html/hvgvioplotbrain-1.png" alt="Violin plots of normalized log-expression values for the top 10 HVGs in the brain dataset. For each gene, each point represents the log-expression value for an individual cell." width="100%" />
 <p class="caption">(\#fig:hvgvioplotbrain)Violin plots of normalized log-expression values for the top 10 HVGs in the brain dataset. For each gene, each point represents the log-expression value for an individual cell.</p>
 </div>
 
@@ -460,7 +460,7 @@ multiplot(tsne1, tsne2, cols=2)
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/work-2-umis_files/figure-html/tsneplotbrain-1.png" alt="_t_-SNE plots constructed from the denoised PCs of the brain dataset. Each point represents a cell and is coloured according to its expression of _Neurod6_ (left) or _Mog_ (right)." width="1152" />
+<img src="umis_files/figure-html/tsneplotbrain-1.png" alt="_t_-SNE plots constructed from the denoised PCs of the brain dataset. Each point represents a cell and is coloured according to its expression of _Neurod6_ (left) or _Mog_ (right)." width="1152" />
 <p class="caption">(\#fig:tsneplotbrain)_t_-SNE plots constructed from the denoised PCs of the brain dataset. Each point represents a cell and is coloured according to its expression of _Neurod6_ (left) or _Mog_ (right).</p>
 </div>
 
@@ -476,7 +476,7 @@ multiplot(pca1, pca2, cols=2)
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/work-2-umis_files/figure-html/pcaplotbrain-1.png" alt="PCA plots constructed from the denoised PCs of the brain dataset. Each point represents a cell and is coloured according to its expression of the _Neurod6_ (left) or _Mog_ (right)." width="1152" />
+<img src="umis_files/figure-html/pcaplotbrain-1.png" alt="PCA plots constructed from the denoised PCs of the brain dataset. Each point represents a cell and is coloured according to its expression of the _Neurod6_ (left) or _Mog_ (right)." width="1152" />
 <p class="caption">(\#fig:pcaplotbrain)PCA plots constructed from the denoised PCs of the brain dataset. Each point represents a cell and is coloured according to its expression of the _Neurod6_ (left) or _Mog_ (right).</p>
 </div>
 
@@ -520,7 +520,7 @@ plotTSNE(sce, colour_by="cluster") + fontsize
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/work-2-umis_files/figure-html/tsneclusterbrain-1.png" alt="_t_-SNE plot of the denoised PCs of the brain dataset. Each point represents a cell and is coloured according to its assigned cluster identity." width="100%" />
+<img src="umis_files/figure-html/tsneclusterbrain-1.png" alt="_t_-SNE plot of the denoised PCs of the brain dataset. Each point represents a cell and is coloured according to its assigned cluster identity." width="100%" />
 <p class="caption">(\#fig:tsneclusterbrain)_t_-SNE plot of the denoised PCs of the brain dataset. Each point represents a cell and is coloured according to its assigned cluster identity.</p>
 </div>
 
@@ -538,7 +538,7 @@ plotReducedDim(sce, colour_by="cluster", use_dimred="force")
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/work-2-umis_files/figure-html/fdlbrain-1.png" alt="Force-directed layout for the shared nearest-neighbour graph of the brain dataset. Each point represents a cell and is coloured according to its assigned cluster identity." width="100%" />
+<img src="umis_files/figure-html/fdlbrain-1.png" alt="Force-directed layout for the shared nearest-neighbour graph of the brain dataset. Each point represents a cell and is coloured according to its assigned cluster identity." width="100%" />
 <p class="caption">(\#fig:fdlbrain)Force-directed layout for the shared nearest-neighbour graph of the brain dataset. Each point represents a cell and is coloured according to its assigned cluster identity.</p>
 </div>
 
@@ -590,7 +590,7 @@ pheatmap(lratio, cluster_rows=FALSE, cluster_cols=FALSE,
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/work-2-umis_files/figure-html/heatmodbrain-1.png" alt="Heatmap of the log~10~-ratio of the total weight between nodes in the same cluster or in different clusters, relative to the total weight expected under a null model of random links." width="100%" />
+<img src="umis_files/figure-html/heatmodbrain-1.png" alt="Heatmap of the log~10~-ratio of the total weight between nodes in the same cluster or in different clusters, relative to the total weight expected under a null model of random links." width="100%" />
 <p class="caption">(\#fig:heatmodbrain)Heatmap of the log~10~-ratio of the total weight between nodes in the same cluster or in different clusters, relative to the total weight expected under a null model of random links.</p>
 </div>
 
@@ -606,7 +606,7 @@ plot(cluster.gr, edge.width=igraph::E(cluster.gr)$weight*10)
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/work-2-umis_files/figure-html/graphbrain-1.png" alt="Force-directed layout showing the relationships between clusters based on the ratio of observed to expected total weights between nodes in different clusters. The thickness of the edge between a pair of clusters is proportional to the corresponding ratio." width="100%" />
+<img src="umis_files/figure-html/graphbrain-1.png" alt="Force-directed layout showing the relationships between clusters based on the ratio of observed to expected total weights between nodes in different clusters. The thickness of the edge between a pair of clusters is proportional to the corresponding ratio." width="100%" />
 <p class="caption">(\#fig:graphbrain)Force-directed layout showing the relationships between clusters based on the ratio of observed to expected total weights between nodes in different clusters. The thickness of the edge between a pair of clusters is proportional to the corresponding ratio.</p>
 </div>
 
@@ -701,7 +701,7 @@ plotHeatmap(sce, features=top.markers, columns=order(my.clusters),
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/work-2-umis_files/figure-html/heatmapmarkerbrain-1.png" alt="Heatmap of mean-centred and normalized log-expression values for the top set of markers for cluster 4 in the brain dataset. Column colours represent the cluster to which each cell is assigned, as indicated by the legend." width="100%"  class="widefigure" />
+<img src="umis_files/figure-html/heatmapmarkerbrain-1.png" alt="Heatmap of mean-centred and normalized log-expression values for the top set of markers for cluster 4 in the brain dataset. Column colours represent the cluster to which each cell is assigned, as indicated by the legend." width="100%"  class="widefigure" />
 <p class="caption">(\#fig:heatmapmarkerbrain)Heatmap of mean-centred and normalized log-expression values for the top set of markers for cluster 4 in the brain dataset. Column colours represent the cluster to which each cell is assigned, as indicated by the legend.</p>
 </div>
 
@@ -727,98 +727,72 @@ sessionInfo()
 ```
 
 ```
-## R Under development (unstable) (2018-11-02 r75535)
-## Platform: x86_64-pc-linux-gnu (64-bit)
-## Running under: Ubuntu 16.04.5 LTS
+## R Under development (unstable) (2018-12-07 r75787)
+## Platform: x86_64-apple-darwin15.6.0 (64-bit)
+## Running under: OS X El Capitan 10.11.6
 ## 
 ## Matrix products: default
-## BLAS: /home/cri.camres.org/lun01/Software/R/trunk/lib/libRblas.so
-## LAPACK: /home/cri.camres.org/lun01/Software/R/trunk/lib/libRlapack.so
+## BLAS: /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRblas.0.dylib
+## LAPACK: /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRlapack.dylib
 ## 
 ## locale:
-##  [1] LC_CTYPE=en_GB.UTF-8       LC_NUMERIC=C              
-##  [3] LC_TIME=en_GB.UTF-8        LC_COLLATE=en_GB.UTF-8    
-##  [5] LC_MONETARY=en_GB.UTF-8    LC_MESSAGES=en_GB.UTF-8   
-##  [7] LC_PAPER=en_GB.UTF-8       LC_NAME=C                 
-##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
-## [11] LC_MEASUREMENT=en_GB.UTF-8 LC_IDENTIFICATION=C       
+## [1] en_GB.UTF-8/en_GB.UTF-8/en_GB.UTF-8/C/en_GB.UTF-8/en_GB.UTF-8
 ## 
 ## attached base packages:
 ## [1] parallel  stats4    stats     graphics  grDevices utils     datasets 
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] pheatmap_1.0.10                       
-##  [2] cluster_2.0.7-1                       
-##  [3] dynamicTreeCut_1.63-1                 
-##  [4] limma_3.39.1                          
-##  [5] scran_1.11.4                          
-##  [6] scater_1.11.2                         
-##  [7] ggplot2_3.1.0                         
-##  [8] TxDb.Mmusculus.UCSC.mm10.ensGene_3.4.0
-##  [9] GenomicFeatures_1.35.1                
-## [10] org.Mm.eg.db_3.7.0                    
-## [11] AnnotationDbi_1.45.0                  
-## [12] SingleCellExperiment_1.5.0            
-## [13] SummarizedExperiment_1.13.0           
-## [14] DelayedArray_0.9.0                    
-## [15] BiocParallel_1.17.1                   
-## [16] matrixStats_0.54.0                    
-## [17] Biobase_2.43.0                        
-## [18] GenomicRanges_1.35.1                  
-## [19] GenomeInfoDb_1.19.1                   
-## [20] IRanges_2.17.1                        
-## [21] S4Vectors_0.21.4                      
-## [22] BiocGenerics_0.29.1                   
-## [23] bindrcpp_0.2.2                        
-## [24] BiocFileCache_1.7.0                   
-## [25] dbplyr_1.2.2                          
-## [26] knitr_1.20                            
-## [27] BiocStyle_2.11.0                      
+##  [1] pheatmap_1.0.10             scran_1.11.10              
+##  [3] scater_1.11.5               ggplot2_3.1.0              
+##  [5] org.Mm.eg.db_3.7.0          AnnotationDbi_1.45.0       
+##  [7] SingleCellExperiment_1.5.1  SummarizedExperiment_1.13.0
+##  [9] DelayedArray_0.9.4          BiocParallel_1.17.3        
+## [11] matrixStats_0.54.0          Biobase_2.43.0             
+## [13] GenomicRanges_1.35.1        GenomeInfoDb_1.19.1        
+## [15] IRanges_2.17.3              S4Vectors_0.21.8           
+## [17] BiocGenerics_0.29.1         bindrcpp_0.2.2             
+## [19] BiocFileCache_1.7.0         dbplyr_1.2.2               
+## [21] knitr_1.21                  BiocStyle_2.11.0           
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] bitops_1.0-6             bit64_0.9-7             
-##  [3] RColorBrewer_1.1-2       progress_1.2.0          
-##  [5] httr_1.3.1               rprojroot_1.3-2         
-##  [7] tools_3.6.0              backports_1.1.2         
-##  [9] irlba_2.3.3              R6_2.3.0                
-## [11] KernSmooth_2.23-15       HDF5Array_1.11.0        
-## [13] vipor_0.4.5              DBI_1.0.0               
-## [15] lazyeval_0.2.1           colorspace_1.3-2        
-## [17] withr_2.1.2              tidyselect_0.2.5        
-## [19] gridExtra_2.3            prettyunits_1.0.2       
-## [21] bit_1.1-14               curl_3.2                
-## [23] compiler_3.6.0           BiocNeighbors_1.1.1     
-## [25] rtracklayer_1.43.0       labeling_0.3            
-## [27] bookdown_0.7             scales_1.0.0            
-## [29] rappdirs_0.3.1           stringr_1.3.1           
-## [31] digest_0.6.18            Rsamtools_1.35.0        
-## [33] rmarkdown_1.10           XVector_0.23.0          
-## [35] pkgconfig_2.0.2          htmltools_0.3.6         
-## [37] highr_0.7                rlang_0.3.0.1           
-## [39] RSQLite_2.1.1            DelayedMatrixStats_1.5.0
-## [41] bindr_0.1.1              dplyr_0.7.8             
-## [43] RCurl_1.95-4.11          magrittr_1.5            
-## [45] GenomeInfoDbData_1.2.0   Matrix_1.2-15           
-## [47] Rcpp_1.0.0               ggbeeswarm_0.6.0        
-## [49] munsell_0.5.0            Rhdf5lib_1.5.0          
-## [51] viridis_0.5.1            edgeR_3.25.0            
-## [53] stringi_1.2.4            yaml_2.2.0              
-## [55] zlibbioc_1.29.0          Rtsne_0.15              
-## [57] rhdf5_2.27.1             plyr_1.8.4              
-## [59] grid_3.6.0               blob_1.1.1              
-## [61] crayon_1.3.4             lattice_0.20-38         
-## [63] Biostrings_2.51.1        cowplot_0.9.3           
-## [65] hms_0.4.2                locfit_1.5-9.1          
-## [67] pillar_1.3.0             igraph_1.2.2            
-## [69] reshape2_1.4.3           biomaRt_2.39.2          
-## [71] XML_3.98-1.16            glue_1.3.0              
-## [73] evaluate_0.12            BiocManager_1.30.4      
-## [75] gtable_0.2.0             purrr_0.2.5             
-## [77] assertthat_0.2.0         xfun_0.4                
-## [79] viridisLite_0.3.0        tibble_1.4.2            
-## [81] GenomicAlignments_1.19.0 beeswarm_0.2.3          
-## [83] memoise_1.1.0            statmod_1.4.30
+##  [3] RColorBrewer_1.1-2       httr_1.4.0              
+##  [5] dynamicTreeCut_1.63-1    tools_3.6.0             
+##  [7] R6_2.3.0                 irlba_2.3.3             
+##  [9] HDF5Array_1.11.10        vipor_0.4.5             
+## [11] DBI_1.0.0                lazyeval_0.2.1          
+## [13] colorspace_1.3-2         withr_2.1.2             
+## [15] tidyselect_0.2.5         gridExtra_2.3           
+## [17] bit_1.1-14               curl_3.2                
+## [19] compiler_3.6.0           BiocNeighbors_1.1.7     
+## [21] labeling_0.3             bookdown_0.9            
+## [23] scales_1.0.0             rappdirs_0.3.1          
+## [25] stringr_1.3.1            digest_0.6.18           
+## [27] rmarkdown_1.11           XVector_0.23.0          
+## [29] pkgconfig_2.0.2          htmltools_0.3.6         
+## [31] limma_3.39.3             highr_0.7               
+## [33] rlang_0.3.0.1            RSQLite_2.1.1           
+## [35] DelayedMatrixStats_1.5.0 bindr_0.1.1             
+## [37] dplyr_0.7.8              RCurl_1.95-4.11         
+## [39] magrittr_1.5             GenomeInfoDbData_1.2.0  
+## [41] Matrix_1.2-15            Rcpp_1.0.0              
+## [43] ggbeeswarm_0.6.0         munsell_0.5.0           
+## [45] Rhdf5lib_1.5.1           viridis_0.5.1           
+## [47] stringi_1.2.4            yaml_2.2.0              
+## [49] edgeR_3.25.2             zlibbioc_1.29.0         
+## [51] rhdf5_2.27.4             Rtsne_0.15              
+## [53] plyr_1.8.4               grid_3.6.0              
+## [55] blob_1.1.1               crayon_1.3.4            
+## [57] lattice_0.20-38          cowplot_0.9.3           
+## [59] locfit_1.5-9.1           pillar_1.3.1            
+## [61] igraph_1.2.2             codetools_0.2-16        
+## [63] glue_1.3.0               evaluate_0.12           
+## [65] BiocManager_1.30.4       gtable_0.2.0            
+## [67] purrr_0.2.5              assertthat_0.2.0        
+## [69] xfun_0.4                 viridisLite_0.3.0       
+## [71] tibble_1.4.2             beeswarm_0.2.3          
+## [73] memoise_1.1.0            statmod_1.4.30
 ```
 
 # References

@@ -5,7 +5,7 @@ author:
   affiliation: Cancer Research UK Cambridge Institute, Li Ka Shing Centre, Robinson Way, Cambridge CB2 0RE, United Kingdom
 - name: Michael D. Morgan
   affiliation: Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
-date: "2018-11-20"
+date: "2018-12-25"
 vignette: >
   %\VignetteIndexEntry{05. Correcting batch effects}
   %\VignetteEngine{knitr::rmarkdown}
@@ -193,7 +193,7 @@ This is done with pre-clustering by `quickCluster()` to avoid pooling together v
 ```r
 library(scran)
 set.seed(1000) # for irlba. 
-clusters <- quickCluster(sce.gse81076, pc.approx=TRUE)
+clusters <- quickCluster(sce.gse81076, use.ranks=FALSE, pc.approx=TRUE)
 table(clusters)
 ```
 
@@ -255,7 +255,7 @@ curve(fit$trend(x), col="dodgerblue", add=TRUE)
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/work-5-mnn_files/figure-html/var-gse81076-1.png" alt="Variance of normalized log-expression values for each gene in the GSE81076 dataset, plotted against the mean log-expression. The blue line represents the mean-dependent trend fitted to the variances of the spike-in transcripts (red)." width="100%" />
+<img src="batch_files/figure-html/var-gse81076-1.png" alt="Variance of normalized log-expression values for each gene in the GSE81076 dataset, plotted against the mean log-expression. The blue line represents the mean-dependent trend fitted to the variances of the spike-in transcripts (red)." width="100%" />
 <p class="caption">(\#fig:var-gse81076)Variance of normalized log-expression values for each gene in the GSE81076 dataset, plotted against the mean log-expression. The blue line represents the mean-dependent trend fitted to the variances of the spike-in transcripts (red).</p>
 </div>
 
@@ -274,20 +274,20 @@ head(dec.gse81076)
 ## DataFrame with 6 rows and 7 columns
 ##                             mean            total              bio
 ##                        <numeric>        <numeric>        <numeric>
-## ENSG00000254647 2.84354986788675 6.37223658453819 5.92885912197339
-## ENSG00000129965 1.88950987335824 6.02281611785607 5.57524591788433
-## ENSG00000115263 4.02102813554184 5.79923366454836 5.56593885619407
-## ENSG00000118271 3.67285962325439 5.80023170033878 5.49885083587672
-## ENSG00000115386 4.24317140825674 5.41270206612667 5.17694035036249
-## ENSG00000164266 3.03649146616406 5.43074151343319 5.02327614710772
+## ENSG00000254647 2.84354986788675 6.37223658453819  5.9288591219916
+## ENSG00000129965 1.88950987335824 6.02281611785607 5.57524591787871
+## ENSG00000115263 4.02102813554184 5.79923366454836 5.56593885619029
+## ENSG00000118271 3.67285962325439 5.80023170033878 5.49885083589153
+## ENSG00000115386 4.24317140825674 5.41270206612667 5.17694035035338
+## ENSG00000164266 3.03649146616406 5.43074151343319 5.02327614712641
 ##                              tech   p.value       FDR      Symbol
 ##                         <numeric> <numeric> <numeric> <character>
-## ENSG00000254647 0.443377462564809         0         0         INS
-## ENSG00000129965 0.447570199971736         0         0    INS-IGF2
-## ENSG00000115263  0.23329480835429         0         0         GCG
-## ENSG00000118271 0.301380864462058         0         0         TTR
-## ENSG00000115386 0.235761715764185         0         0       REG1A
-## ENSG00000164266 0.407465366325469         0         0      SPINK1
+## ENSG00000254647 0.443377462546594         0         0         INS
+## ENSG00000129965 0.447570199977359         0         0    INS-IGF2
+## ENSG00000115263 0.233294808358074         0         0         GCG
+## ENSG00000118271 0.301380864447243         0         0         TTR
+## ENSG00000115386 0.235761715773295         0         0       REG1A
+## ENSG00000164266 0.407465366306782         0         0      SPINK1
 ```
 
 
@@ -440,7 +440,7 @@ We compute size factors for the endogenous genes and spike-in transcripts, and u
 
 ```r
 set.seed(1000)
-clusters <- quickCluster(sce.gse85241, pc.approx=TRUE)
+clusters <- quickCluster(sce.gse85241, use.ranks=FALSE, pc.approx=TRUE)
 table(clusters)
 ```
 
@@ -492,7 +492,7 @@ curve(fit$trend(x), col="dodgerblue", add=TRUE)
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/work-5-mnn_files/figure-html/var-gse85241-1.png" alt="Variance of normalized log-expression values for each gene in the GSE85241 dataset, plotted against the mean log-expression. The blue line represents the mean-dependent trend fitted to the variances of the spike-in transcripts (red)." width="100%" />
+<img src="batch_files/figure-html/var-gse85241-1.png" alt="Variance of normalized log-expression values for each gene in the GSE85241 dataset, plotted against the mean log-expression. The blue line represents the mean-dependent trend fitted to the variances of the spike-in transcripts (red)." width="100%" />
 <p class="caption">(\#fig:var-gse85241)Variance of normalized log-expression values for each gene in the GSE85241 dataset, plotted against the mean log-expression. The blue line represents the mean-dependent trend fitted to the variances of the spike-in transcripts (red).</p>
 </div>
 
@@ -510,20 +510,20 @@ head(dec.gse85241)
 ## DataFrame with 6 rows and 7 columns
 ##                             mean            total              bio
 ##                        <numeric>        <numeric>        <numeric>
-## ENSG00000115263 7.65841710442871  6.5830512952663 6.55421179060075
-## ENSG00000089199 4.61402548649295 6.40161547541309 6.27960849217962
-## ENSG00000169903 3.00902736622973 6.52426016019893 6.16908131917692
-## ENSG00000254647 1.99894035399136 6.41255303005657 5.85584323627252
-## ENSG00000118271  7.3311379562758 5.71978094825155 5.68830339385946
-## ENSG00000171951 4.18265117704755 5.54705848250118 5.38194664056256
+## ENSG00000115263 7.65841710442871  6.5830512952663 6.55421179067102
+## ENSG00000089199 4.61402548649295 6.40161547541309  6.2796084921898
+## ENSG00000169903 3.00902736622973 6.52426016019893 6.16908131913193
+## ENSG00000254647 1.99894035399136 6.41255303005657 5.85584323610226
+## ENSG00000118271  7.3311379562758 5.71978094825155 5.68830339392333
+## ENSG00000171951 4.18265117704755 5.54705848250118 5.38194664056955
 ##                               tech   p.value       FDR      Symbol
 ##                          <numeric> <numeric> <numeric> <character>
-## ENSG00000115263 0.0288395046655466         0         0         GCG
-## ENSG00000089199  0.122006983233466         0         0        CHGB
-## ENSG00000169903  0.355178841022013         0         0      TM4SF4
-## ENSG00000254647  0.556709793784048         0         0         INS
-## ENSG00000118271 0.0314775543920864         0         0         TTR
-## ENSG00000171951  0.165111841938628         0         0        SCG2
+## ENSG00000115263 0.0288395045952795         0         0         GCG
+## ENSG00000089199  0.122006983223284         0         0        CHGB
+## ENSG00000169903  0.355178841067002         0         0      TM4SF4
+## ENSG00000254647  0.556709793954303         0         0         INS
+## ENSG00000118271 0.0314775543282175         0         0         TTR
+## ENSG00000171951  0.165111841931636         0         0        SCG2
 ```
 
 
@@ -729,7 +729,7 @@ multiplot(ot, ct, cols=2)
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/work-5-mnn_files/figure-html/tsne-batch-1.png" alt="t-SNE plots of the pancreas datasets, before and after MNN correction. Each point represents a cell and is coloured by the batch of origin." width="960" />
+<img src="batch_files/figure-html/tsne-batch-1.png" alt="t-SNE plots of the pancreas datasets, before and after MNN correction. Each point represents a cell and is coloured by the batch of origin." width="960" />
 <p class="caption">(\#fig:tsne-batch)t-SNE plots of the pancreas datasets, before and after MNN correction. Each point represents a cell and is coloured by the batch of origin.</p>
 </div>
 
@@ -746,7 +746,7 @@ multiplot(ct.gcg, ct.ins, ct.sst, ct.ppy, cols=2)
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/work-5-mnn_files/figure-html/tsne-markers-1.png" alt="t-SNE plots after MNN correction, where each point represents a cell and is coloured by its corrected expression of key marker genes for known cell types in the pancreas." width="960" />
+<img src="batch_files/figure-html/tsne-markers-1.png" alt="t-SNE plots after MNN correction, where each point represents a cell and is coloured by its corrected expression of key marker genes for known cell types in the pancreas." width="960" />
 <p class="caption">(\#fig:tsne-markers)t-SNE plots after MNN correction, where each point represents a cell and is coloured by its corrected expression of key marker genes for known cell types in the pancreas.</p>
 </div>
 
@@ -1006,7 +1006,7 @@ plot(tout.all$Y[,1], tout.all$Y[,2], main="Final",
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/work-5-mnn_files/figure-html/tsne-hmerge-1.png" alt="t-SNE plots after correcting for donor effects within each data set, and after correcting for batch effects between data sets (final). Each point represents a cell that is coloured according to its donor of origin (left, middle) or the data set of origin (right)." width="960" />
+<img src="batch_files/figure-html/tsne-hmerge-1.png" alt="t-SNE plots after correcting for donor effects within each data set, and after correcting for batch effects between data sets (final). Each point represents a cell that is coloured according to its donor of origin (left, middle) or the data set of origin (right)." width="960" />
 <p class="caption">(\#fig:tsne-hmerge)t-SNE plots after correcting for donor effects within each data set, and after correcting for batch effects between data sets (final). Each point represents a cell that is coloured according to its donor of origin (left, middle) or the data set of origin (right).</p>
 </div>
 
@@ -1086,14 +1086,14 @@ table(clusters$membership, sce$Batch)
 ##     
 ##      GSE81076 GSE85241
 ##   1        72        1
-##   2       308      281
-##   3       357      259
-##   4       222      852
+##   2       315      281
+##   3       350      259
+##   4       212      851
 ##   5        65      198
-##   6       139      390
+##   6       129       90
 ##   7        25      108
-##   8        22      127
-##   9        67       87
+##   8        87      389
+##   9        22      126
 ##   10        0       18
 ##   11        8        4
 ##   12        7       21
@@ -1108,7 +1108,7 @@ plotTSNE(sce, colour_by="Cluster")
 ```
 
 <div class="figure">
-<img src="/home/cri.camres.org/lun01/AaronDocs/Research/simpleSingleCell/results/work-5-mnn_files/figure-html/tsne-cluster-1.png" alt="t-SNE plot after MMN correction, where each point represents a cell and is coloured by its cluster identity." width="100%" />
+<img src="batch_files/figure-html/tsne-cluster-1.png" alt="t-SNE plot after MMN correction, where each point represents a cell and is coloured by its cluster identity." width="100%" />
 <p class="caption">(\#fig:tsne-cluster)t-SNE plot after MMN correction, where each point represents a cell and is coloured by its cluster identity.</p>
 </div>
 
@@ -1133,36 +1133,38 @@ as.data.frame(demo[,1:3]) # only first three columns for brevity.
 ## SCG2      1  0.000000e+00  0.000000e+00
 ## PPP1R1A   1  0.000000e+00  0.000000e+00
 ## IRX2      1  0.000000e+00  0.000000e+00
+## GC        1  0.000000e+00  0.000000e+00
 ## FAP       1  0.000000e+00  0.000000e+00
+## CRYBA2    1  0.000000e+00  0.000000e+00
 ## CNTN1     1  0.000000e+00  0.000000e+00
-## ARX       1  0.000000e+00  0.000000e+00
-## PTPRN     2  0.000000e+00  0.000000e+00
+## CPE       2  0.000000e+00  0.000000e+00
 ## CHGB      2  0.000000e+00  0.000000e+00
-## GC        2  0.000000e+00  0.000000e+00
 ## PAM       2  0.000000e+00  0.000000e+00
-## CRYBA2    2  0.000000e+00  0.000000e+00
+## ARX       2  0.000000e+00  0.000000e+00
 ## SYT7      2  0.000000e+00  0.000000e+00
-## LOXL4     2 1.460814e-289 2.872740e-287
-## CPE       3  0.000000e+00  0.000000e+00
-## TTR       3  0.000000e+00  0.000000e+00
+## LOXL4     2 3.109256e-290 6.197084e-288
+## PTPRN     3  0.000000e+00  0.000000e+00
 ## SCG5      3  0.000000e+00  0.000000e+00
+## PTPRN2    3  0.000000e+00  0.000000e+00
 ## SEZ6L2    3  0.000000e+00  0.000000e+00
 ## TPD52     3  0.000000e+00  0.000000e+00
-## PLCE1     3 1.777919e-192 1.507042e-190
+## PLCE1     3 1.995343e-192 1.634962e-190
 ## MAFB      4  0.000000e+00  0.000000e+00
 ## SCGN      4  0.000000e+00  0.000000e+00
-## GCG       4  0.000000e+00  0.000000e+00
-## PTPRN2    4  0.000000e+00  0.000000e+00
 ## RAB3B     4  0.000000e+00  0.000000e+00
-## SLC38A4   4  0.000000e+00  0.000000e+00
-## RCAN2     4 6.174972e-283 1.124379e-280
-## DDR1      5  0.000000e+00  0.000000e+00
-## CFC1      5 5.010538e-262 7.316874e-260
+## DDR1      4  0.000000e+00  0.000000e+00
+## RCAN2     4 2.371175e-282 4.317587e-280
+## SLC30A8   5  0.000000e+00  0.000000e+00
+## TTR       5  0.000000e+00  0.000000e+00
+## NEUROD1   5  0.000000e+00  0.000000e+00
+## GCG       5  0.000000e+00  0.000000e+00
+## SLC38A4   5  0.000000e+00  0.000000e+00
+## CFC1      5 8.016825e-262 1.194345e-259
 ```
 
 
 
-Other approaches for handling batch effects during marker gene detection are discussed [elsewhere](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/xtra-3b-de.html#blocking-on-uninteresting-factors-of-variation).
+Other approaches for handling batch effects during marker gene detection are discussed [elsewhere](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/de.html#blocking-on-uninteresting-factors-of-variation).
 It is similarly possible to perform these analyses with standard Bioconductor packages for DE analysis such as *[edgeR](https://bioconductor.org/packages/3.9/edgeR)* or *[limma](https://bioconductor.org/packages/3.9/limma)*.
 Note that the use of `block=` is roughly similar to the use of a batch-cluster interaction model and testing whether the average log-fold change across batches is equal to zero.
 
@@ -1196,77 +1198,72 @@ sessionInfo()
 ```
 
 ```
-## R Under development (unstable) (2018-11-02 r75535)
-## Platform: x86_64-pc-linux-gnu (64-bit)
-## Running under: Ubuntu 16.04.5 LTS
+## R Under development (unstable) (2018-12-07 r75787)
+## Platform: x86_64-apple-darwin15.6.0 (64-bit)
+## Running under: OS X El Capitan 10.11.6
 ## 
 ## Matrix products: default
-## BLAS: /home/cri.camres.org/lun01/Software/R/trunk/lib/libRblas.so
-## LAPACK: /home/cri.camres.org/lun01/Software/R/trunk/lib/libRlapack.so
+## BLAS: /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRblas.0.dylib
+## LAPACK: /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRlapack.dylib
 ## 
 ## locale:
-##  [1] LC_CTYPE=en_GB.UTF-8       LC_NUMERIC=C              
-##  [3] LC_TIME=en_GB.UTF-8        LC_COLLATE=en_GB.UTF-8    
-##  [5] LC_MONETARY=en_GB.UTF-8    LC_MESSAGES=en_GB.UTF-8   
-##  [7] LC_PAPER=en_GB.UTF-8       LC_NAME=C                 
-##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
-## [11] LC_MEASUREMENT=en_GB.UTF-8 LC_IDENTIFICATION=C       
+## [1] en_GB.UTF-8/en_GB.UTF-8/en_GB.UTF-8/C/en_GB.UTF-8/en_GB.UTF-8
 ## 
 ## attached base packages:
 ## [1] parallel  stats4    stats     graphics  grDevices utils     datasets 
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] Rtsne_0.15                  scran_1.11.4               
-##  [3] scater_1.11.2               ggplot2_3.1.0              
-##  [5] SingleCellExperiment_1.5.0  SummarizedExperiment_1.13.0
-##  [7] DelayedArray_0.9.0          BiocParallel_1.17.1        
+##  [1] Rtsne_0.15                  scran_1.11.10              
+##  [3] scater_1.11.5               ggplot2_3.1.0              
+##  [5] SingleCellExperiment_1.5.1  SummarizedExperiment_1.13.0
+##  [7] DelayedArray_0.9.4          BiocParallel_1.17.3        
 ##  [9] matrixStats_0.54.0          GenomicRanges_1.35.1       
 ## [11] GenomeInfoDb_1.19.1         org.Hs.eg.db_3.7.0         
-## [13] AnnotationDbi_1.45.0        IRanges_2.17.1             
-## [15] S4Vectors_0.21.5            Biobase_2.43.0             
+## [13] AnnotationDbi_1.45.0        IRanges_2.17.3             
+## [15] S4Vectors_0.21.8            Biobase_2.43.0             
 ## [17] BiocGenerics_0.29.1         bindrcpp_0.2.2             
 ## [19] BiocFileCache_1.7.0         dbplyr_1.2.2               
-## [21] knitr_1.20                  BiocStyle_2.11.0           
+## [21] knitr_1.21                  BiocStyle_2.11.0           
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] dynamicTreeCut_1.63-1    viridis_0.5.1           
-##  [3] httr_1.3.1               edgeR_3.25.0            
-##  [5] bit64_0.9-7              viridisLite_0.3.0       
+##  [3] httr_1.4.0               edgeR_3.25.2            
+##  [5] viridisLite_0.3.0        bit64_0.9-7             
 ##  [7] DelayedMatrixStats_1.5.0 assertthat_0.2.0        
 ##  [9] statmod_1.4.30           highr_0.7               
 ## [11] BiocManager_1.30.4       blob_1.1.1              
-## [13] vipor_0.4.5              GenomeInfoDbData_1.2.0  
-## [15] yaml_2.2.0               pillar_1.3.0            
-## [17] RSQLite_2.1.1            backports_1.1.2         
-## [19] lattice_0.20-38          limma_3.39.1            
-## [21] glue_1.3.0               digest_0.6.18           
-## [23] XVector_0.23.0           colorspace_1.3-2        
-## [25] cowplot_0.9.3            htmltools_0.3.6         
-## [27] Matrix_1.2-15            plyr_1.8.4              
-## [29] pkgconfig_2.0.2          bookdown_0.7            
-## [31] zlibbioc_1.29.0          purrr_0.2.5             
-## [33] scales_1.0.0             HDF5Array_1.11.0        
-## [35] tibble_1.4.2             withr_2.1.2             
-## [37] lazyeval_0.2.1           magrittr_1.5            
-## [39] crayon_1.3.4             memoise_1.1.0           
-## [41] evaluate_0.12            beeswarm_0.2.3          
+## [13] GenomeInfoDbData_1.2.0   vipor_0.4.5             
+## [15] yaml_2.2.0               pillar_1.3.1            
+## [17] RSQLite_2.1.1            lattice_0.20-38         
+## [19] limma_3.39.3             glue_1.3.0              
+## [21] digest_0.6.18            XVector_0.23.0          
+## [23] colorspace_1.3-2         cowplot_0.9.3           
+## [25] htmltools_0.3.6          Matrix_1.2-15           
+## [27] plyr_1.8.4               pkgconfig_2.0.2         
+## [29] bookdown_0.9             zlibbioc_1.29.0         
+## [31] purrr_0.2.5              scales_1.0.0            
+## [33] HDF5Array_1.11.10        tibble_1.4.2            
+## [35] withr_2.1.2              lazyeval_0.2.1          
+## [37] magrittr_1.5             crayon_1.3.4            
+## [39] memoise_1.1.0            evaluate_0.12           
+## [41] simpleSingleCell_1.7.8   beeswarm_0.2.3          
 ## [43] tools_3.6.0              stringr_1.3.1           
-## [45] Rhdf5lib_1.5.0           locfit_1.5-9.1          
+## [45] Rhdf5lib_1.5.1           locfit_1.5-9.1          
 ## [47] munsell_0.5.0            irlba_2.3.3             
 ## [49] compiler_3.6.0           rlang_0.3.0.1           
-## [51] rhdf5_2.27.1             grid_3.6.0              
-## [53] RCurl_1.95-4.11          BiocNeighbors_1.1.1     
+## [51] rhdf5_2.27.4             grid_3.6.0              
+## [53] RCurl_1.95-4.11          BiocNeighbors_1.1.7     
 ## [55] rappdirs_0.3.1           igraph_1.2.2            
 ## [57] labeling_0.3             bitops_1.0-6            
-## [59] rmarkdown_1.10           gtable_0.2.0            
-## [61] DBI_1.0.0                curl_3.2                
-## [63] reshape2_1.4.3           R6_2.3.0                
+## [59] rmarkdown_1.11           gtable_0.2.0            
+## [61] codetools_0.2-16         DBI_1.0.0               
+## [63] curl_3.2                 R6_2.3.0                
 ## [65] gridExtra_2.3            dplyr_0.7.8             
 ## [67] bit_1.1-14               bindr_0.1.1             
-## [69] rprojroot_1.3-2          stringi_1.2.4           
-## [71] ggbeeswarm_0.6.0         Rcpp_1.0.0              
-## [73] tidyselect_0.2.5         xfun_0.4
+## [69] stringi_1.2.4            ggbeeswarm_0.6.0        
+## [71] Rcpp_1.0.0               tidyselect_0.2.5        
+## [73] xfun_0.4
 ```
 
 # References

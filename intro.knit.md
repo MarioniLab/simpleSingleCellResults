@@ -1,0 +1,104 @@
+---
+title: Workflows for analyzing single-cell RNA-seq data with R/Bioconductor
+author: 
+- name: Aaron T. L. Lun
+  affiliation: &CRUK Cancer Research UK Cambridge Institute, Li Ka Shing Centre, Robinson Way, Cambridge CB2 0RE, United Kingdom
+- name: Davis J. McCarthy
+  affiliation: 
+  - &EMBL EMBL European Bioinformatics Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SD, United Kingdom
+  - St Vincent's Institute of Medical Research, 41 Victoria Parade, Fitzroy, Victoria 3065, Australia
+- name: John C. Marioni
+  affiliation: 
+  - *CRUK
+  - *EMBL
+  - Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
+date: "2018-12-25"
+vignette: >
+  %\VignetteIndexEntry{01. Introduction}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}    
+output: 
+  BiocStyle::html_document:
+    toc_float: true
+bibliography: ref.bib
+---
+
+
+
+# Workflow version information
+
+**R version**: R Under development (unstable) (2018-12-07 r75787)
+
+**Bioconductor version**: 3.9
+
+**Package**: 1.7.8
+
+# Motivation
+
+Single-cell RNA sequencing (scRNA-seq) is widely used to measure the genome-wide expression profile of individual cells.
+From each cell, mRNA is isolated and reverse transcribed to cDNA for high-throughput sequencing [@stegle2015computational].
+This can be done using microfluidics platforms like the Fluidigm C1 [@pollen2014lowcoverage], protocols based on microtiter plates like Smart-seq2 [@picelli2014fulllength], or droplet-based technologies like inDrop [@klein2015droplet;@macosko2015highly].
+The number of reads mapped to each gene is then used to quantify its expression in each cell.
+Alternatively, unique molecular identifiers (UMIs) can be used to directly measure the number of transcript molecules for each gene [@islam2014quantitative].
+Count data are analyzed to detect highly variable genes (HVGs) that drive heterogeneity across cells in a population, to find correlations between genes and cellular phenotypes, or to identify new subpopulations via dimensionality reduction and clustering. 
+This provides biological insights at a single-cell resolution that cannot be achieved with conventional bulk RNA sequencing of cell populations.
+
+Strategies for scRNA-seq data analysis differ markedly from those for bulk RNA-seq.
+One technical reason is that scRNA-seq data are much noisier than bulk data [@brennecke2013accounting;@marinov2014singlecell].
+Reliable capture (i.e., conversion) of transcripts into cDNA for sequencing is difficult with the low quantity of RNA in a single cell.
+This increases the frequency of drop-out events where none of the transcripts for a gene are captured.
+Dedicated steps are required to deal with this noise during analysis, especially during quality control.
+In addition, scRNA-seq data can be used to study cell-to-cell heterogeneity, e.g., to identify new cell subtypes, to characterize differentiation processes, to assign cells into their cell cycle phases, or to identify HVGs driving variability across the population [@vallejos2015basics;@fan2016characterizing;@trapnell2014dynamics].
+This is simply not possible with bulk data, meaning that custom methods are required to perform these analyses. 
+
+# scRNA-seq data analysis with Bioconductor
+
+This package contains a set of computational workflows for basic analysis of scRNA-seq data, using software from the open-source Bioconductor project [@huber2015orchestrating].
+The workflows start from a count matrix and describe a number of key steps for scRNA-seq data analysis, including quality control to remove problematic cells; normalization of cell-specific biases, with and without spike-ins; correction for batch effects; cell cycle phase classification from gene expression data; data exploration to identify putative subpopulations; and finally, HVG and marker gene identification to prioritize interesting genes.
+The application of these procedures will be demonstrated on several public scRNA-seq datasets involving immortalized myeloid progenitors, brain cells, haematopoietic stem cells, T-helper cells and mouse embryonic stem cells, generated with a range of experimental protocols and platforms [@lun2017assessing;@wilson2015combined;@zeisel2015brain;@islam2011characterization;@buettner2015computational;@zheng2017massively].
+The aim is to provide a variety of modular usage examples that can be applied to construct custom analysis pipelines.
+
+See the *[simpleSingleCell](https://bioconductor.org/packages/3.9/simpleSingleCell)* landing page for links to individual workflows and for instructions on how to install the required packages.
+To cite any of these workflows, please refer to http://f1000research.com/articles/5-2122/v2 for instructions.
+
+# Obtaining a count matrix
+
+All of these workflows start from a publicly available count matrix.
+For simplicity, we forego a description of the read processing steps required to generate the count matrix, i.e., read alignment and counting into features.
+These steps have been described in some detail elsewhere [@love2015rnaseq;@chen2016from], and are largely the same for bulk and single-cell data.
+For users favouring an R-based approach to read alignment and counting, we suggest using the methods in the *[Rsubread](https://bioconductor.org/packages/3.9/Rsubread)* package [@liao2013subread;@liao2014featurecounts].
+
+Some considerations specific to single-cell data may also be relevant, depending on the experimental protocol used to generate the data:
+
+- If spike-in RNA was added, the sequences of the spike-in transcripts can be included as additional FASTA files during genome index building prior to alignment.
+Similarly, genomic intervals for both spike-in transcripts and endogenous genes can be concatenated into a single GTF file prior to counting.
+- If UMIs are present, these should be extracted from the read sequence prior to alignment, e.g., with the _UMI-tools_ software [@smith2017umitools].
+Reads with the same UMI mapping to the same gene represent a single underlying transcript molecule and only increment the count of that gene by one.
+- Alignment-free methods such as _kallisto_ [@bray2016near] or _Salmon_ [@patro2015accurate] may also be useful, due to their speed and ability to perform transcript quantification.
+This can be loaded into R using methods from the *[tximport](https://bioconductor.org/packages/3.9/tximport)* package [@soneson2015differential].
+
+# Author information
+
+## Author contributions
+
+A.T.L.L. developed and tested workflows on all datasets.
+A.T.L.L. and D.J.M. implemented improvements to the software packages required by the workflow.
+J.C.M. provided direction to the software and workflow development.
+All authors wrote and approved the final manuscript.
+
+## Competing interests
+
+No competing interests were disclosed.
+
+## Grant information
+
+A.T.L.L. and J.C.M. were supported by core funding from Cancer Research UK (award no. A17197).
+D.J.M. was supported by a CJ Martin Fellowship from the National Health and Medical Research Council of Australia.
+D.J.M and J.C.M. were also supported by core funding from EMBL.
+
+## Acknowledgements
+
+We would like to thank Antonio Scialdone for helpful discussions, as well as Michael Epstein, James R. Smith and John Wilson-Kanamori for testing the workflow on other datasets.
+
+# References
+
