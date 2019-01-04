@@ -12,7 +12,7 @@ author:
   - *CRUK
   - *EMBL
   - Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
-date: "2018-12-26"
+date: "2019-01-04"
 vignette: >
   %\VignetteIndexEntry{06. Quality control details}
   %\VignetteEngine{knitr::rmarkdown}
@@ -199,26 +199,26 @@ head(info[order(info$logFC, decreasing=TRUE),], 20)
 
 ```
 ##              logFC      Lost       Kept
-## PF4       6.650881 4.3161363 0.17465220
-## PPBP      6.532218 4.9408050 0.27151889
-## HIST1H2AC 6.326946 3.1838702 0.14471326
-## GNG11     6.200611 2.5650752 0.10063522
-## SDPR      5.985726 2.1872679 0.09778785
-## TUBB1     5.645996 1.6817964 0.09011623
-## CLU       5.497674 1.3474666 0.05573092
-## ACRBP     5.360937 1.2179714 0.05450230
-## NRGN      5.155534 1.3426602 0.12978910
-## RGS18     5.054040 1.6853082 0.25128135
-## MAP3K7CL  4.933183 1.0155507 0.08979171
-## SPARC     4.681505 0.6695066 0.02493718
-## MMD       4.651039 0.7604635 0.06383577
-## PGRMC1    4.539879 0.7487133 0.08234133
-## CMTM5     4.201158 0.4562137 0.01647433
-## TSC22D1   4.154685 0.5233821 0.05935072
-## HRAT92    4.150695 0.4301112 0.01147364
-## GP9       4.125577 0.4705918 0.03713110
-## CTSA      4.021144 0.8465420 0.27144948
-## F13A1     3.993667 0.4540804 0.05268481
+## PF4       6.581107 4.1631235 0.17465868
+## PPBP      6.464299 4.7726795 0.27152895
+## HIST1H2AC 6.257400 3.0709978 0.14471862
+## GNG11     6.131353 2.4741398 0.10063895
+## SDPR      5.916594 2.1097263 0.09779148
+## TUBB1     5.577128 1.6221745 0.09011957
+## CLU       5.429221 1.2996971 0.05573299
+## ACRBP     5.292623 1.1747927 0.05450432
+## NRGN      5.084884 1.2950611 0.13025683
+## RGS18     4.988470 1.6255618 0.25004829
+## MAP3K7CL  4.864947 0.9795481 0.08979914
+## SPARC     4.614472 0.6457717 0.02493811
+## MMD       4.583485 0.7335041 0.06383813
+## PGRMC1    4.470638 0.7221704 0.08269211
+## CMTM5     4.135290 0.4400403 0.01647494
+## TSC22D1   4.088106 0.5048275 0.05935292
+## HRAT92    4.085072 0.4148632 0.01147407
+## GP9       4.059463 0.4539087 0.03713248
+## CTSA      3.956011 0.8165310 0.27033587
+## MARCH2    3.935704 0.5567050 0.12207936
 ```
 
 ## Avoiding loss of cell types
@@ -318,7 +318,7 @@ sessionInfo()
 ##  [1] scRNAseq_1.9.0              edgeR_3.25.2               
 ##  [3] limma_3.39.3                scater_1.11.5              
 ##  [5] ggplot2_3.1.0               SingleCellExperiment_1.5.1 
-##  [7] SummarizedExperiment_1.13.0 DelayedArray_0.9.4         
+##  [7] SummarizedExperiment_1.13.0 DelayedArray_0.9.5         
 ##  [9] BiocParallel_1.17.3         matrixStats_0.54.0         
 ## [11] Biobase_2.43.0              GenomicRanges_1.35.1       
 ## [13] GenomeInfoDb_1.19.1         IRanges_2.17.3             
@@ -328,7 +328,7 @@ sessionInfo()
 ## loaded via a namespace (and not attached):
 ##   [1] ggbeeswarm_0.6.0         colorspace_1.3-2        
 ##   [3] mvoutlier_2.0.9          modeltools_0.2-22       
-##   [5] class_7.3-14             rio_0.5.16              
+##   [5] class_7.3-15             rio_0.5.16              
 ##   [7] mclust_5.4.2             XVector_0.23.0          
 ##   [9] pls_2.7-0                BiocNeighbors_1.1.7     
 ##  [11] cvTools_0.3.2            flexmix_2.3-14          
@@ -349,38 +349,40 @@ sessionInfo()
 ##  [41] fpc_2.1-11.1             DelayedMatrixStats_1.5.0
 ##  [43] lmtest_0.9-36            xfun_0.4                
 ##  [45] laeken_0.4.6             stringr_1.3.1           
-##  [47] openxlsx_4.1.0           DEoptimR_1.0-8          
-##  [49] zlibbioc_1.29.0          MASS_7.3-51.1           
-##  [51] zoo_1.8-4                scales_1.0.0            
-##  [53] VIM_4.7.0                hms_0.4.2               
-##  [55] rhdf5_2.27.4             RColorBrewer_1.1-2      
-##  [57] yaml_2.2.0               curl_3.2                
-##  [59] NADA_1.6-1               gridExtra_2.3           
-##  [61] reshape_0.8.8            stringi_1.2.4           
-##  [63] highr_0.7                pcaPP_1.9-73            
-##  [65] simpleSingleCell_1.7.8   e1071_1.7-0             
-##  [67] boot_1.3-20              zip_1.0.0               
-##  [69] truncnorm_1.0-8          prabclus_2.2-6          
-##  [71] rlang_0.3.0.1            pkgconfig_2.0.2         
-##  [73] bitops_1.0-6             evaluate_0.12           
-##  [75] lattice_0.20-38          purrr_0.2.5             
-##  [77] Rhdf5lib_1.5.1           bindr_0.1.1             
-##  [79] tidyselect_0.2.5         GGally_1.4.0            
-##  [81] plyr_1.8.4               magrittr_1.5            
-##  [83] bookdown_0.9             R6_2.3.0                
-##  [85] pillar_1.3.1             haven_2.0.0             
-##  [87] foreign_0.8-71           withr_2.1.2             
-##  [89] survival_2.43-3          abind_1.4-5             
-##  [91] RCurl_1.95-4.11          sp_1.3-1                
-##  [93] nnet_7.3-12              tibble_1.4.2            
-##  [95] crayon_1.3.4             car_3.0-2               
-##  [97] rmarkdown_1.11           viridis_0.5.1           
-##  [99] locfit_1.5-9.1           grid_3.6.0              
-## [101] readxl_1.2.0             data.table_1.11.8       
-## [103] forcats_0.3.0            diptest_0.75-7          
-## [105] vcd_1.4-4                digest_0.6.18           
-## [107] munsell_0.5.0            beeswarm_0.2.3          
-## [109] viridisLite_0.3.0        vipor_0.4.5
+##  [47] ps_1.3.0                 openxlsx_4.1.0          
+##  [49] DEoptimR_1.0-8           zoo_1.8-4               
+##  [51] zlibbioc_1.29.0          MASS_7.3-51.1           
+##  [53] scales_1.0.0             VIM_4.7.0               
+##  [55] hms_0.4.2                rhdf5_2.27.4            
+##  [57] RColorBrewer_1.1-2       yaml_2.2.0              
+##  [59] curl_3.2                 NADA_1.6-1              
+##  [61] gridExtra_2.3            reshape_0.8.8           
+##  [63] stringi_1.2.4            highr_0.7               
+##  [65] pcaPP_1.9-73             simpleSingleCell_1.7.10 
+##  [67] e1071_1.7-0              boot_1.3-20             
+##  [69] zip_1.0.0                truncnorm_1.0-8         
+##  [71] prabclus_2.2-6           rlang_0.3.0.1           
+##  [73] pkgconfig_2.0.2          bitops_1.0-6            
+##  [75] evaluate_0.12            lattice_0.20-38         
+##  [77] purrr_0.2.5              Rhdf5lib_1.5.1          
+##  [79] bindr_0.1.1              processx_3.2.1          
+##  [81] tidyselect_0.2.5         GGally_1.4.0            
+##  [83] plyr_1.8.4               magrittr_1.5            
+##  [85] bookdown_0.9             R6_2.3.0                
+##  [87] pillar_1.3.1             haven_2.0.0             
+##  [89] foreign_0.8-71           withr_2.1.2             
+##  [91] survival_2.43-3          abind_1.4-5             
+##  [93] RCurl_1.95-4.11          sp_1.3-1                
+##  [95] nnet_7.3-12              tibble_1.4.2            
+##  [97] crayon_1.3.4             car_3.0-2               
+##  [99] rmarkdown_1.11           viridis_0.5.1           
+## [101] locfit_1.5-9.1           grid_3.6.0              
+## [103] readxl_1.2.0             data.table_1.11.8       
+## [105] callr_3.1.1              forcats_0.3.0           
+## [107] diptest_0.75-7           vcd_1.4-4               
+## [109] digest_0.6.18            munsell_0.5.0           
+## [111] beeswarm_0.2.3           viridisLite_0.3.0       
+## [113] vipor_0.4.5
 ```
 
 # References

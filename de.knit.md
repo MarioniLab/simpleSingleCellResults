@@ -3,7 +3,7 @@ title: Detecting differental expression from single-cell RNA-seq data
 author: 
 - name: Aaron T. L. Lun
   affiliation: &CRUK Cancer Research UK Cambridge Institute, Li Ka Shing Centre, Robinson Way, Cambridge CB2 0RE, United Kingdom
-date: "2018-12-25"
+date: "2019-01-04"
 vignette: >
   %\VignetteIndexEntry{10. Detecting differential expression}
   %\VignetteEngine{knitr::rmarkdown}
@@ -125,7 +125,7 @@ Thus, we generally recommend the use of `block=` where possible.
 The `overlapExprs()` function uses the Wilcoxon rank sum test to detect uneven mixing of the distributions of expression values between clusters.
 The effect size is reported as the probability of randomly sampling one observation in one cluster that is greater than a random observation in another cluster.
 This prioritizes genes where there is clear separation between the distributions of expression values of different clusters.
-We demonstrate the use of `overlapExprs()` on the 416B data set from the [previous workflow](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/reads),
+We demonstrate the use of `overlapExprs()` on the 416B data set from the [previous workflow](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/reads.html),
 detecting DE genes between clusters while blocking on the plate of origin.
 
 
@@ -320,7 +320,7 @@ However, these are difficult to implement from both a theoretical and practical 
 A faster approach is to use a summation strategy [@lun2017overcoming], where all cells in each combination of sample and condition (or cluster) are summed together.
 This yields a single pseudo-bulk count profile per combination, to which standard methods like *[edgeR](https://bioconductor.org/packages/3.9/edgeR)* or *[limma](https://bioconductor.org/packages/3.9/limma)* can be applied.
 
-We demonstrate this procedure on the [416B data set](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/reads) again.
+We demonstrate this procedure on the [416B data set](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/reads.html) again.
 We first create a factor containing all combinations of the per-cell factors of interest.
 Here, the factors of interest are the assigned cluster and the plate of origin for each cell^[Cluster is nested in oncogene induction status so that latter will not be used here.].
 All cells from one plate with the same oncogene induction status were obtained from the same biological sample.

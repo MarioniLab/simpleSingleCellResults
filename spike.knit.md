@@ -12,7 +12,7 @@ author:
   - *CRUK
   - *EMBL
   - Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
-date: "2019-01-02"
+date: "2019-01-04"
 vignette: >
   %\VignetteIndexEntry{07. Spike-in normalization}
   %\VignetteEngine{knitr::rmarkdown}
@@ -211,9 +211,9 @@ sessionInfo()
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] scran_1.11.11               scater_1.11.5              
+##  [1] scran_1.11.12               scater_1.11.5              
 ##  [3] ggplot2_3.1.0               SingleCellExperiment_1.5.1 
-##  [5] SummarizedExperiment_1.13.0 DelayedArray_0.9.4         
+##  [5] SummarizedExperiment_1.13.0 DelayedArray_0.9.5         
 ##  [7] BiocParallel_1.17.3         matrixStats_0.54.0         
 ##  [9] Biobase_2.43.0              GenomicRanges_1.35.1       
 ## [11] GenomeInfoDb_1.19.1         IRanges_2.17.3             
@@ -224,7 +224,7 @@ sessionInfo()
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] dynamicTreeCut_1.63-1    viridis_0.5.1           
-##  [3] httr_1.4.0               edgeR_3.19.3            
+##  [3] httr_1.4.0               edgeR_3.25.2            
 ##  [5] viridisLite_0.3.0        bit64_0.9-7             
 ##  [7] DelayedMatrixStats_1.5.0 assertthat_0.2.0        
 ##  [9] statmod_1.4.30           highr_0.7               
@@ -232,7 +232,7 @@ sessionInfo()
 ## [13] GenomeInfoDbData_1.2.0   vipor_0.4.5             
 ## [15] yaml_2.2.0               pillar_1.3.1            
 ## [17] RSQLite_2.1.1            lattice_0.20-38         
-## [19] limma_3.33.7             glue_1.3.0              
+## [19] limma_3.39.3             glue_1.3.0              
 ## [21] digest_0.6.18            XVector_0.23.0          
 ## [23] colorspace_1.3-2         htmltools_0.3.6         
 ## [25] Matrix_1.2-15            plyr_1.8.4              

@@ -3,7 +3,7 @@ title: Detecting doublets in single-cell RNA-seq data
 author:
 - name: Aaron T. L. Lun
   affiliation: &CRUK Cancer Research UK Cambridge Institute, Li Ka Shing Centre, Robinson Way, Cambridge CB2 0RE, United Kingdom
-date: "2018-12-25"
+date: "2019-01-04"
 vignette: >
   %\VignetteIndexEntry{08. Detecting doublets}
   %\VignetteEngine{knitr::rmarkdown}
@@ -454,7 +454,7 @@ Any systematic differences between simulated and real doublets will be removed, 
 This overcomes some of issues related to RNA content but is a rather aggressive strategy that may incorrectly inflate the reported doublet scores.
 - The issue of unknown combining proportions can be solved completely if spike-in information is available, e.g., in plate-based protocols.
 This will provide an accurate estimate of the total RNA content of each cell.
-To this end, size factors from `computeSpikeFactors()` (see [here](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/xtra-2-spike)) can be supplied to the `doubletCells()` function via the `size.factors.content=` argument.
+To this end, size factors from `computeSpikeFactors()` (see [here](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/spike.html)) can be supplied to the `doubletCells()` function via the `size.factors.content=` argument.
 This will use the spike-in size factors to scale the contribution of each cell to a doublet library.
 
 # Concluding remarks
@@ -504,7 +504,7 @@ sessionInfo()
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] scran_1.11.10                         
+##  [1] scran_1.11.12                         
 ##  [2] TxDb.Mmusculus.UCSC.mm10.ensGene_3.4.0
 ##  [3] GenomicFeatures_1.35.4                
 ##  [4] AnnotationDbi_1.45.0                  
@@ -513,7 +513,7 @@ sessionInfo()
 ##  [7] ggplot2_3.1.0                         
 ##  [8] SingleCellExperiment_1.5.1            
 ##  [9] SummarizedExperiment_1.13.0           
-## [10] DelayedArray_0.9.4                    
+## [10] DelayedArray_0.9.5                    
 ## [11] BiocParallel_1.17.3                   
 ## [12] matrixStats_0.54.0                    
 ## [13] Biobase_2.43.0                        
@@ -536,41 +536,43 @@ sessionInfo()
 ##  [9] R6_2.3.0                 HDF5Array_1.11.10       
 ## [11] vipor_0.4.5              DBI_1.0.0               
 ## [13] lazyeval_0.2.1           colorspace_1.3-2        
-## [15] withr_2.1.2              tidyselect_0.2.5        
-## [17] gridExtra_2.3            prettyunits_1.0.2       
-## [19] bit_1.1-14               curl_3.2                
-## [21] compiler_3.6.0           BiocNeighbors_1.1.7     
-## [23] labeling_0.3             rtracklayer_1.43.1      
-## [25] bookdown_0.9             scales_1.0.0            
-## [27] rappdirs_0.3.1           stringr_1.3.1           
-## [29] digest_0.6.18            Rsamtools_1.35.0        
-## [31] rmarkdown_1.11           XVector_0.23.0          
-## [33] pkgconfig_2.0.2          htmltools_0.3.6         
-## [35] highr_0.7                limma_3.39.3            
-## [37] rlang_0.3.0.1            RSQLite_2.1.1           
-## [39] DelayedMatrixStats_1.5.0 bindr_0.1.1             
-## [41] dplyr_0.7.8              RCurl_1.95-4.11         
-## [43] magrittr_1.5             GenomeInfoDbData_1.2.0  
-## [45] Rcpp_1.0.0               ggbeeswarm_0.6.0        
-## [47] munsell_0.5.0            Rhdf5lib_1.5.1          
-## [49] viridis_0.5.1            edgeR_3.25.2            
-## [51] stringi_1.2.4            yaml_2.2.0              
-## [53] zlibbioc_1.29.0          Rtsne_0.15              
-## [55] rhdf5_2.27.4             plyr_1.8.4              
-## [57] grid_3.6.0               blob_1.1.1              
-## [59] crayon_1.3.4             lattice_0.20-38         
-## [61] cowplot_0.9.3            Biostrings_2.51.1       
-## [63] hms_0.4.2                locfit_1.5-9.1          
-## [65] pillar_1.3.1             igraph_1.2.2            
-## [67] codetools_0.2-16         biomaRt_2.39.2          
-## [69] XML_3.98-1.16            glue_1.3.0              
-## [71] evaluate_0.12            BiocManager_1.30.4      
-## [73] gtable_0.2.0             purrr_0.2.5             
-## [75] assertthat_0.2.0         xfun_0.4                
-## [77] viridisLite_0.3.0        pheatmap_1.0.10         
-## [79] tibble_1.4.2             GenomicAlignments_1.19.0
-## [81] beeswarm_0.2.3           memoise_1.1.0           
-## [83] statmod_1.4.30
+## [15] withr_2.1.2              processx_3.2.1          
+## [17] tidyselect_0.2.5         gridExtra_2.3           
+## [19] prettyunits_1.0.2        bit_1.1-14              
+## [21] curl_3.2                 compiler_3.6.0          
+## [23] BiocNeighbors_1.1.7      labeling_0.3            
+## [25] rtracklayer_1.43.1       bookdown_0.9            
+## [27] scales_1.0.0             callr_3.1.1             
+## [29] rappdirs_0.3.1           stringr_1.3.1           
+## [31] digest_0.6.18            Rsamtools_1.35.0        
+## [33] rmarkdown_1.11           XVector_0.23.0          
+## [35] pkgconfig_2.0.2          htmltools_0.3.6         
+## [37] highr_0.7                limma_3.39.3            
+## [39] rlang_0.3.0.1            RSQLite_2.1.1           
+## [41] DelayedMatrixStats_1.5.0 bindr_0.1.1             
+## [43] dplyr_0.7.8              RCurl_1.95-4.11         
+## [45] magrittr_1.5             simpleSingleCell_1.7.10 
+## [47] GenomeInfoDbData_1.2.0   Rcpp_1.0.0              
+## [49] ggbeeswarm_0.6.0         munsell_0.5.0           
+## [51] Rhdf5lib_1.5.1           viridis_0.5.1           
+## [53] edgeR_3.25.2             stringi_1.2.4           
+## [55] yaml_2.2.0               zlibbioc_1.29.0         
+## [57] Rtsne_0.15               rhdf5_2.27.4            
+## [59] plyr_1.8.4               grid_3.6.0              
+## [61] blob_1.1.1               crayon_1.3.4            
+## [63] lattice_0.20-38          cowplot_0.9.3           
+## [65] Biostrings_2.51.1        hms_0.4.2               
+## [67] locfit_1.5-9.1           ps_1.3.0                
+## [69] pillar_1.3.1             igraph_1.2.2            
+## [71] codetools_0.2-16         biomaRt_2.39.2          
+## [73] XML_3.98-1.16            glue_1.3.0              
+## [75] evaluate_0.12            BiocManager_1.30.4      
+## [77] gtable_0.2.0             purrr_0.2.5             
+## [79] assertthat_0.2.0         xfun_0.4                
+## [81] viridisLite_0.3.0        pheatmap_1.0.10         
+## [83] tibble_1.4.2             GenomicAlignments_1.19.0
+## [85] beeswarm_0.2.3           memoise_1.1.0           
+## [87] statmod_1.4.30
 ```
 
 # References

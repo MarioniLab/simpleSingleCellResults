@@ -3,7 +3,7 @@ title: Scalable analyses for big scRNA-seq data with Bioconductor
 author:
 - name: Aaron T. L. Lun
   affiliation: &CRUK Cancer Research UK Cambridge Institute, Li Ka Shing Centre, Robinson Way, Cambridge CB2 0RE, United Kingdom
-date: "2018-12-26"
+date: "2019-01-04"
 vignette: >
   %\VignetteIndexEntry{11. Scalability for big data}
   %\VignetteEngine{knitr::rmarkdown}
@@ -264,7 +264,7 @@ The default is to favour accuracy over speed by using an exact nearest neighbour
 However, for large data sets, it may be preferable to use a faster approximate approach.
 The *[BiocNeighbors](https://bioconductor.org/packages/3.9/BiocNeighbors)* framework makes it easy to switch between search options.
 
-To demonstrate, we will use the PBMC data from the [previous workflow](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/tenx):
+To demonstrate, we will use the PBMC data from the [previous workflow](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/tenx.html):
 
 
 ```r
@@ -295,19 +295,20 @@ table(Exact=sce.pbmc$Cluster, Approx=clusters$membership)
 ```
 ##      Approx
 ## Exact   1   2   3   4   5   6   7   8   9  10  11  12  13  14
-##    1  519  26   0   0   0   0  20   0  15   0   0   0   0   0
-##    2    0   1   0 675   0   0   0 130   0   0   0   0   1   0
-##    3    1 520   0   0   0   0   0   0   0   0   0   0   0   0
-##    4    0   0 202   0   0   0   0   0   0   0   0   0   0   0
-##    5    0   0   0   0   0 516   0   0   0   0   0   0   0   0
-##    6    0   0   0   0 128   0   0   0   0   0   0   0   0   0
-##    7    1   0   0   0   0   0 804   0  12   0   0   0   0   0
-##    8    0   0   0   1   0   0   1   0   0  37   0   1   0   0
-##    9    0   0   0   0   0   0   0   0   0   0  18   0   0   0
-##    10   0   0   0   0   0   0   0   0   0   0   0   0  45   0
-##    11   0   0   0   0   0   0   0   0 125   0   0   0   0   0
-##    12   0   0   0   0   0   0   0   0   0   0   0  82   0   0
-##    13   0   0   0   0   0   0   0   0   0   0   0   0   0  36
+##    1    0 508   1   0   0   0   0   2   0   0   0   0   0   0
+##    2   53   1   0   0   1   0   0   0   0   0   0   0   0   0
+##    3    0   0   0 205   0   0   0   0   1   0   0   0   0   0
+##    4    2   0   0   0 726   1   0   0   0   0   0   0   0   0
+##    5    0   0 545   0   0   0   0   0   0   0   0   0   0   0
+##    6    0   0   1   0   0 523   0   0   0   0   0   0   0   0
+##    7    0   0   0   0   0   0 127   0   0   0   0   0   0   0
+##    8    0  37   0   0   0   0   0 786   0   0   0   0   0   0
+##    9    0  45   0   0   0   0   0   1   0   0 108   0   0   0
+##    10   0   0   0   0   0   0   0   0  40   0   0   0   0   0
+##    11   0   0   0   0   3   0   0   0   0  59   0   0   0   0
+##    12   0   0   0   0   0   0   0   0   0   0   0  85   0   0
+##    13   0   0   0   0   0   0   0   0   0   0   0   0   0  14
+##    14   0   0   0   0   0   0   0   0   0   0   0   0  46   0
 ```
 
 **Comments from Aaron:**
@@ -341,11 +342,11 @@ sessionInfo()
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] BiocNeighbors_1.1.7         scran_1.11.10              
+##  [1] BiocNeighbors_1.1.7         scran_1.11.12              
 ##  [3] scater_1.11.5               ggplot2_3.1.0              
 ##  [5] TENxBrainData_1.3.0         HDF5Array_1.11.10          
 ##  [7] rhdf5_2.27.4                SingleCellExperiment_1.5.1 
-##  [9] SummarizedExperiment_1.13.0 DelayedArray_0.9.4         
+##  [9] SummarizedExperiment_1.13.0 DelayedArray_0.9.5         
 ## [11] BiocParallel_1.17.3         matrixStats_0.54.0         
 ## [13] Biobase_2.43.0              GenomicRanges_1.35.1       
 ## [15] GenomeInfoDb_1.19.1         IRanges_2.17.3             
@@ -359,38 +360,40 @@ sessionInfo()
 ##  [7] vipor_0.4.5                   DBI_1.0.0                    
 ##  [9] lazyeval_0.2.1                colorspace_1.3-2             
 ## [11] withr_2.1.2                   tidyselect_0.2.5             
-## [13] gridExtra_2.3                 bit_1.1-14                   
-## [15] curl_3.2                      compiler_3.6.0               
-## [17] bookdown_0.9                  scales_1.0.0                 
-## [19] stringr_1.3.1                 digest_0.6.18                
-## [21] rmarkdown_1.11                XVector_0.23.0               
-## [23] pkgconfig_2.0.2               htmltools_0.3.6              
-## [25] limma_3.39.3                  rlang_0.3.0.1                
-## [27] RSQLite_2.1.1                 shiny_1.2.0                  
-## [29] DelayedMatrixStats_1.5.0      bindr_0.1.1                  
-## [31] dplyr_0.7.8                   RCurl_1.95-4.11              
-## [33] magrittr_1.5                  simpleSingleCell_1.7.8       
-## [35] GenomeInfoDbData_1.2.0        Matrix_1.2-15                
-## [37] Rcpp_1.0.0                    ggbeeswarm_0.6.0             
-## [39] munsell_0.5.0                 Rhdf5lib_1.5.1               
-## [41] viridis_0.5.1                 stringi_1.2.4                
-## [43] yaml_2.2.0                    edgeR_3.25.2                 
-## [45] zlibbioc_1.29.0               plyr_1.8.4                   
-## [47] AnnotationHub_2.15.3          grid_3.6.0                   
-## [49] blob_1.1.1                    promises_1.0.1               
-## [51] ExperimentHub_1.9.0           crayon_1.3.4                 
-## [53] lattice_0.20-38               locfit_1.5-9.1               
-## [55] pillar_1.3.1                  igraph_1.2.2                 
-## [57] codetools_0.2-16              glue_1.3.0                   
-## [59] evaluate_0.12                 BiocManager_1.30.4           
-## [61] httpuv_1.4.5.1                gtable_0.2.0                 
-## [63] purrr_0.2.5                   assertthat_0.2.0             
-## [65] xfun_0.4                      mime_0.6                     
-## [67] xtable_1.8-3                  later_0.7.5                  
-## [69] viridisLite_0.3.0             tibble_1.4.2                 
-## [71] AnnotationDbi_1.45.0          beeswarm_0.2.3               
-## [73] memoise_1.1.0                 bindrcpp_0.2.2               
-## [75] statmod_1.4.30                interactiveDisplayBase_1.21.0
+## [13] gridExtra_2.3                 processx_3.2.1               
+## [15] bit_1.1-14                    curl_3.2                     
+## [17] compiler_3.6.0                bookdown_0.9                 
+## [19] scales_1.0.0                  callr_3.1.1                  
+## [21] stringr_1.3.1                 digest_0.6.18                
+## [23] rmarkdown_1.11                XVector_0.23.0               
+## [25] pkgconfig_2.0.2               htmltools_0.3.6              
+## [27] limma_3.39.3                  rlang_0.3.0.1                
+## [29] RSQLite_2.1.1                 shiny_1.2.0                  
+## [31] DelayedMatrixStats_1.5.0      bindr_0.1.1                  
+## [33] dplyr_0.7.8                   RCurl_1.95-4.11              
+## [35] magrittr_1.5                  simpleSingleCell_1.7.10      
+## [37] GenomeInfoDbData_1.2.0        Matrix_1.2-15                
+## [39] Rcpp_1.0.0                    ggbeeswarm_0.6.0             
+## [41] munsell_0.5.0                 Rhdf5lib_1.5.1               
+## [43] viridis_0.5.1                 edgeR_3.25.2                 
+## [45] stringi_1.2.4                 yaml_2.2.0                   
+## [47] zlibbioc_1.29.0               plyr_1.8.4                   
+## [49] AnnotationHub_2.15.3          grid_3.6.0                   
+## [51] blob_1.1.1                    promises_1.0.1               
+## [53] ExperimentHub_1.9.0           crayon_1.3.4                 
+## [55] lattice_0.20-38               locfit_1.5-9.1               
+## [57] ps_1.3.0                      pillar_1.3.1                 
+## [59] igraph_1.2.2                  codetools_0.2-16             
+## [61] glue_1.3.0                    evaluate_0.12                
+## [63] BiocManager_1.30.4            httpuv_1.4.5.1               
+## [65] gtable_0.2.0                  purrr_0.2.5                  
+## [67] assertthat_0.2.0              xfun_0.4                     
+## [69] mime_0.6                      xtable_1.8-3                 
+## [71] later_0.7.5                   viridisLite_0.3.0            
+## [73] tibble_1.4.2                  AnnotationDbi_1.45.0         
+## [75] beeswarm_0.2.3                memoise_1.1.0                
+## [77] bindrcpp_0.2.2                statmod_1.4.30               
+## [79] interactiveDisplayBase_1.21.0
 ```
 
 # References 

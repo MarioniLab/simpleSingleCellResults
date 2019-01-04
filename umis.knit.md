@@ -12,7 +12,7 @@ author:
   - *CRUK
   - *EMBL
   - Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
-date: "2018-12-25"
+date: "2019-01-04"
 vignette: >
   %\VignetteIndexEntry{03. UMI count data}
   %\VignetteEngine{knitr::rmarkdown}
@@ -233,7 +233,7 @@ table(assignments$phase)
 ```
 ## 
 ##   G1  G2M    S 
-## 2980    8    1
+## 2981    7    1
 ```
 
 ```r
@@ -743,11 +743,11 @@ sessionInfo()
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] pheatmap_1.0.10             scran_1.11.10              
+##  [1] pheatmap_1.0.10             scran_1.11.12              
 ##  [3] scater_1.11.5               ggplot2_3.1.0              
 ##  [5] org.Mm.eg.db_3.7.0          AnnotationDbi_1.45.0       
 ##  [7] SingleCellExperiment_1.5.1  SummarizedExperiment_1.13.0
-##  [9] DelayedArray_0.9.4          BiocParallel_1.17.3        
+##  [9] DelayedArray_0.9.5          BiocParallel_1.17.3        
 ## [11] matrixStats_0.54.0          Biobase_2.43.0             
 ## [13] GenomicRanges_1.35.1        GenomeInfoDb_1.19.1        
 ## [15] IRanges_2.17.3              S4Vectors_0.21.8           
