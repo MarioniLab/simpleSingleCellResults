@@ -16,12 +16,11 @@ $(RMD): src
 	cp src/vignettes/*.Rmd .
 
 # Defining the HTML outputs.
-HTML=$(RMD:.Rmd=.html)
-$(HTML): %.html: %.Rmd
-	rm -f $@
+KNIT=$(RMD:.Rmd=.knit.md)
+$(KNIT): %.knit.md : %.Rmd
 	${RCMD} --no-save --slave -e "rmarkdown::render('$<', clean=FALSE)"
 
-all: $(HTML)
+all: $(KNIT)
 
 # Cleaning commands.
 uncache:
