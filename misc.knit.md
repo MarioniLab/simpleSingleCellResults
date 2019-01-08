@@ -12,7 +12,7 @@ author:
   - *CRUK
   - *EMBL
   - Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
-date: "2018-12-25"
+date: "2019-01-08"
 vignette: >
   %\VignetteIndexEntry{12. Further analysis strategies}
   %\VignetteEngine{knitr::rmarkdown}
@@ -60,20 +60,20 @@ head(var.cor)
 ## DataFrame with 6 rows and 6 columns
 ##         gene1       gene2               rho              p.value
 ##   <character> <character>         <numeric>            <numeric>
-## 1      H2-Ab1      H2-Eb1 0.497634203104049   1.999998000002e-06
-## 2       H2-Aa      H2-Ab1 0.488479262672811   1.999998000002e-06
-## 3       H2-D1       H2-K1 0.412280566558266  3.3999966000034e-05
-## 4       H2-Aa      H2-Eb1  0.41029237242421  3.7999962000038e-05
-## 5      H2-Ab1     H2-DMb1 0.359662777615092 0.000455999544000456
-## 6       H2-Q6       H2-Q7 0.339981196923693  0.00098999901000099
-##                    FDR   limited
-##              <numeric> <logical>
-## 1 0.000434999565000435      TRUE
-## 2 0.000434999565000435      TRUE
-## 3  0.00413249586750413     FALSE
-## 4  0.00413249586750413     FALSE
-## 5   0.0396719603280397     FALSE
-## 6   0.0717749282250718     FALSE
+## 1       H2-Aa      H2-Ab1 0.537721745295378   1.999998000002e-06
+## 2      H2-Ab1      H2-Eb1 0.427978052802737  2.7999972000028e-05
+## 3       H2-D1       H2-K1 0.412280566558266  5.5999944000056e-05
+## 4       H2-Aa      H2-Eb1 0.407417967726523  6.5999934000066e-05
+## 5       H2-Q6       H2-Q7 0.339981196923693 0.000921999078000922
+## 6       H2-K2       H2-Q6 0.308678698580522  0.00286199713800286
+##                   FDR   limited
+##             <numeric> <logical>
+## 1 0.00086999913000087      TRUE
+## 2 0.00608999391000609     FALSE
+## 3 0.00717749282250718     FALSE
+## 4 0.00717749282250718     FALSE
+## 5  0.0802139197860802     FALSE
+## 6   0.207494792505207     FALSE
 ```
 
 Correction for multiple testing across many gene pairs is performed by controlling the FDR at 5%.
@@ -86,7 +86,7 @@ summary(sig.cor)
 
 ```
 ##    Mode   FALSE    TRUE 
-## logical     430       5
+## logical     431       4
 ```
 
 We can also compute correlations between specific pairs of genes, or between all pairs between two distinct sets of genes.
@@ -101,7 +101,7 @@ correlatePairs(sce.hsc, subset.row=cbind("Fos", "Jun"))
 ## DataFrame with 1 row and 6 columns
 ##         gene1       gene2               rho            p.value
 ##   <character> <character>         <numeric>          <numeric>
-## 1         Fos         Jun 0.466855724920241 1.999998000002e-06
+## 1         Fos         Jun 0.467634048980473 1.999998000002e-06
 ##                  FDR   limited
 ##            <numeric> <logical>
 ## 1 1.999998000002e-06      TRUE
@@ -284,19 +284,19 @@ sessionInfo()
 ##  [1] limma_3.39.3                org.Mm.eg.db_3.7.0         
 ##  [3] AnnotationDbi_1.45.0        readxl_1.2.0               
 ##  [5] bindrcpp_0.2.2              BiocFileCache_1.7.0        
-##  [7] dbplyr_1.2.2                scater_1.11.5              
-##  [9] ggplot2_3.1.0               scran_1.11.10              
-## [11] SingleCellExperiment_1.5.1  SummarizedExperiment_1.13.0
-## [13] DelayedArray_0.9.4          BiocParallel_1.17.3        
+##  [7] dbplyr_1.2.2                scater_1.11.7              
+##  [9] ggplot2_3.1.0               scran_1.11.14              
+## [11] SingleCellExperiment_1.5.2  SummarizedExperiment_1.13.0
+## [13] DelayedArray_0.9.5          BiocParallel_1.17.3        
 ## [15] matrixStats_0.54.0          Biobase_2.43.0             
 ## [17] GenomicRanges_1.35.1        GenomeInfoDb_1.19.1        
-## [19] IRanges_2.17.3              S4Vectors_0.21.8           
+## [19] IRanges_2.17.4              S4Vectors_0.21.9           
 ## [21] BiocGenerics_0.29.1         knitr_1.21                 
 ## [23] BiocStyle_2.11.0           
 ## 
 ## loaded via a namespace (and not attached):
 ##   [1] ggbeeswarm_0.6.0         colorspace_1.3-2        
-##   [3] RcppEigen_0.3.3.5.0      class_7.3-14            
+##   [3] RcppEigen_0.3.3.5.0      class_7.3-15            
 ##   [5] rio_0.5.16               dynamicTreeCut_1.63-1   
 ##   [7] XVector_0.23.0           BiocNeighbors_1.1.7     
 ##   [9] proxy_0.4-22             bit64_0.9-7             
@@ -313,40 +313,42 @@ sessionInfo()
 ##  [31] cellranger_1.1.0         DelayedMatrixStats_1.5.0
 ##  [33] lmtest_0.9-36            laeken_0.4.6            
 ##  [35] xfun_0.4                 stringr_1.3.1           
-##  [37] openxlsx_4.1.0           statmod_1.4.30          
-##  [39] edgeR_3.25.2             DEoptimR_1.0-8          
-##  [41] zoo_1.8-4                zlibbioc_1.29.0         
-##  [43] MASS_7.3-51.1            scales_1.0.0            
-##  [45] VIM_4.7.0                hms_0.4.2               
-##  [47] rhdf5_2.27.4             yaml_2.2.0              
-##  [49] curl_3.2                 memoise_1.1.0           
-##  [51] gridExtra_2.3            stringi_1.2.4           
-##  [53] RSQLite_2.1.1            highr_0.7               
-##  [55] simpleSingleCell_1.7.8   e1071_1.7-0             
-##  [57] destiny_2.13.0           TTR_0.23-4              
-##  [59] boot_1.3-20              zip_1.0.0               
-##  [61] rlang_0.3.0.1            pkgconfig_2.0.2         
-##  [63] bitops_1.0-6             evaluate_0.12           
-##  [65] lattice_0.20-38          purrr_0.2.5             
-##  [67] Rhdf5lib_1.5.1           bindr_0.1.1             
-##  [69] labeling_0.3             cowplot_0.9.3           
-##  [71] bit_1.1-14               tidyselect_0.2.5        
-##  [73] plyr_1.8.4               magrittr_1.5            
-##  [75] bookdown_0.9             R6_2.3.0                
-##  [77] DBI_1.0.0                pillar_1.3.1            
-##  [79] haven_2.0.0              foreign_0.8-71          
-##  [81] withr_2.1.2              xts_0.11-2              
-##  [83] scatterplot3d_0.3-41     abind_1.4-5             
-##  [85] RCurl_1.95-4.11          sp_1.3-1                
-##  [87] nnet_7.3-12              tibble_1.4.2            
-##  [89] crayon_1.3.4             car_3.0-2               
-##  [91] rmarkdown_1.11           viridis_0.5.1           
-##  [93] locfit_1.5-9.1           grid_3.6.0              
-##  [95] data.table_1.11.8        blob_1.1.1              
-##  [97] forcats_0.3.0            vcd_1.4-4               
-##  [99] digest_0.6.18            munsell_0.5.0           
-## [101] beeswarm_0.2.3           viridisLite_0.3.0       
-## [103] smoother_1.1             vipor_0.4.5
+##  [37] ps_1.3.0                 openxlsx_4.1.0          
+##  [39] statmod_1.4.30           edgeR_3.25.3            
+##  [41] DEoptimR_1.0-8           zoo_1.8-4               
+##  [43] zlibbioc_1.29.0          MASS_7.3-51.1           
+##  [45] scales_1.0.0             VIM_4.7.0               
+##  [47] hms_0.4.2                rhdf5_2.27.5            
+##  [49] yaml_2.2.0               curl_3.2                
+##  [51] memoise_1.1.0            gridExtra_2.3           
+##  [53] stringi_1.2.4            RSQLite_2.1.1           
+##  [55] highr_0.7                simpleSingleCell_1.7.10 
+##  [57] e1071_1.7-0              destiny_2.13.0          
+##  [59] TTR_0.23-4               boot_1.3-20             
+##  [61] zip_1.0.0                rlang_0.3.0.1           
+##  [63] pkgconfig_2.0.2          bitops_1.0-6            
+##  [65] evaluate_0.12            lattice_0.20-38         
+##  [67] purrr_0.2.5              Rhdf5lib_1.5.1          
+##  [69] bindr_0.1.1              labeling_0.3            
+##  [71] cowplot_0.9.3            bit_1.1-14              
+##  [73] processx_3.2.1           tidyselect_0.2.5        
+##  [75] plyr_1.8.4               magrittr_1.5            
+##  [77] bookdown_0.9             R6_2.3.0                
+##  [79] DBI_1.0.0                pillar_1.3.1            
+##  [81] haven_2.0.0              foreign_0.8-71          
+##  [83] withr_2.1.2              xts_0.11-2              
+##  [85] scatterplot3d_0.3-41     abind_1.4-5             
+##  [87] RCurl_1.95-4.11          sp_1.3-1                
+##  [89] nnet_7.3-12              tibble_2.0.0            
+##  [91] crayon_1.3.4             car_3.0-2               
+##  [93] rmarkdown_1.11           viridis_0.5.1           
+##  [95] locfit_1.5-9.1           grid_3.6.0              
+##  [97] data.table_1.11.8        blob_1.1.1              
+##  [99] callr_3.1.1              forcats_0.3.0           
+## [101] vcd_1.4-4                digest_0.6.18           
+## [103] munsell_0.5.0            beeswarm_0.2.3          
+## [105] viridisLite_0.3.0        smoother_1.1            
+## [107] vipor_0.4.5
 ```
 
 # References

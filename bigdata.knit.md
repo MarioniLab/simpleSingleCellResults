@@ -3,7 +3,7 @@ title: Scalable analyses for big scRNA-seq data with Bioconductor
 author:
 - name: Aaron T. L. Lun
   affiliation: &CRUK Cancer Research UK Cambridge Institute, Li Ka Shing Centre, Robinson Way, Cambridge CB2 0RE, United Kingdom
-date: "2019-01-04"
+date: "2019-01-08"
 vignette: >
   %\VignetteIndexEntry{11. Scalability for big data}
   %\VignetteEngine{knitr::rmarkdown}
@@ -294,21 +294,20 @@ table(Exact=sce.pbmc$Cluster, Approx=clusters$membership)
 
 ```
 ##      Approx
-## Exact   1   2   3   4   5   6   7   8   9  10  11  12  13  14
-##    1    0 508   1   0   0   0   0   2   0   0   0   0   0   0
-##    2   53   1   0   0   1   0   0   0   0   0   0   0   0   0
-##    3    0   0   0 205   0   0   0   0   1   0   0   0   0   0
-##    4    2   0   0   0 726   1   0   0   0   0   0   0   0   0
-##    5    0   0 545   0   0   0   0   0   0   0   0   0   0   0
-##    6    0   0   1   0   0 523   0   0   0   0   0   0   0   0
-##    7    0   0   0   0   0   0 127   0   0   0   0   0   0   0
-##    8    0  37   0   0   0   0   0 786   0   0   0   0   0   0
-##    9    0  45   0   0   0   0   0   1   0   0 108   0   0   0
-##    10   0   0   0   0   0   0   0   0  40   0   0   0   0   0
-##    11   0   0   0   0   3   0   0   0   0  59   0   0   0   0
-##    12   0   0   0   0   0   0   0   0   0   0   0  85   0   0
-##    13   0   0   0   0   0   0   0   0   0   0   0   0   0  14
-##    14   0   0   0   0   0   0   0   0   0   0   0   0  46   0
+## Exact   1   2   3   4   5   6   7   8   9  10  11  12
+##    1  718   0   0   1   0   0   1   1   0   0   0   0
+##    2    0 538   2   0   0   0   1   0   0   0   0   0
+##    3    0   8 514   1   0   4   0   0   0   0   0   0
+##    4    0   0   0 526   0   0   0   0   0   0   0   0
+##    5    0   0   0   0   0 195   0   0   0   0   0   0
+##    6    0   0   0   0 125   0   0   0   0   0   0   0
+##    7  130   0   0   0   0   0   0   0   0   0   0   0
+##    8    0   0   0   0   0   0   0  45   0   0   0   0
+##    9    0   3   0   0   0   0 816   0   0   0   0   0
+##    10   0   0   0   0   0   0   0   0  23   0   0   0
+##    11   0   0   0   0   0   0  11   0   0 141   0   0
+##    12   1   0   0   0   0   0   0   0   0   0  88   0
+##    13   0   0   0   0   0   0   0   0   0   0   0  36
 ```
 
 **Comments from Aaron:**
@@ -342,15 +341,15 @@ sessionInfo()
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] BiocNeighbors_1.1.7         scran_1.11.12              
-##  [3] scater_1.11.5               ggplot2_3.1.0              
+##  [1] BiocNeighbors_1.1.7         scran_1.11.14              
+##  [3] scater_1.11.7               ggplot2_3.1.0              
 ##  [5] TENxBrainData_1.3.0         HDF5Array_1.11.10          
-##  [7] rhdf5_2.27.4                SingleCellExperiment_1.5.1 
+##  [7] rhdf5_2.27.5                SingleCellExperiment_1.5.2 
 ##  [9] SummarizedExperiment_1.13.0 DelayedArray_0.9.5         
 ## [11] BiocParallel_1.17.3         matrixStats_0.54.0         
 ## [13] Biobase_2.43.0              GenomicRanges_1.35.1       
-## [15] GenomeInfoDb_1.19.1         IRanges_2.17.3             
-## [17] S4Vectors_0.21.8            BiocGenerics_0.29.1        
+## [15] GenomeInfoDb_1.19.1         IRanges_2.17.4             
+## [17] S4Vectors_0.21.9            BiocGenerics_0.29.1        
 ## [19] knitr_1.21                  BiocStyle_2.11.0           
 ## 
 ## loaded via a namespace (and not attached):
@@ -375,10 +374,10 @@ sessionInfo()
 ## [37] GenomeInfoDbData_1.2.0        Matrix_1.2-15                
 ## [39] Rcpp_1.0.0                    ggbeeswarm_0.6.0             
 ## [41] munsell_0.5.0                 Rhdf5lib_1.5.1               
-## [43] viridis_0.5.1                 edgeR_3.25.2                 
+## [43] viridis_0.5.1                 edgeR_3.25.3                 
 ## [45] stringi_1.2.4                 yaml_2.2.0                   
 ## [47] zlibbioc_1.29.0               plyr_1.8.4                   
-## [49] AnnotationHub_2.15.3          grid_3.6.0                   
+## [49] AnnotationHub_2.15.4          grid_3.6.0                   
 ## [51] blob_1.1.1                    promises_1.0.1               
 ## [53] ExperimentHub_1.9.0           crayon_1.3.4                 
 ## [55] lattice_0.20-38               locfit_1.5-9.1               
@@ -390,7 +389,7 @@ sessionInfo()
 ## [67] assertthat_0.2.0              xfun_0.4                     
 ## [69] mime_0.6                      xtable_1.8-3                 
 ## [71] later_0.7.5                   viridisLite_0.3.0            
-## [73] tibble_1.4.2                  AnnotationDbi_1.45.0         
+## [73] tibble_2.0.0                  AnnotationDbi_1.45.0         
 ## [75] beeswarm_0.2.3                memoise_1.1.0                
 ## [77] bindrcpp_0.2.2                statmod_1.4.30               
 ## [79] interactiveDisplayBase_1.21.0
