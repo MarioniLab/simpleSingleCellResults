@@ -11,16 +11,17 @@ update: src
 	${RCMD} CMD INSTALL --preclean src/
 
 # Moving the scripts to avoid directory chaos.
-RMD=batch.Rmd bigdata.Rmd de.Rmd doublets.Rmd intro.Rmd misc.Rmd qc.Rmd reads.Rmd spike.Rmd tenx.Rmd umis.Rmd var.Rmd
-$(RMD): src
-	cp src/vignettes/*.Rmd .
+%.Rmd: src
+	cp src/vignettes/$@ .
+
+ref.bib: src
+	cp src/vignettes/ref.bib .
 
 # Defining the HTML outputs.
-KNIT=$(RMD:.Rmd=.knit.md)
-$(KNIT): %.knit.md : %.Rmd
+%.knit.md : %.Rmd ref.bib
 	${RCMD} --no-save --slave -e "rmarkdown::render('$<', clean=FALSE)"
 
-all: $(KNIT)
+all: batch.knit.md bigdata.knit.md de.knit.md doublets.knit.md intro.knit.md misc.knit.md qc.knit.md reads.knit.md spike.knit.md tenx.knit.md umis.knit.md var.knit.md
 
 # Cleaning commands.
 uncache:
