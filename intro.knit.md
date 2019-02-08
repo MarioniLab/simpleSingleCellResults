@@ -31,7 +31,7 @@ bibliography: ref.bib
 
 **Bioconductor version**: 3.9
 
-**Package**: 1.7.16
+**Package**: 1.7.17
 
 # Motivation
 

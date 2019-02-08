@@ -847,6 +847,8 @@ Conversely, if two small batches without shared populations are supplied first, 
 
 ## Hierarchical merging 
 
+### Motivation  
+
 In more complex experiments, we may know beforehand that certain sets of batches are more similar to each other.
 We might then want to merge those similar batches before attempting the more difficult merges involving batches with different cell type composition and/or gene expression.
 Examples include:
@@ -857,6 +859,8 @@ Examples include:
 This strategy limits encourages detection of correct MNN pairs as similar batches should have more shared populations, 
 By comparison, performing the more difficult merges first is more likely to introduce errors whereby distinct subpopulations are incorrectly placed together.
 This unnecessarily propagates the error to later steps as the initial merge is used as a reference for subsequent merges.
+
+### Setting up the inputs
 
 Hierarchical merging can be achieved through multiple calls to `fastMNN()` with progressively merged batches.
 To illustrate, assume that we want to remove `Donor` effects within each batch prior to merging across batches.
@@ -930,6 +934,16 @@ names(output)
 ```
 ## [1] "D28" "D29" "D30" "D31" "A"   "B"   "C"   "D"
 ```
+
+**Comments from Aaron:**
+
+- Here, we have applied `multiBatchPCA()` to the batch-level inputs for convenience.
+It is also possible to supply donor-level matrices to equalize contributions across donors.
+- Recall that we ran `multiBatchNorm()` earlier to generate the `rescaled.gse*` objects.
+As a result, cosine normalization is not technically necessary, as all batches should be on the same scale already (see `?cosineNorm` for a discussion of this).
+Nonetheless, we run it here for consistency with our previous `fastMNN()` call where cosine normalization is turned on by default.
+
+### Performing progressive merges 
 
 We pass the matrices corresponding to the donors in GSE85241 to `fastMNN()`, setting `pc.input=TRUE` to indicate that dimensionality reduction has already been performed.
 This uses the first donor to define the reference space^[Which can be changed with `auto.order=`, if so desired.] and merges cells from all other donors to the first.
@@ -1080,8 +1094,12 @@ As such, we prefer manual definition of a merge order that makes better use of p
 
 # Using the corrected values in downstream analyses
 
-For downstream analyses, the MNN-corrected values can be treated in the same manner as any other dimensionality reduction result.
-For example, it is straightforward to use the MNN-corrected values directly used for clustering analyses, as shown below.
+## For cell-based analyses
+
+The low-dimensional corrected values can be used in any procedure that involves computing and comparing cell-cell (Euclidean) distances.
+Recall that the aim of batch correction is to bring together related cells from different batches while preserving biological differences between cells within each batch.
+The exact values of the corrected coordinates may not be interpretable, but this is not a problem if we are interested in the relative magnitudes of the distances.
+For example, the code below directly uses the MNN-corrected values for clustering. 
 
 
 ```r
@@ -1120,8 +1138,29 @@ plotTSNE(sce, colour_by="Cluster")
 <p class="caption">(\#fig:tsne-cluster)t-SNE plot after MMN correction, where each point represents a cell and is coloured by its cluster identity.</p>
 </div>
 
-Differential expression analyses should be performed on the **original** log-expression values or counts.
-We do not use the corrected values here (which no longer correspond to genes anyway) except to obtain the clusters or trajectories to be characterized.
+The corrected values can be used in any procedure that operates on cell-cell distances.
+This includes nearest-neighbor searches, non-linear visualization like _t_-SNE and trajectory inference.
+
+## For gene-based analyses
+
+For gene-based procedures like differential expression (DE) analyses or gene network construction, it is desirable to use the **original** log-expression values or counts.
+The corrected values are only used to obtain cell-level results such as clusters or trajectories.
+Batch effects are handled explicitly using blocking terms or via a meta-analysis across batches. 
+We do not use the corrected values directly in gene-based analyses, for various reasons:
+
+- It is usually inappropriate to perform DE analyses on batch-corrected values, due to the failure to model the uncertainty of the correction.
+This usually results in loss of type I error control, i.e., more false positives than expected.
+- The correction does not preserve the mean-variance relationship.
+Applications of common DE methods like *[edgeR](https://bioconductor.org/packages/3.9/edgeR)* or *[limma](https://bioconductor.org/packages/3.9/limma)* are unlikely to be valid.
+- Batch correction may (correctly) remove biological differences between batches in the course of mapping all cells onto a common coordinate system.
+Returning to the uncorrected expression values provides an opportunity for detecting such differences if they are of interest.
+Conversely, if the batch correction made a mistake, the use of the uncorrected expression values provides an important sanity check.
+
+Indeed, in the specific case of `fastMNN()`, the batch-corrected values no longer correspond to per-gene expression values anyway.
+This means that they cannot be directly used in gene-based analyses^[Though one can circumvent this, see below.].
+
+Users should generally aim to avoid using batch-corrected values for per-gene analyses when within-batch alternatives are available. 
+To illustrate, we perform a DE analysis on the uncorrected expression data using the clusters identified previously.
 To model the batch effect, we set the batch of origin as the `block=` argument in `findMarkers()`.
 This will perform all comparisons between clusters _within_ each batch, and then combine the $p$-values to consolidate results across batches.
 
@@ -1176,14 +1215,52 @@ Note that the use of `block=` is roughly similar to the use of a batch-cluster i
 
 **Comments from Aaron:**
 
-- Users of the older `mnnCorrect()` function will note that the function returned corrected _expression_ values.
-Thus, it is tempting to use these corrected values directly for DE analyses.
-This is inappropriate for various reasons:
-    - The default parameters of `mnnCorrect()` do not return corrected values on the log-scale, but rather a cosine-normalized log-scale.
-      This makes it difficult to interpret the effect size of DE analyses based on the corrected values.
-    - It is usually inappropriate to perform DE analyses on batch-corrected values, due to the failure to model the uncertainty of the correction.
-      This usually results in loss of type I error control, i.e., more false positives than expected.
-    - The correction does _not_ preserve the mean-variance relationship.
+- Users of the older `mnnCorrect()` function will note that the function returned corrected expression values.
+It is tempting to use these corrected values directly for DE analyses, but this would likely be inappropriate.
+In addition to the reasons discussed above, the default parameters of `mnnCorrect()` do not return corrected values on the log-scale, but rather a cosine-normalized log-scale.
+This makes it difficult to interpret the effect size of DE analyses based on the corrected values.
+
+## Obtaining per-gene corrected values
+
+Users can obtain per-gene corrected values by computing the cross-product of the corrected values with the rotation vectors.
+This effectively reverses the initial projection into a low-dimensional space during `multiBatchPCA()`.
+For example, the code below obtains corrected expression values for _GCG_.
+
+
+```r
+cor.exp <- tcrossprod(mnn.out$corrected, 
+    mnn.out$rotation[which(rownames(sce)=="GCG"),,drop=FALSE]) 
+summary(cor.exp)
+```
+
+```
+##        V1          
+##  Min.   :-0.07498  
+##  1st Qu.:-0.02633  
+##  Median :-0.01589  
+##  Mean   :-0.00252  
+##  3rd Qu.: 0.04024  
+##  Max.   : 0.09402
+```
+
+Calculation of per-gene corrected values is not performed by default, as to do so for all genes would require the construction a dense matrix.
+This may be prohibitively memory-consuming for large data sets that are otherwise representable as sparse matrices.
+
+Per-gene corrected values can be readily used for visualization, e.g., to colour cells on _t_-SNE plots by their corrected expression values (Figure \@ref(fig:correctedcolours)).
+This can be more aesthetically pleasing than uncorrected expression values that may contain large shifts on the colour scale between cells in different batches.
+
+
+```r
+plotTSNE(sce, colour_by=data.frame(GCG=cor.exp))
+```
+
+<div class="figure">
+<img src="batch_files/figure-html/correctedcolours-1.png" alt="t-SNE plot after MMN correction, where each point represents a cell and is coloured by the corrected expression of _GCG_." width="100%" />
+<p class="caption">(\#fig:correctedcolours)t-SNE plot after MMN correction, where each point represents a cell and is coloured by the corrected expression of _GCG_.</p>
+</div>
+
+However, use of the corrected values in any quantitative procedure should be treated with extreme caution.
+If they must be used, they should be backed up by similar results from an analysis on the uncorrected values.
 
 # Concluding remarks
 
@@ -1221,7 +1298,7 @@ sessionInfo()
 ## [11] LC_MEASUREMENT=en_GB.UTF-8 LC_IDENTIFICATION=C       
 ## 
 ## attached base packages:
-## [1] parallel  stats4    stats     graphics  grDevices utils     datasets 
+## [1] stats4    parallel  stats     graphics  grDevices utils     datasets 
 ## [8] methods   base     
 ## 
 ## other attached packages:
@@ -1244,8 +1321,8 @@ sessionInfo()
 ##  [7] irlba_2.3.3              vipor_0.4.5             
 ##  [9] DBI_1.0.0                lazyeval_0.2.1          
 ## [11] colorspace_1.4-0         withr_2.1.2             
-## [13] processx_3.2.1           tidyselect_0.2.5        
-## [15] gridExtra_2.3            bit_1.1-14              
+## [13] tidyselect_0.2.5         gridExtra_2.3           
+## [15] processx_3.2.1           bit_1.1-14              
 ## [17] curl_3.3                 compiler_3.6.0          
 ## [19] BiocNeighbors_1.1.11     labeling_0.3            
 ## [21] bookdown_0.9             scales_1.0.0            
@@ -1253,12 +1330,12 @@ sessionInfo()
 ## [25] stringr_1.3.1            digest_0.6.18           
 ## [27] rmarkdown_1.11           XVector_0.23.0          
 ## [29] pkgconfig_2.0.2          htmltools_0.3.6         
-## [31] limma_3.39.5             highr_0.7               
+## [31] highr_0.7                limma_3.39.5            
 ## [33] rlang_0.3.1              RSQLite_2.1.1           
 ## [35] DelayedMatrixStats_1.5.2 bindr_0.1.1             
 ## [37] dplyr_0.7.8              RCurl_1.95-4.11         
-## [39] magrittr_1.5             BiocSingular_0.99.0     
-## [41] simpleSingleCell_1.7.16  GenomeInfoDbData_1.2.0  
+## [39] magrittr_1.5             BiocSingular_0.99.1     
+## [41] simpleSingleCell_1.7.17  GenomeInfoDbData_1.2.0  
 ## [43] Matrix_1.2-15            Rcpp_1.0.0              
 ## [45] ggbeeswarm_0.6.0         munsell_0.5.0           
 ## [47] viridis_0.5.1            stringi_1.2.4           
