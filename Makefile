@@ -1,6 +1,6 @@
 targets: all
 
-RCMD=R
+RCMD=Rdevel
 
 # Obtaining the vignette sources.
 src:
@@ -17,17 +17,37 @@ update: src
 ref.bib: src
 	cp src/vignettes/ref.bib .
 
-# Defining the HTML outputs.
+# Creating the *.knit.md file (destroying it if the command fails).
 %.knit.md : %.Rmd ref.bib
-	${RCMD} --no-save --slave -e "rmarkdown::render('$<', clean=FALSE)"
+	${RCMD} --no-save --slave -e "rmarkdown::render('$<', clean=FALSE)" || rm $@
 
-all: batch.knit.md bigdata.knit.md de.knit.md doublets.knit.md intro.knit.md misc.knit.md qc.knit.md reads.knit.md spike.knit.md tenx.knit.md umis.knit.md var.knit.md
+bigdata.knit.md: tenx.knit.md
+
+de.knit.md: reads.knit.md batch.knit.md
+
+misc.knit.md: var.knit.md
+
+qc.knit.md: reads.knit.md tenx.knit.md
+
+var.knit.md: reads.knit.md
+
+all: intro.knit.md \
+        reads.knit.md \
+        umis.knit.md \
+        tenx.knit.md \
+        batch.knit.md \
+        doublets.knit.md \
+        qc.knit.md \
+        spike.knit.md \
+        var.knit.md \
+        de.knit.md \
+        bigdata.knit.md \
+        misc.knit.md
 
 # Cleaning commands.
-uncache:
-	rm -rf *_cache
+clean: 
+	rm -rf *.Rmd *.html *_files *_cache *.knit.md 
 
-clean:
-	rm -rf *_cache *.html *_files *.Rmd raw_data
-	git checkout *.knit.md
-	cd src && git reset --hard HEAD
+distclean: clean
+	rm -rf raw_data
+	rm -rf src
