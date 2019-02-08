@@ -12,7 +12,7 @@ author:
   - *CRUK
   - *EMBL
   - Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
-date: "2019-01-04"
+date: "2019-02-08"
 vignette: >
   %\VignetteIndexEntry{01. Introduction}
   %\VignetteEngine{knitr::rmarkdown}
@@ -27,11 +27,11 @@ bibliography: ref.bib
 
 # Workflow version information
 
-**R version**: R Under development (unstable) (2018-12-07 r75787)
+**R version**: R Under development (unstable) (2019-01-14 r75992)
 
 **Bioconductor version**: 3.9
 
-**Package**: 1.7.10
+**Package**: 1.7.16
 
 # Motivation
 
@@ -54,9 +54,17 @@ This is simply not possible with bulk data, meaning that custom methods are requ
 # scRNA-seq data analysis with Bioconductor
 
 This package contains a set of computational workflows for basic analysis of scRNA-seq data, using software from the open-source Bioconductor project [@huber2015orchestrating].
-The workflows start from a count matrix and describe a number of key steps for scRNA-seq data analysis, including quality control to remove problematic cells; normalization of cell-specific biases, with and without spike-ins; correction for batch effects; cell cycle phase classification from gene expression data; data exploration to identify putative subpopulations; and finally, HVG and marker gene identification to prioritize interesting genes.
+The workflows start from a count matrix and describe a number of key steps for scRNA-seq data analysis, including:
+
+- quality control to remove problematic cells;
+- normalization of cell-specific biases, with and without spike-ins; 
+- correction for batch effects; 
+- cell cycle phase classification from gene expression data; 
+- data exploration to identify putative subpopulations; 
+- and finally, HVG and marker gene identification to prioritize interesting genes.
+
 The application of these procedures will be demonstrated on several public scRNA-seq datasets involving immortalized myeloid progenitors, brain cells, haematopoietic stem cells, T-helper cells and mouse embryonic stem cells, generated with a range of experimental protocols and platforms [@lun2017assessing;@wilson2015combined;@zeisel2015brain;@islam2011characterization;@buettner2015computational;@zheng2017massively].
-The aim is to provide a variety of modular usage examples that can be applied to construct custom analysis pipelines.
+The aim is to provide a variety of modular usage examples that can be applied by readers to construct custom analysis pipelines for their own experiments.
 
 See the *[simpleSingleCell](https://bioconductor.org/packages/3.9/simpleSingleCell)* landing page for links to individual workflows and for instructions on how to install the required packages.
 To cite any of these workflows, please refer to http://f1000research.com/articles/5-2122/v2 for instructions.
@@ -65,17 +73,22 @@ To cite any of these workflows, please refer to http://f1000research.com/article
 
 All of these workflows start from a publicly available count matrix.
 For simplicity, we forego a description of the read processing steps required to generate the count matrix, i.e., read alignment and counting into features.
-These steps have been described in some detail elsewhere [@love2015rnaseq;@chen2016from], and are largely the same for bulk and single-cell data.
-For users favouring an R-based approach to read alignment and counting, we suggest using the methods in the *[Rsubread](https://bioconductor.org/packages/3.9/Rsubread)* package [@liao2013subread;@liao2014featurecounts].
+For SMART-seq2 data [@picelli2014fulllength], quantification procedures developed for bulk RNA-seq are generally satisfactory [@love2015rnaseq;@chen2016from].
+Users favouring an R-based approach to read alignment and counting might consider using the methods in the *[Rsubread](https://bioconductor.org/packages/3.9/Rsubread)* package [@liao2013subread;@liao2014featurecounts].
 
-Some considerations specific to single-cell data may also be relevant, depending on the experimental protocol used to generate the data:
+Many other scRNA-seq protocols contain bespoke sequence structures that require careful processing:
 
-- If spike-in RNA was added, the sequences of the spike-in transcripts can be included as additional FASTA files during genome index building prior to alignment.
-Similarly, genomic intervals for both spike-in transcripts and endogenous genes can be concatenated into a single GTF file prior to counting.
-- If UMIs are present, these should be extracted from the read sequence prior to alignment, e.g., with the _UMI-tools_ software [@smith2017umitools].
+- Unique molecular identifiers (UMIs) [@islam2014quantitative] are widely used to mitigate the effects of amplification biases.
 Reads with the same UMI mapping to the same gene represent a single underlying transcript molecule and only increment the count of that gene by one.
-- Alignment-free methods such as _kallisto_ [@bray2016near] or _Salmon_ [@patro2015accurate] may also be useful, due to their speed and ability to perform transcript quantification.
-This can be loaded into R using methods from the *[tximport](https://bioconductor.org/packages/3.9/tximport)* package [@soneson2015differential].
+Processing of this data requires extraction of the UMI sequence from each read or read pair, and a method to collapse UMI-based duplicates into a single count [@smith2017umitools].
+- Protocols may also use custom cell barcodes to improve multiplexing efficiency beyond that offered by the standard sequencing barcodes (e.g., from Illumina).
+This includes data generated from droplet-based experiments [@zheng2017massively] or from very high-throughput plate-based protocols like MARS-seq [@jaitin2014massively].
+Processing of this data usually requires a separate step to extract the barcode sequence from each read and to allocate the read to the correct per-cell sequencing library.
+
+For these data sets, the *[scPipe](https://bioconductor.org/packages/3.9/scPipe)* package [@lian2018scpipe] provides an R-based processing pipeline for obtaining a count matrix. 
+
+If spike-in RNA was added, the sequences of the spike-in transcripts can be included as additional FASTA files during genome index building prior to alignment.
+Similarly, genomic intervals for both spike-in transcripts and endogenous genes can be concatenated into a single GTF file prior to counting.
 
 # Author information
 

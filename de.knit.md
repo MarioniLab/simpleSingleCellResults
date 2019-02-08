@@ -3,7 +3,7 @@ title: Detecting differental expression from single-cell RNA-seq data
 author: 
 - name: Aaron T. L. Lun
   affiliation: &CRUK Cancer Research UK Cambridge Institute, Li Ka Shing Centre, Robinson Way, Cambridge CB2 0RE, United Kingdom
-date: "2019-01-04"
+date: "2019-02-08"
 vignette: >
   %\VignetteIndexEntry{10. Detecting differential expression}
   %\VignetteEngine{knitr::rmarkdown}
@@ -50,27 +50,27 @@ as.data.frame(demo[demo$Top <= 5,1:3])
 
 ```
 ##           Top      p.value          FDR
-## KCNQ1OT1    1 7.216182e-56 1.064315e-51
-## PGM5P2      1 1.317269e-47 6.476132e-44
+## KCNQ1OT1    1 3.938748e-56 5.809259e-52
+## PGM5P2      1 9.973107e-50 4.903112e-46
 ## TMEM212     1 5.507935e-34 1.353942e-30
-## TLCD2       1 9.972736e-28 1.337163e-24
-## SMG1        1 1.411506e-26 1.387887e-23
-## TSIX        1 1.256427e-16 1.799130e-14
-## UGDH-AS1    2 5.509461e-54 4.062952e-50
-## LOC643406   2 5.464592e-30 1.007466e-26
+## TLCD2       1 1.159434e-28 1.900055e-25
+## SMG1        1 1.411506e-26 1.301144e-23
+## TSIX        1 1.256427e-16 1.748212e-14
+## UGDH-AS1    2 3.066164e-54 2.261143e-50
+## LOC643406   2 7.330958e-32 1.544633e-28
 ## NLRP12      2 3.128190e-25 2.306884e-22
-## ODF2L       2 4.193889e-24 2.689377e-21
-## ARMC9       2 5.531674e-16 6.798889e-14
-## MAB21L3     3 4.411577e-42 1.626659e-38
-## FBXL20      3 6.670172e-23 3.074324e-20
+## ODF2L       2 4.193889e-24 2.577320e-21
+## ARMC9       2 5.531674e-16 6.633062e-14
+## MAB21L3     3 9.131242e-44 3.366917e-40
+## FBXL20      3 6.670172e-23 2.981163e-20
 ## GPR155      3 1.300526e-14 1.245550e-12
-## TFDP2       4 8.851044e-28 1.305440e-24
-## LRRC57      4 4.148010e-22 1.747971e-19
-## TUBA3FP     4 3.278619e-14 2.930688e-12
-## FBLIM1      5 4.896706e-39 1.444430e-35
-## CCL5        5 2.583585e-26 2.381581e-23
-## PNPT1       5 7.818870e-21 2.812695e-18
-## TRPM7       5 2.614253e-14 2.380100e-12
+## TFDP2       4 8.851044e-28 1.186764e-24
+## LRRC57      4 4.148010e-22 1.699417e-19
+## TUBA3FP     4 3.278619e-14 2.878354e-12
+## FBLIM1      5 1.730417e-40 5.104383e-37
+## CCL5        5 1.322838e-26 1.300703e-23
+## PNPT1       5 7.818870e-21 2.745726e-18
+## TRPM7       5 2.002259e-14 1.834243e-12
 ```
 
 Intra-batch comparisons with `block=` are robust to difference in the log-fold changes or variance between batches.
@@ -100,16 +100,17 @@ as.data.frame(demo[demo$Top <= 5,1:3])
 ```
 ##         Top       p.value           FDR
 ## CCL5      1  0.000000e+00  0.000000e+00
-## PCDH11Y   1  0.000000e+00  0.000000e+00
-## PGM5P2    1 2.341939e-314 8.635313e-311
-## LPAL2     2 3.371227e-317 1.657407e-313
-## TMEM212   2 1.115951e-299 2.351309e-296
-## LAIR1     3 1.924973e-305 5.678287e-302
-## TFDP2     3 8.637836e-300 2.123324e-296
-## ZNF665    3 7.120647e-297 1.312780e-293
-## VSTM4     3 4.535077e-296 7.431984e-293
-## LRRC57    4 3.121177e-259 1.353948e-256
-## FBXL20    5 1.327894e-252 4.776857e-250
+## PGM5P2    1 3.831712e-314 1.412848e-310
+## PCDH11Y   2  0.000000e+00  0.000000e+00
+## LPAL2     2 5.313572e-318 2.612330e-314
+## TMEM212   2 3.302215e-300 8.117395e-297
+## LAIR1     3 3.407370e-304 1.005106e-300
+## VSTM4     3 1.288202e-296 2.374962e-293
+## TFDP2     3 3.422123e-296 5.608100e-293
+## ZNF665    4 8.652004e-298 1.822977e-294
+## LRRC57    4 1.925200e-258 7.472310e-256
+## LPP       5 1.184317e-262 5.634675e-260
+## FBXL20    5 1.342461e-248 4.829257e-246
 ```
 
 The use of a linear model makes a few some strong assumptions, necessitating some caution when interpreting the results.
@@ -266,7 +267,7 @@ as.data.frame(head(combined[["cluster1"]][,1:3]))
 ## ND1      2  1.301918e-44  3.811149e-42
 ```
 
-# Caveats with interpreting DE p-values
+# Caveats with interpreting DE $p$-values
 
 ## Data dredging from clustering
 
@@ -292,8 +293,8 @@ hist(out[[1]]$p.value, col="grey80", xlab="p-value")
 ```
 
 <div class="figure">
-<img src="de_files/figure-html/pval-dist-1.png" alt="Distribution of p-values from a DE analysis between two clusters in a simulation with no true subpopulation structure." width="100%" />
-<p class="caption">(\#fig:pval-dist)Distribution of p-values from a DE analysis between two clusters in a simulation with no true subpopulation structure.</p>
+<img src="de_files/figure-html/pval-dist-1.png" alt="Distribution of $p$-values from a DE analysis between two clusters in a simulation with no true subpopulation structure." width="100%" />
+<p class="caption">(\#fig:pval-dist)Distribution of $p$-values from a DE analysis between two clusters in a simulation with no true subpopulation structure.</p>
 </div>
 
 By and large, this effect does not cause problems for marker gene detection as the DE statistics from `findMarkers()` and counterparts are primarily used for ranking.

@@ -12,7 +12,7 @@ author:
   - *CRUK
   - *EMBL
   - Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
-date: "2019-01-04"
+date: "2019-02-08"
 vignette: >
   %\VignetteIndexEntry{09. Advanced variance modelling}
   %\VignetteEngine{knitr::rmarkdown}
@@ -217,17 +217,17 @@ head(hvg.out)
 ## Fos      6.46229730082989 19.5774140760543 12.8221002879735 6.75531378808077
 ## Dusp1    6.82314467206793 15.6360357795109 10.1162290203638 5.51980675914714
 ## Rgs1     5.31345464503953 20.3107030102909 10.0119450815048  10.298757928786
-## Ppp1r15a 6.66579727019324 14.5266651189811 8.47596930729374 6.05069581168738
+## Ppp1r15a 6.66579727019324 14.5266651189811 8.47596930729373 6.05069581168739
 ## Ly6a     8.40354443058819   10.05833414214 8.05800100918705 2.00033313295293
 ## Egr1     6.71592505528811  13.857027821927 7.97752724423428 5.87950057769273
 ##                       p.value                  FDR
 ##                     <numeric>            <numeric>
-## Fos       1.0106613559478e-18 7.14571267366961e-16
-## Dusp1    7.24908882891273e-18   4.155687112164e-15
-## Rgs1     9.43425356723099e-08 1.10557984759412e-05
-## Ppp1r15a 1.73432258509506e-12 4.90489551366018e-10
+## Fos      1.01066135594786e-18 7.14571267367002e-16
+## Dusp1    7.24908882891304e-18 4.15568711216418e-15
+## Rgs1      9.4342535672312e-08 1.10557984759415e-05
+## Ppp1r15a 1.73432258509514e-12 4.90489551366039e-10
 ## Ly6a     2.99530600782523e-50  9.0762051045687e-47
-## Egr1      5.7056902206606e-12 1.49411599099299e-09
+## Egr1     5.70569022066076e-12 1.49411599099303e-09
 ```
 
 We check the distribution of expression values for the genes with the largest biological components.
@@ -401,7 +401,8 @@ comb.out <- multiBlockVar(sce.416B.2, block=sce.416B.2$Plate,
 ```
 
 Statistics are combined across multiple batches using the `combineVar()` function within `multiBlockVar()`.
-This function computes a weighted average across batches for the means and variances, and applies Fisher's method for combining the _p_-values.
+This function computes a weighted average across batches for the means and variances, and applies Fisher's method for combining the $p$-values.
+The weighting is based to the number of cells in each batch, which improves precision by favouring batches with more cells and more information.
 These results can be used in downstream functions such as `denoisePCA`, or for detecting highly variable genes (see below).
 
 
@@ -421,12 +422,12 @@ head(comb.out[,1:6])
 ## Rp1                 0.0970243712569606    0.45233813529556
 ##                                    bio               tech           p.value
 ##                              <numeric>          <numeric>         <numeric>
-## ENSMUSG00000103377 -0.0277229724173977 0.0396448379034627                 1
-## ENSMUSG00000103147 -0.0764556948465832  0.148675311100107 0.999999999962404
-## ENSMUSG00000103161 -0.0173491251784058 0.0222877021736163                 1
-## ENSMUSG00000102331 -0.0540089343571418 0.0869325262177148 0.999999999999991
-## ENSMUSG00000102948  -0.169989420950973  0.258126546724555                 1
-## Rp1                0.00813766886247711  0.444200466433083 0.163473096322238
+## ENSMUSG00000103377 -0.0277229724196103 0.0396448379056754                 1
+## ENSMUSG00000103147 -0.0764556948275004  0.148675311081024 0.999999999962404
+## ENSMUSG00000103161 -0.0173491251755451 0.0222877021707557                 1
+## ENSMUSG00000102331 -0.0540089343559534 0.0869325262165264 0.999999999999991
+## ENSMUSG00000102948  -0.169989420924752  0.258126546698334                 1
+## Rp1                0.00813766887883806  0.444200466416722 0.163473096421542
 ##                                  FDR
 ##                            <numeric>
 ## ENSMUSG00000103377                 1
@@ -434,7 +435,7 @@ head(comb.out[,1:6])
 ## ENSMUSG00000103161                 1
 ## ENSMUSG00000102331                 1
 ## ENSMUSG00000102948                 1
-## Rp1                0.538786121096424
+## Rp1                0.538786121423717
 ```
 
 We visualize the quality of the batch-specific trend fits by extracting the relevant statistics from `comb.out` (Figure \@ref(fig:hvgplotbatch416b)).
@@ -499,73 +500,78 @@ sessionInfo()
 ```
 
 ```
-## R Under development (unstable) (2018-12-07 r75787)
-## Platform: x86_64-apple-darwin15.6.0 (64-bit)
-## Running under: OS X El Capitan 10.11.6
+## R Under development (unstable) (2019-01-14 r75992)
+## Platform: x86_64-pc-linux-gnu (64-bit)
+## Running under: Ubuntu 16.04.5 LTS
 ## 
 ## Matrix products: default
-## BLAS: /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRblas.0.dylib
-## LAPACK: /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRlapack.dylib
+## BLAS: /home/cri.camres.org/lun01/Software/R/trunk/lib/libRblas.so
+## LAPACK: /home/cri.camres.org/lun01/Software/R/trunk/lib/libRlapack.so
 ## 
 ## locale:
-## [1] en_GB.UTF-8/en_GB.UTF-8/en_GB.UTF-8/C/en_GB.UTF-8/en_GB.UTF-8
+##  [1] LC_CTYPE=en_GB.UTF-8       LC_NUMERIC=C              
+##  [3] LC_TIME=en_GB.UTF-8        LC_COLLATE=en_GB.UTF-8    
+##  [5] LC_MONETARY=en_GB.UTF-8    LC_MESSAGES=en_GB.UTF-8   
+##  [7] LC_PAPER=en_GB.UTF-8       LC_NAME=C                 
+##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+## [11] LC_MEASUREMENT=en_GB.UTF-8 LC_IDENTIFICATION=C       
 ## 
 ## attached base packages:
 ## [1] parallel  stats4    stats     graphics  grDevices utils     datasets 
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] scran_1.11.12               scater_1.11.5              
-##  [3] ggplot2_3.1.0               SingleCellExperiment_1.5.1 
-##  [5] SummarizedExperiment_1.13.0 DelayedArray_0.9.5         
-##  [7] BiocParallel_1.17.3         matrixStats_0.54.0         
-##  [9] Biobase_2.43.0              GenomicRanges_1.35.1       
-## [11] GenomeInfoDb_1.19.1         IRanges_2.17.3             
-## [13] S4Vectors_0.21.8            BiocGenerics_0.29.1        
+##  [1] scran_1.11.20               scater_1.11.11             
+##  [3] ggplot2_3.1.0               SingleCellExperiment_1.5.2 
+##  [5] SummarizedExperiment_1.13.0 DelayedArray_0.9.8         
+##  [7] BiocParallel_1.17.9         matrixStats_0.54.0         
+##  [9] Biobase_2.43.1              GenomicRanges_1.35.1       
+## [11] GenomeInfoDb_1.19.1         IRanges_2.17.4             
+## [13] S4Vectors_0.21.10           BiocGenerics_0.29.1        
 ## [15] readxl_1.2.0                R.utils_2.7.0              
 ## [17] R.oo_1.22.0                 R.methodsS3_1.7.1          
 ## [19] bindrcpp_0.2.2              BiocFileCache_1.7.0        
-## [21] dbplyr_1.2.2                knitr_1.21                 
+## [21] dbplyr_1.3.0                knitr_1.21                 
 ## [23] BiocStyle_2.11.0           
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] bitops_1.0-6             bit64_0.9-7             
 ##  [3] httr_1.4.0               dynamicTreeCut_1.63-1   
 ##  [5] tools_3.6.0              R6_2.3.0                
-##  [7] HDF5Array_1.11.10        vipor_0.4.5             
+##  [7] irlba_2.3.3              vipor_0.4.5             
 ##  [9] DBI_1.0.0                lazyeval_0.2.1          
-## [11] colorspace_1.3-2         withr_2.1.2             
+## [11] colorspace_1.4-0         withr_2.1.2             
 ## [13] tidyselect_0.2.5         gridExtra_2.3           
 ## [15] processx_3.2.1           bit_1.1-14              
-## [17] curl_3.2                 compiler_3.6.0          
-## [19] BiocNeighbors_1.1.7      labeling_0.3            
+## [17] curl_3.3                 compiler_3.6.0          
+## [19] BiocNeighbors_1.1.11     labeling_0.3            
 ## [21] bookdown_0.9             scales_1.0.0            
 ## [23] callr_3.1.1              rappdirs_0.3.1          
 ## [25] stringr_1.3.1            digest_0.6.18           
 ## [27] rmarkdown_1.11           XVector_0.23.0          
 ## [29] pkgconfig_2.0.2          htmltools_0.3.6         
-## [31] limma_3.39.3             highr_0.7               
-## [33] rlang_0.3.0.1            RSQLite_2.1.1           
-## [35] DelayedMatrixStats_1.5.0 bindr_0.1.1             
+## [31] limma_3.39.5             highr_0.7               
+## [33] rlang_0.3.1              RSQLite_2.1.1           
+## [35] DelayedMatrixStats_1.5.2 bindr_0.1.1             
 ## [37] dplyr_0.7.8              RCurl_1.95-4.11         
-## [39] magrittr_1.5             simpleSingleCell_1.7.10 
-## [41] GenomeInfoDbData_1.2.0   Matrix_1.2-15           
-## [43] Rcpp_1.0.0               ggbeeswarm_0.6.0        
-## [45] munsell_0.5.0            Rhdf5lib_1.5.1          
+## [39] magrittr_1.5             BiocSingular_0.99.0     
+## [41] simpleSingleCell_1.7.16  GenomeInfoDbData_1.2.0  
+## [43] Matrix_1.2-15            Rcpp_1.0.0              
+## [45] ggbeeswarm_0.6.0         munsell_0.5.0           
 ## [47] viridis_0.5.1            stringi_1.2.4           
-## [49] yaml_2.2.0               edgeR_3.25.2            
-## [51] zlibbioc_1.29.0          rhdf5_2.27.4            
-## [53] plyr_1.8.4               grid_3.6.0              
-## [55] blob_1.1.1               crayon_1.3.4            
-## [57] lattice_0.20-38          cowplot_0.9.3           
-## [59] locfit_1.5-9.1           ps_1.3.0                
-## [61] pillar_1.3.1             igraph_1.2.2            
-## [63] codetools_0.2-16         glue_1.3.0              
-## [65] evaluate_0.12            BiocManager_1.30.4      
-## [67] cellranger_1.1.0         gtable_0.2.0            
-## [69] purrr_0.2.5              assertthat_0.2.0        
-## [71] xfun_0.4                 viridisLite_0.3.0       
-## [73] tibble_1.4.2             beeswarm_0.2.3          
+## [49] yaml_2.2.0               edgeR_3.25.3            
+## [51] zlibbioc_1.29.0          plyr_1.8.4              
+## [53] grid_3.6.0               blob_1.1.1              
+## [55] crayon_1.3.4             lattice_0.20-38         
+## [57] cowplot_0.9.4            locfit_1.5-9.1          
+## [59] ps_1.3.0                 pillar_1.3.1            
+## [61] igraph_1.2.2             codetools_0.2-16        
+## [63] glue_1.3.0               evaluate_0.12           
+## [65] BiocManager_1.30.4       cellranger_1.1.0        
+## [67] gtable_0.2.0             purrr_0.3.0             
+## [69] assertthat_0.2.0         xfun_0.4                
+## [71] rsvd_1.0.0               viridisLite_0.3.0       
+## [73] tibble_2.0.1             beeswarm_0.2.3          
 ## [75] memoise_1.1.0            statmod_1.4.30
 ```
 

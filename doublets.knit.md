@@ -3,7 +3,7 @@ title: Detecting doublets in single-cell RNA-seq data
 author:
 - name: Aaron T. L. Lun
   affiliation: &CRUK Cancer Research UK Cambridge Institute, Li Ka Shing Centre, Robinson Way, Cambridge CB2 0RE, United Kingdom
-date: "2019-01-04"
+date: "2019-02-08"
 vignette: >
   %\VignetteIndexEntry{08. Detecting doublets}
   %\VignetteEngine{knitr::rmarkdown}
@@ -34,7 +34,7 @@ These approaches can be highly effective but rely on experimental information th
 
 A more general approach is to infer doublets from the expression profiles alone [@dahlin2018single].
 In this workflow, we will describe two purely computational approaches for detecting doublets from scRNA-seq data.
-The main difference between These two methods is whether or not they need cluster information beforehand.
+The main difference between these two methods is whether or not they need cluster information beforehand.
 Both are implemented in the *[scran](https://bioconductor.org/packages/3.9/scran)* package from the open-source Bioconductor project [@huber2015orchestrating].
 We will demonstrate the use of these methods on data from a droplet-based scRNA-seq study of the mouse mammary gland [@bach2017differentiation],
 available from NCBI GEO with the accession code GSE106273.
@@ -346,8 +346,7 @@ plotHeatmap(sce, columns=order(sce$Cluster), colour_columns_by="Cluster",
 
 
 Closer examination of some known markers suggests that the offending cluster consists of doublets of basal cells (_Acta2_) and alveolar cells (_Csn2_) (Figure \@ref(fig:markerexprs)).
-Indeed, no cell type is known to strongly express both of these genes at the same time, which supports the hypothesis that this cluster consists solely of doublets.
-Of course, it is possible that this cluster represents an entirely novel cell type, though the presence of doublets provides a more sober explanation for its expression profile.
+Indeed, no cell type is known to strongly express both of these genes at the same time, which supports the hypothesis that this cluster consists solely of doublets^[Of course, it is possible that this cluster represents an entirely novel cell type, though the presence of doublets provides a more sober explanation for its expression profile.].
 
 
 ```r
@@ -432,22 +431,34 @@ plotColData(sce, x="Cluster", y="DoubletScore", colour_by="Cluster")
 <p class="caption">(\#fig:densclust)Distribution of doublet scores for each cluster in the mammary gland data set. Each point is a cell.</p>
 </div>
 
-The advantage of `doubletCells()` is that it does not depend on clusters, reducing the sensitivity of the results to clustering quality.
-The downside is that it requires some strong assumptions about how doublets form, such as the combining proportions and the sampling from pure subpopulations.
-In particular, `doubletCells()` treats the library size of each cell as an accurate proxy for its total RNA content.
-If this is not true, the simulation will not combine expression profiles from different cells in the correct proportions.
-This means that the simulated doublets will be systematically shifted away from the real doublets, resulting in doublet scores that are too low.
-
-It should also be stressed that the interpretation of the doublet scores is relative.
-It is difficult to generally define a fixed threshold above which libraries are to be considered doublets.
-One strategy is to define a threshold at a percentile corresponding to the expected proportion of doublets, based on experimental knowledge of the number of loaded cells.
-Another approach is to use these scores in the context of cluster annotation, where clusters with higher-than-average doublet scores are considered suspect.
-
 **Comments from Aaron:**
 
 - To speed up the density calculations, `doubletCells()` will perform a PCA on the log-expression matrix. 
 When `approximate=TRUE`, methods from the *[irlba](https://CRAN.R-project.org/package=irlba)* package are used to perform a fast approximate PCA.
 This involves randomization so it is necessary to call `set.seed()` to ensure that results are reproducible.
+
+## Strengths and weaknesses 
+
+The advantage of `doubletCells()` is that it does not depend on clusters, reducing the sensitivity of the results to clustering quality.
+The downside is that it requires some strong assumptions about how doublets form, such as the combining proportions and the sampling from pure subpopulations.
+In particular, `doubletCells()` treats the library size of each cell as an accurate proxy for its total RNA content.
+If this is not true, the simulation will not combine expression profiles from different cells in the correct proportions.
+This means that the simulated doublets will be systematically shifted away from the real doublets, resulting in doublet scores that are too low for the latter.
+
+Simply removing cells with high doublet scores will not be sufficient to eliminate real doublets from the data set.
+As we can see in Figure \@ref(fig:densclust), only a subset of the cells in the putative doublet cluster actually have high scores.
+Removing these would still leave enough cells in that cluster to mislead downstream analyses.
+In fact, even defining a threshold on the doublet score is difficult as the interpretation of the score is relative.
+There is no general definition for a fixed threshold above which libraries are to be considered doublets.
+
+We recommend interpreting the `doubletCells()` scores in the context of cluster annotation.
+All cells from a cluster with a large average doublet score should be considered suspect.
+Close neighbours of problematic clusters (e.g., identified by `clusterModularity()`, see [here](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/umis.html#evaluating-graph-based-clusters)) should be treated with caution.
+A cluster containing a small proportion of high-scoring cells is generally safe for downstream analyses, provided that the user investigates any interesting results to ensure that they are not being driven by those cells^[For example, checking that DE in an interesting gene is not driven solely by cells with high doublet scores.].
+While clustering is still required, this approach is more robust than `doubletClusters()` to the quality of the clustering.
+
+**Comments from Aaron:**
+
 - In some cases, we can improve the clarity of the result by setting `force.match=TRUE` in the `doubletCells()` call.
 This will forcibly match each simulated doublet to the nearest neighbouring cells in the original data set.
 Any systematic differences between simulated and real doublets will be removed, provided that the former are close enough to the latter to identify the correct nearest neighbours.
@@ -470,7 +481,11 @@ Some protection is provided by the non-linear nature of many real trajectories, 
 One can also put more weight on the relative library sizes in `doubletCluster()` instead of relying on `N`, 
 under the assumption that sudden spikes in RNA content are unlikely in a continuous biological process.
 
-# Session information
+The best solution to the doublet problem is experimental - that is, to avoid generating them in the first place.
+This should be a consideration when designing scRNA-seq experiments, where the desire to obtain large numbers of cells at minimum cost should be weighed against the general deterioration in data quality and reliability when doublets become more frequent^[Not that penny-pinching PIs would understand, but one can only hope.].
+Other experimental approaches make use of sample-specific cell "labels" to identify doublets in multiplexed experiments [@kang2018multiplexed;@stoekius2018hashing].
+If this information is available, we recommend using it to mark potential doublet clusters rather than simply removing doublets directly, 
+as the latter approach will not remove doublets of cells with the same label.
 
 We save the `SingleCellExperiment` object with its associated data to file for future use.
 
@@ -488,43 +503,48 @@ sessionInfo()
 ```
 
 ```
-## R Under development (unstable) (2018-12-07 r75787)
-## Platform: x86_64-apple-darwin15.6.0 (64-bit)
-## Running under: OS X El Capitan 10.11.6
+## R Under development (unstable) (2019-01-14 r75992)
+## Platform: x86_64-pc-linux-gnu (64-bit)
+## Running under: Ubuntu 16.04.5 LTS
 ## 
 ## Matrix products: default
-## BLAS: /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRblas.0.dylib
-## LAPACK: /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRlapack.dylib
+## BLAS: /home/cri.camres.org/lun01/Software/R/trunk/lib/libRblas.so
+## LAPACK: /home/cri.camres.org/lun01/Software/R/trunk/lib/libRlapack.so
 ## 
 ## locale:
-## [1] en_GB.UTF-8/en_GB.UTF-8/en_GB.UTF-8/C/en_GB.UTF-8/en_GB.UTF-8
+##  [1] LC_CTYPE=en_GB.UTF-8       LC_NUMERIC=C              
+##  [3] LC_TIME=en_GB.UTF-8        LC_COLLATE=en_GB.UTF-8    
+##  [5] LC_MONETARY=en_GB.UTF-8    LC_MESSAGES=en_GB.UTF-8   
+##  [7] LC_PAPER=en_GB.UTF-8       LC_NAME=C                 
+##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+## [11] LC_MEASUREMENT=en_GB.UTF-8 LC_IDENTIFICATION=C       
 ## 
 ## attached base packages:
 ## [1] parallel  stats4    stats     graphics  grDevices utils     datasets 
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] scran_1.11.12                         
+##  [1] scran_1.11.20                         
 ##  [2] TxDb.Mmusculus.UCSC.mm10.ensGene_3.4.0
-##  [3] GenomicFeatures_1.35.4                
+##  [3] GenomicFeatures_1.35.6                
 ##  [4] AnnotationDbi_1.45.0                  
 ##  [5] Matrix_1.2-15                         
-##  [6] scater_1.11.5                         
+##  [6] scater_1.11.11                        
 ##  [7] ggplot2_3.1.0                         
-##  [8] SingleCellExperiment_1.5.1            
+##  [8] SingleCellExperiment_1.5.2            
 ##  [9] SummarizedExperiment_1.13.0           
-## [10] DelayedArray_0.9.5                    
-## [11] BiocParallel_1.17.3                   
+## [10] DelayedArray_0.9.8                    
+## [11] BiocParallel_1.17.9                   
 ## [12] matrixStats_0.54.0                    
-## [13] Biobase_2.43.0                        
+## [13] Biobase_2.43.1                        
 ## [14] GenomicRanges_1.35.1                  
 ## [15] GenomeInfoDb_1.19.1                   
-## [16] IRanges_2.17.3                        
-## [17] S4Vectors_0.21.8                      
+## [16] IRanges_2.17.4                        
+## [17] S4Vectors_0.21.10                     
 ## [18] BiocGenerics_0.29.1                   
 ## [19] bindrcpp_0.2.2                        
 ## [20] BiocFileCache_1.7.0                   
-## [21] dbplyr_1.2.2                          
+## [21] dbplyr_1.3.0                          
 ## [22] knitr_1.21                            
 ## [23] BiocStyle_2.11.0                      
 ## 
@@ -532,47 +552,46 @@ sessionInfo()
 ##  [1] bitops_1.0-6             bit64_0.9-7             
 ##  [3] RColorBrewer_1.1-2       progress_1.2.0          
 ##  [5] httr_1.4.0               dynamicTreeCut_1.63-1   
-##  [7] tools_3.6.0              irlba_2.3.3             
-##  [9] R6_2.3.0                 HDF5Array_1.11.10       
-## [11] vipor_0.4.5              DBI_1.0.0               
-## [13] lazyeval_0.2.1           colorspace_1.3-2        
-## [15] withr_2.1.2              processx_3.2.1          
-## [17] tidyselect_0.2.5         gridExtra_2.3           
-## [19] prettyunits_1.0.2        bit_1.1-14              
-## [21] curl_3.2                 compiler_3.6.0          
-## [23] BiocNeighbors_1.1.7      labeling_0.3            
-## [25] rtracklayer_1.43.1       bookdown_0.9            
-## [27] scales_1.0.0             callr_3.1.1             
-## [29] rappdirs_0.3.1           stringr_1.3.1           
-## [31] digest_0.6.18            Rsamtools_1.35.0        
-## [33] rmarkdown_1.11           XVector_0.23.0          
-## [35] pkgconfig_2.0.2          htmltools_0.3.6         
-## [37] highr_0.7                limma_3.39.3            
-## [39] rlang_0.3.0.1            RSQLite_2.1.1           
-## [41] DelayedMatrixStats_1.5.0 bindr_0.1.1             
-## [43] dplyr_0.7.8              RCurl_1.95-4.11         
-## [45] magrittr_1.5             simpleSingleCell_1.7.10 
+##  [7] tools_3.6.0              R6_2.3.0                
+##  [9] irlba_2.3.3              vipor_0.4.5             
+## [11] DBI_1.0.0                lazyeval_0.2.1          
+## [13] colorspace_1.4-0         withr_2.1.2             
+## [15] processx_3.2.1           tidyselect_0.2.5        
+## [17] gridExtra_2.3            prettyunits_1.0.2       
+## [19] bit_1.1-14               curl_3.3                
+## [21] compiler_3.6.0           BiocNeighbors_1.1.11    
+## [23] labeling_0.3             rtracklayer_1.43.1      
+## [25] bookdown_0.9             scales_1.0.0            
+## [27] callr_3.1.1              rappdirs_0.3.1          
+## [29] stringr_1.3.1            digest_0.6.18           
+## [31] Rsamtools_1.35.2         rmarkdown_1.11          
+## [33] XVector_0.23.0           pkgconfig_2.0.2         
+## [35] htmltools_0.3.6          highr_0.7               
+## [37] limma_3.39.5             rlang_0.3.1             
+## [39] RSQLite_2.1.1            DelayedMatrixStats_1.5.2
+## [41] bindr_0.1.1              dplyr_0.7.8             
+## [43] RCurl_1.95-4.11          magrittr_1.5            
+## [45] BiocSingular_0.99.0      simpleSingleCell_1.7.16 
 ## [47] GenomeInfoDbData_1.2.0   Rcpp_1.0.0              
 ## [49] ggbeeswarm_0.6.0         munsell_0.5.0           
-## [51] Rhdf5lib_1.5.1           viridis_0.5.1           
-## [53] edgeR_3.25.2             stringi_1.2.4           
-## [55] yaml_2.2.0               zlibbioc_1.29.0         
-## [57] Rtsne_0.15               rhdf5_2.27.4            
-## [59] plyr_1.8.4               grid_3.6.0              
-## [61] blob_1.1.1               crayon_1.3.4            
-## [63] lattice_0.20-38          cowplot_0.9.3           
-## [65] Biostrings_2.51.1        hms_0.4.2               
-## [67] locfit_1.5-9.1           ps_1.3.0                
-## [69] pillar_1.3.1             igraph_1.2.2            
-## [71] codetools_0.2-16         biomaRt_2.39.2          
-## [73] XML_3.98-1.16            glue_1.3.0              
-## [75] evaluate_0.12            BiocManager_1.30.4      
-## [77] gtable_0.2.0             purrr_0.2.5             
-## [79] assertthat_0.2.0         xfun_0.4                
-## [81] viridisLite_0.3.0        pheatmap_1.0.10         
-## [83] tibble_1.4.2             GenomicAlignments_1.19.0
-## [85] beeswarm_0.2.3           memoise_1.1.0           
-## [87] statmod_1.4.30
+## [51] viridis_0.5.1            edgeR_3.25.3            
+## [53] stringi_1.2.4            yaml_2.2.0              
+## [55] zlibbioc_1.29.0          Rtsne_0.15              
+## [57] plyr_1.8.4               grid_3.6.0              
+## [59] blob_1.1.1               crayon_1.3.4            
+## [61] lattice_0.20-38          cowplot_0.9.4           
+## [63] Biostrings_2.51.2        hms_0.4.2               
+## [65] locfit_1.5-9.1           ps_1.3.0                
+## [67] pillar_1.3.1             igraph_1.2.2            
+## [69] codetools_0.2-16         biomaRt_2.39.2          
+## [71] XML_3.98-1.16            glue_1.3.0              
+## [73] evaluate_0.12            BiocManager_1.30.4      
+## [75] gtable_0.2.0             purrr_0.3.0             
+## [77] assertthat_0.2.0         xfun_0.4                
+## [79] rsvd_1.0.0               viridisLite_0.3.0       
+## [81] pheatmap_1.0.12          tibble_2.0.1            
+## [83] GenomicAlignments_1.19.1 beeswarm_0.2.3          
+## [85] memoise_1.1.0            statmod_1.4.30
 ```
 
 # References

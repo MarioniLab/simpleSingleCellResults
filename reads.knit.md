@@ -12,7 +12,7 @@ author:
   - *CRUK
   - *EMBL
   - Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
-date: "2019-01-04"
+date: "2019-02-08"
 vignette: >
   %\VignetteIndexEntry{02. Read count data}
   %\VignetteEngine{knitr::rmarkdown}
@@ -425,7 +425,7 @@ These may be useful for checking whether the automatically selected thresholds a
     
     ```
     ##        control.20160113 control.20160325 induced.20160113 induced.20160325
-    ## lower           5.82883         5.622679         5.698215         5.664173
+    ## lower            674264         419448.6         499131.8         461501.1
     ## higher              Inf              Inf              Inf              Inf
     ```
     
@@ -489,7 +489,7 @@ table(sce$phases)
 ```
 ## 
 ##  G1 G2M   S 
-##  99  62  22
+##  98  62  23
 ```
 
 Pre-trained classifiers are available in *[scran](https://bioconductor.org/packages/3.9/scran)* for human and mouse data. 
@@ -1128,7 +1128,7 @@ markers <- findMarkers(sce, my.clusters, block=sce$Plate)
 For each cluster, the DE results of the relevant comparisons are consolidated into a single output table.
 This allows a set of marker genes to be easily defined by taking the top DE genes from each pairwise comparison between clusters.
 For example, to construct a marker set for cluster 1 from the top 10 genes of each comparison, one would filter `marker.set` to retain rows with `Top` less than or equal to 10.
-Other statistics are also reported for each gene, including the adjusted p-values (see below) and the log-fold changes relative to every other cluster.
+Other statistics are also reported for each gene, including the adjusted $p$-values (see below) and the log-fold changes relative to every other cluster.
 
 
 
@@ -1216,7 +1216,7 @@ This should be done by setting `pval.type="all"`, which defines the p-value for 
 Combined with `direction="up"`, this can be used to identify unique markers for each cluster.
 However, this is sensitive to overclustering, as unique marker genes will no longer exist if a cluster is split into two smaller subclusters.
 - It must be stressed that the (adjusted) _p_-values computed here cannot be properly interpreted as measures of significance.
-This is because the clusters have been empirically identified from the data, see [here](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/de.html#misinterpretation-of-de-p-values).
+This is because the clusters have been empirically identified from the data, see [here](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/de.html#misinterpretation-of-de-$p$-values).
 
 # Concluding remarks
 
@@ -1247,16 +1247,21 @@ sessionInfo()
 ```
 
 ```
-## R Under development (unstable) (2018-12-07 r75787)
-## Platform: x86_64-apple-darwin15.6.0 (64-bit)
-## Running under: OS X El Capitan 10.11.6
+## R Under development (unstable) (2019-01-14 r75992)
+## Platform: x86_64-pc-linux-gnu (64-bit)
+## Running under: Ubuntu 16.04.5 LTS
 ## 
 ## Matrix products: default
-## BLAS: /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRblas.0.dylib
-## LAPACK: /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRlapack.dylib
+## BLAS: /home/cri.camres.org/lun01/Software/R/trunk/lib/libRblas.so
+## LAPACK: /home/cri.camres.org/lun01/Software/R/trunk/lib/libRlapack.so
 ## 
 ## locale:
-## [1] en_GB.UTF-8/en_GB.UTF-8/en_GB.UTF-8/C/en_GB.UTF-8/en_GB.UTF-8
+##  [1] LC_CTYPE=en_GB.UTF-8       LC_NUMERIC=C              
+##  [3] LC_TIME=en_GB.UTF-8        LC_COLLATE=en_GB.UTF-8    
+##  [5] LC_MONETARY=en_GB.UTF-8    LC_MESSAGES=en_GB.UTF-8   
+##  [7] LC_PAPER=en_GB.UTF-8       LC_NAME=C                 
+##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+## [11] LC_MEASUREMENT=en_GB.UTF-8 LC_IDENTIFICATION=C       
 ## 
 ## attached base packages:
 ## [1] parallel  stats4    stats     graphics  grDevices utils     datasets 
@@ -1265,28 +1270,28 @@ sessionInfo()
 ## other attached packages:
 ##  [1] cluster_2.0.7-1                       
 ##  [2] dynamicTreeCut_1.63-1                 
-##  [3] limma_3.39.3                          
-##  [4] scran_1.11.12                         
+##  [3] limma_3.39.5                          
+##  [4] scran_1.11.20                         
 ##  [5] TxDb.Mmusculus.UCSC.mm10.ensGene_3.4.0
-##  [6] GenomicFeatures_1.35.4                
-##  [7] scater_1.11.5                         
+##  [6] GenomicFeatures_1.35.6                
+##  [7] scater_1.11.11                        
 ##  [8] ggplot2_3.1.0                         
 ##  [9] org.Mm.eg.db_3.7.0                    
 ## [10] AnnotationDbi_1.45.0                  
-## [11] SingleCellExperiment_1.5.1            
+## [11] SingleCellExperiment_1.5.2            
 ## [12] SummarizedExperiment_1.13.0           
-## [13] DelayedArray_0.9.5                    
-## [14] BiocParallel_1.17.3                   
+## [13] DelayedArray_0.9.8                    
+## [14] BiocParallel_1.17.9                   
 ## [15] matrixStats_0.54.0                    
-## [16] Biobase_2.43.0                        
+## [16] Biobase_2.43.1                        
 ## [17] GenomicRanges_1.35.1                  
 ## [18] GenomeInfoDb_1.19.1                   
-## [19] IRanges_2.17.3                        
-## [20] S4Vectors_0.21.8                      
+## [19] IRanges_2.17.4                        
+## [20] S4Vectors_0.21.10                     
 ## [21] BiocGenerics_0.29.1                   
 ## [22] bindrcpp_0.2.2                        
 ## [23] BiocFileCache_1.7.0                   
-## [24] dbplyr_1.2.2                          
+## [24] dbplyr_1.3.0                          
 ## [25] knitr_1.21                            
 ## [26] BiocStyle_2.11.0                      
 ## 
@@ -1294,45 +1299,45 @@ sessionInfo()
 ##  [1] bitops_1.0-6             bit64_0.9-7             
 ##  [3] RColorBrewer_1.1-2       progress_1.2.0          
 ##  [5] httr_1.4.0               tools_3.6.0             
-##  [7] R6_2.3.0                 KernSmooth_2.23-15      
-##  [9] HDF5Array_1.11.10        vipor_0.4.5             
+##  [7] R6_2.3.0                 irlba_2.3.3             
+##  [9] KernSmooth_2.23-15       vipor_0.4.5             
 ## [11] DBI_1.0.0                lazyeval_0.2.1          
-## [13] colorspace_1.3-2         withr_2.1.2             
+## [13] colorspace_1.4-0         withr_2.1.2             
 ## [15] processx_3.2.1           tidyselect_0.2.5        
 ## [17] gridExtra_2.3            prettyunits_1.0.2       
-## [19] bit_1.1-14               curl_3.2                
-## [21] compiler_3.6.0           BiocNeighbors_1.1.7     
+## [19] bit_1.1-14               curl_3.3                
+## [21] compiler_3.6.0           BiocNeighbors_1.1.11    
 ## [23] rtracklayer_1.43.1       labeling_0.3            
 ## [25] bookdown_0.9             scales_1.0.0            
 ## [27] callr_3.1.1              rappdirs_0.3.1          
 ## [29] stringr_1.3.1            digest_0.6.18           
-## [31] Rsamtools_1.35.0         rmarkdown_1.11          
+## [31] Rsamtools_1.35.2         rmarkdown_1.11          
 ## [33] XVector_0.23.0           pkgconfig_2.0.2         
 ## [35] htmltools_0.3.6          highr_0.7               
-## [37] rlang_0.3.0.1            RSQLite_2.1.1           
-## [39] DelayedMatrixStats_1.5.0 bindr_0.1.1             
+## [37] rlang_0.3.1              RSQLite_2.1.1           
+## [39] DelayedMatrixStats_1.5.2 bindr_0.1.1             
 ## [41] dplyr_0.7.8              RCurl_1.95-4.11         
-## [43] magrittr_1.5             simpleSingleCell_1.7.10 
-## [45] GenomeInfoDbData_1.2.0   Matrix_1.2-15           
-## [47] Rcpp_1.0.0               ggbeeswarm_0.6.0        
-## [49] munsell_0.5.0            Rhdf5lib_1.5.1          
-## [51] viridis_0.5.1            edgeR_3.25.2            
+## [43] magrittr_1.5             BiocSingular_0.99.0     
+## [45] simpleSingleCell_1.7.16  GenomeInfoDbData_1.2.0  
+## [47] Matrix_1.2-15            Rcpp_1.0.0              
+## [49] ggbeeswarm_0.6.0         munsell_0.5.0           
+## [51] viridis_0.5.1            edgeR_3.25.3            
 ## [53] stringi_1.2.4            yaml_2.2.0              
 ## [55] zlibbioc_1.29.0          Rtsne_0.15              
-## [57] rhdf5_2.27.4             plyr_1.8.4              
-## [59] grid_3.6.0               blob_1.1.1              
-## [61] crayon_1.3.4             lattice_0.20-38         
-## [63] Biostrings_2.51.1        cowplot_0.9.3           
-## [65] hms_0.4.2                locfit_1.5-9.1          
-## [67] ps_1.3.0                 pillar_1.3.1            
-## [69] igraph_1.2.2             reshape2_1.4.3          
-## [71] codetools_0.2-16         biomaRt_2.39.2          
-## [73] XML_3.98-1.16            glue_1.3.0              
-## [75] evaluate_0.12            BiocManager_1.30.4      
-## [77] gtable_0.2.0             purrr_0.2.5             
-## [79] assertthat_0.2.0         xfun_0.4                
-## [81] viridisLite_0.3.0        pheatmap_1.0.10         
-## [83] tibble_1.4.2             GenomicAlignments_1.19.0
+## [57] plyr_1.8.4               grid_3.6.0              
+## [59] blob_1.1.1               crayon_1.3.4            
+## [61] lattice_0.20-38          Biostrings_2.51.2       
+## [63] cowplot_0.9.4            hms_0.4.2               
+## [65] locfit_1.5-9.1           ps_1.3.0                
+## [67] pillar_1.3.1             igraph_1.2.2            
+## [69] reshape2_1.4.3           codetools_0.2-16        
+## [71] biomaRt_2.39.2           XML_3.98-1.16           
+## [73] glue_1.3.0               evaluate_0.12           
+## [75] BiocManager_1.30.4       gtable_0.2.0            
+## [77] purrr_0.3.0              assertthat_0.2.0        
+## [79] xfun_0.4                 rsvd_1.0.0              
+## [81] viridisLite_0.3.0        pheatmap_1.0.12         
+## [83] tibble_2.0.1             GenomicAlignments_1.19.1
 ## [85] beeswarm_0.2.3           memoise_1.1.0           
 ## [87] statmod_1.4.30
 ```

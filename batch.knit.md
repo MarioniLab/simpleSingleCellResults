@@ -5,7 +5,7 @@ author:
   affiliation: Cancer Research UK Cambridge Institute, Li Ka Shing Centre, Robinson Way, Cambridge CB2 0RE, United Kingdom
 - name: Michael D. Morgan
   affiliation: Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
-date: "2019-01-04"
+date: "2019-02-08"
 vignette: >
   %\VignetteIndexEntry{05. Correcting batch effects}
   %\VignetteEngine{knitr::rmarkdown}
@@ -274,20 +274,20 @@ head(dec.gse81076)
 ## DataFrame with 6 rows and 7 columns
 ##                             mean            total              bio
 ##                        <numeric>        <numeric>        <numeric>
-## ENSG00000254647 2.84354986788675 6.37223658453819  5.9288591219916
-## ENSG00000129965 1.88950987335824 6.02281611785607 5.57524591787871
-## ENSG00000115263 4.02102813554184 5.79923366454836 5.56593885619029
-## ENSG00000118271 3.67285962325439 5.80023170033878 5.49885083589153
-## ENSG00000115386 4.24317140825674 5.41270206612667 5.17694035035338
-## ENSG00000164266 3.03649146616406 5.43074151343319 5.02327614712641
+## ENSG00000254647 2.84354986788675 6.37223658453819 5.92885912197339
+## ENSG00000129965 1.88950987335824 6.02281611785607 5.57524591788433
+## ENSG00000115263 4.02102813554184 5.79923366454836 5.56593885619407
+## ENSG00000118271 3.67285962325439 5.80023170033878 5.49885083587672
+## ENSG00000115386 4.24317140825674 5.41270206612667 5.17694035036249
+## ENSG00000164266 3.03649146616406 5.43074151343319 5.02327614710772
 ##                              tech   p.value       FDR      Symbol
 ##                         <numeric> <numeric> <numeric> <character>
-## ENSG00000254647 0.443377462546594         0         0         INS
-## ENSG00000129965 0.447570199977359         0         0    INS-IGF2
-## ENSG00000115263 0.233294808358074         0         0         GCG
-## ENSG00000118271 0.301380864447243         0         0         TTR
-## ENSG00000115386 0.235761715773295         0         0       REG1A
-## ENSG00000164266 0.407465366306782         0         0      SPINK1
+## ENSG00000254647 0.443377462564809         0         0         INS
+## ENSG00000129965 0.447570199971736         0         0    INS-IGF2
+## ENSG00000115263  0.23329480835429         0         0         GCG
+## ENSG00000118271 0.301380864462058         0         0         TTR
+## ENSG00000115386 0.235761715764185         0         0       REG1A
+## ENSG00000164266 0.407465366325469         0         0      SPINK1
 ```
 
 
@@ -510,20 +510,20 @@ head(dec.gse85241)
 ## DataFrame with 6 rows and 7 columns
 ##                             mean            total              bio
 ##                        <numeric>        <numeric>        <numeric>
-## ENSG00000115263 7.65841710442871  6.5830512952663 6.55421179067102
-## ENSG00000089199 4.61402548649295 6.40161547541309  6.2796084921898
-## ENSG00000169903 3.00902736622973 6.52426016019893 6.16908131913193
-## ENSG00000254647 1.99894035399136 6.41255303005657 5.85584323610226
-## ENSG00000118271  7.3311379562758 5.71978094825155 5.68830339392333
-## ENSG00000171951 4.18265117704755 5.54705848250118 5.38194664056955
+## ENSG00000115263 7.65841710442871  6.5830512952663 6.55421179060075
+## ENSG00000089199 4.61402548649295 6.40161547541309 6.27960849217962
+## ENSG00000169903 3.00902736622973 6.52426016019893 6.16908131917692
+## ENSG00000254647 1.99894035399136 6.41255303005657 5.85584323627252
+## ENSG00000118271  7.3311379562758 5.71978094825155 5.68830339385946
+## ENSG00000171951 4.18265117704755 5.54705848250118 5.38194664056256
 ##                               tech   p.value       FDR      Symbol
 ##                          <numeric> <numeric> <numeric> <character>
-## ENSG00000115263 0.0288395045952795         0         0         GCG
-## ENSG00000089199  0.122006983223284         0         0        CHGB
-## ENSG00000169903  0.355178841067002         0         0      TM4SF4
-## ENSG00000254647  0.556709793954303         0         0         INS
-## ENSG00000118271 0.0314775543282175         0         0         TTR
-## ENSG00000171951  0.165111841931636         0         0        SCG2
+## ENSG00000115263 0.0288395046655466         0         0         GCG
+## ENSG00000089199  0.122006983233466         0         0        CHGB
+## ENSG00000169903  0.355178841022013         0         0      TM4SF4
+## ENSG00000254647  0.556709793784048         0         0         INS
+## ENSG00000118271 0.0314775543920864         0         0         TTR
+## ENSG00000171951  0.165111841938628         0         0        SCG2
 ```
 
 
@@ -547,7 +547,7 @@ However, we note that it is possible to apply the MNN correction between donors 
 To obtain a single set of features for batch correction, we compute the average biological component across all batches.
 We then take all genes with positive biological components to ensure that all interesting biology is retained, equivalent to the behaviour of `denoisePCA()`.
 However, the quality of the correction can often be sensitive to technical noise, which means that some discretion may be required during feature selection.
-Users may prefer to take the top 1000-5000 genes with the largest average components, or to use `combineVar()` to obtain combined _p_-values for gene selection.
+Users may prefer to take the top 1000-5000 genes with the largest average components, or to use `combineVar()` to obtain combined $p$-values for gene selection.
 
 
 ```r
@@ -839,18 +839,26 @@ mnn.out2$batch # same as mnn.out$batch
 ##   Values : "GSE81076" "GSE85241"
 ```
 
-If very different batches (in terms of cell composition) are present, we suggest setting the largest and/or most heterogeneous batch as the first.
+If very different batches (in terms of cell composition) are present, we suggest setting the largest, most heterogeneous batch as the first.
 This ensures that sufficient MNN pairs will be identified between the first and other batches for stable correction.
+Conversely, if two small batches without shared populations are supplied first, the wrong MNN pairs will be detected and the result of the merge will be incorrect.
 
 
 
 ## Hierarchical merging 
 
 In more complex experiments, we may know beforehand that certain sets of batches are more similar to each other.
-For example, we might want to merge batches that represent replicate experiments from the same condition, prior to merging across conditions.
-We might also want to merge batches generated with the same scRNA-seq technology prior to merging across technologies.
-This can be done by multiple calls to `fastMNN()` with progressively merged batches.
+We might then want to merge those similar batches before attempting the more difficult merges involving batches with different cell type composition and/or gene expression.
+Examples include:
 
+- Merging batches that represent replicate experiments from the same condition, prior to merging across conditions.
+- Merging batches generated with the same scRNA-seq technology prior to merging across technologies.
+
+This strategy limits encourages detection of correct MNN pairs as similar batches should have more shared populations, 
+By comparison, performing the more difficult merges first is more likely to introduce errors whereby distinct subpopulations are incorrectly placed together.
+This unnecessarily propagates the error to later steps as the initial merge is used as a reference for subsequent merges.
+
+Hierarchical merging can be achieved through multiple calls to `fastMNN()` with progressively merged batches.
 To illustrate, assume that we want to remove `Donor` effects within each batch prior to merging across batches.
 We split up the cells in GSE85241 according to the donor of origin, creating one `SingleCellExperiment` object for each donor.
 
@@ -903,6 +911,8 @@ for (x in all.donors) {
 
 We use the `multiBatchPCA()` function to perform a PCA across _all_ batches to be merged.
 This ensures that all cells are placed onto the same coordinate space, which would obviously not be possible if a PCA was performed for each batch separately.
+Specifically, `multiBatchPCA()` performs a modified PCA to ensure that each supplied matrix contributes equally to the definition of the PC space.
+This avoids problems with imbalances in the number of cells across batches, meanining that smaller batches (possibly with unique cell types) are not ignored.
 
 
 ```r
@@ -956,7 +966,7 @@ mnn.out.81076$batch
 The next step is to merge the two batches together.
 To do this, we simply repeat the `fastMNN()` call with the donor-corrected values for each batch.
 Again, we need to set `pc.input=TRUE` to prevent the function from unnecessarily (and incorrectly) repeating the cosine normalization and PCA steps on the corrected values.
-This yields a final corrected expression matrix where both within-batch donor effects and batch effects have been corrected.
+We use a larger `k` in the final `fastMNN()` call to improve the robustness of MNN detection to outlier cells on the edges of each cluster.
 
 
 ```r
@@ -983,6 +993,7 @@ c(mnn.out.81076$batch, mnn.out.85241$batch) # by donor
 ##   Values :   "A"   "B"   "C"   "D" "D28" "D29" "D30" "D31"
 ```
 
+This yields a final corrected expression matrix where both within-batch donor effects and batch effects have been corrected.
 We examine the quality of each of the merge steps with t-SNE plots (Figure \@ref(fig:tsne-hmerge)).
 Within each batch, the donors are generally well-mixed, and the final merge is consistent with Figure \@ref(fig:tsne-batch). 
 
@@ -1012,13 +1023,10 @@ plot(tout.all$Y[,1], tout.all$Y[,2], main="Final",
 
 **Comments from Aaron:**
 
-- We use a larger `k` in the final `fastMNN()` call to improve the robustness of MNN detection to outlier cells on the edges of each cluster.
-One might ask why a larger `k` was not needed in Figure \@ref(fig:tsne-batch) as well.
+- Here, we have applied `multiBatchPCA()` to the batch-level inputs for convenience.
+It is also possible to supply donor-level matrices to equalize contributions across donors.
+- One might ask why a larger `k` was not needed in Figure \@ref(fig:tsne-batch) as well.
 This was probably because the outliers were masked by inter-donor heterogeneity when the t-SNE plots were generated without removing the donor effects.
-- `multiBatchPCA()` will ensure that each supplied matrix contributes equally to the definition of the PC space.
-This avoids problems with imbalances in the number of cells across batches.
-In particular, it ensures that smaller batches (possibly with unique cell types) can affect the rotation vectors.
-Here, we have applied `multiBatchPCA()` to the batch-level inputs for convenience, though it is also possible to supply donor-level matrices to equalize contributions across donors.
 - In this specific example, cells from the same donor will occupy contiguous rows in the `mnn.out3$corrected` matrix.
 However, this may not have been the case for the original ordering of cells in each `SingleCellExperiment`.
 This requires some extra account-keeping to match up the final corrected matrix to the original ordering, e.g., when cross-referencing to metadata.
@@ -1086,14 +1094,14 @@ table(clusters$membership, sce$Batch)
 ##     
 ##      GSE81076 GSE85241
 ##   1        72        1
-##   2       315      281
-##   3       350      259
-##   4       212      851
+##   2       308      281
+##   3       357      259
+##   4       222      852
 ##   5        65      198
-##   6       129       90
+##   6       139      390
 ##   7        25      108
-##   8        87      389
-##   9        22      126
+##   8        22      127
+##   9        67       87
 ##   10        0       18
 ##   11        8        4
 ##   12        7       21
@@ -1115,7 +1123,7 @@ plotTSNE(sce, colour_by="Cluster")
 Differential expression analyses should be performed on the **original** log-expression values or counts.
 We do not use the corrected values here (which no longer correspond to genes anyway) except to obtain the clusters or trajectories to be characterized.
 To model the batch effect, we set the batch of origin as the `block=` argument in `findMarkers()`.
-This will perform all comparisons between clusters _within_ each batch, and then combine the _p_-values to consolidate results across batches.
+This will perform all comparisons between clusters _within_ each batch, and then combine the $p$-values to consolidate results across batches.
 
 
 ```r
@@ -1133,33 +1141,31 @@ as.data.frame(demo[,1:3]) # only first three columns for brevity.
 ## SCG2      1  0.000000e+00  0.000000e+00
 ## PPP1R1A   1  0.000000e+00  0.000000e+00
 ## IRX2      1  0.000000e+00  0.000000e+00
-## GC        1  0.000000e+00  0.000000e+00
 ## FAP       1  0.000000e+00  0.000000e+00
-## CRYBA2    1  0.000000e+00  0.000000e+00
 ## CNTN1     1  0.000000e+00  0.000000e+00
-## CPE       2  0.000000e+00  0.000000e+00
+## ARX       1  0.000000e+00  0.000000e+00
+## PTPRN     2  0.000000e+00  0.000000e+00
 ## CHGB      2  0.000000e+00  0.000000e+00
+## GC        2  0.000000e+00  0.000000e+00
 ## PAM       2  0.000000e+00  0.000000e+00
-## ARX       2  0.000000e+00  0.000000e+00
+## CRYBA2    2  0.000000e+00  0.000000e+00
 ## SYT7      2  0.000000e+00  0.000000e+00
-## LOXL4     2 3.109256e-290 6.197084e-288
-## PTPRN     3  0.000000e+00  0.000000e+00
+## LOXL4     2 1.460814e-289 2.872740e-287
+## CPE       3  0.000000e+00  0.000000e+00
+## TTR       3  0.000000e+00  0.000000e+00
 ## SCG5      3  0.000000e+00  0.000000e+00
-## PTPRN2    3  0.000000e+00  0.000000e+00
 ## SEZ6L2    3  0.000000e+00  0.000000e+00
 ## TPD52     3  0.000000e+00  0.000000e+00
-## PLCE1     3 1.995343e-192 1.634962e-190
+## PLCE1     3 1.777919e-192 1.507042e-190
 ## MAFB      4  0.000000e+00  0.000000e+00
 ## SCGN      4  0.000000e+00  0.000000e+00
+## GCG       4  0.000000e+00  0.000000e+00
+## PTPRN2    4  0.000000e+00  0.000000e+00
 ## RAB3B     4  0.000000e+00  0.000000e+00
-## DDR1      4  0.000000e+00  0.000000e+00
-## RCAN2     4 2.371175e-282 4.317587e-280
-## SLC30A8   5  0.000000e+00  0.000000e+00
-## TTR       5  0.000000e+00  0.000000e+00
-## NEUROD1   5  0.000000e+00  0.000000e+00
-## GCG       5  0.000000e+00  0.000000e+00
-## SLC38A4   5  0.000000e+00  0.000000e+00
-## CFC1      5 8.016825e-262 1.194345e-259
+## SLC38A4   4  0.000000e+00  0.000000e+00
+## RCAN2     4 6.174972e-283 1.124379e-280
+## DDR1      5  0.000000e+00  0.000000e+00
+## CFC1      5 5.010538e-262 7.316874e-260
 ```
 
 
@@ -1198,73 +1204,78 @@ sessionInfo()
 ```
 
 ```
-## R Under development (unstable) (2018-12-07 r75787)
-## Platform: x86_64-apple-darwin15.6.0 (64-bit)
-## Running under: OS X El Capitan 10.11.6
+## R Under development (unstable) (2019-01-14 r75992)
+## Platform: x86_64-pc-linux-gnu (64-bit)
+## Running under: Ubuntu 16.04.5 LTS
 ## 
 ## Matrix products: default
-## BLAS: /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRblas.0.dylib
-## LAPACK: /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRlapack.dylib
+## BLAS: /home/cri.camres.org/lun01/Software/R/trunk/lib/libRblas.so
+## LAPACK: /home/cri.camres.org/lun01/Software/R/trunk/lib/libRlapack.so
 ## 
 ## locale:
-## [1] en_GB.UTF-8/en_GB.UTF-8/en_GB.UTF-8/C/en_GB.UTF-8/en_GB.UTF-8
+##  [1] LC_CTYPE=en_GB.UTF-8       LC_NUMERIC=C              
+##  [3] LC_TIME=en_GB.UTF-8        LC_COLLATE=en_GB.UTF-8    
+##  [5] LC_MONETARY=en_GB.UTF-8    LC_MESSAGES=en_GB.UTF-8   
+##  [7] LC_PAPER=en_GB.UTF-8       LC_NAME=C                 
+##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+## [11] LC_MEASUREMENT=en_GB.UTF-8 LC_IDENTIFICATION=C       
 ## 
 ## attached base packages:
 ## [1] parallel  stats4    stats     graphics  grDevices utils     datasets 
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] Rtsne_0.15                  scran_1.11.12              
-##  [3] scater_1.11.5               ggplot2_3.1.0              
-##  [5] SingleCellExperiment_1.5.1  SummarizedExperiment_1.13.0
-##  [7] DelayedArray_0.9.5          BiocParallel_1.17.3        
+##  [1] Rtsne_0.15                  scran_1.11.20              
+##  [3] scater_1.11.11              ggplot2_3.1.0              
+##  [5] SingleCellExperiment_1.5.2  SummarizedExperiment_1.13.0
+##  [7] DelayedArray_0.9.8          BiocParallel_1.17.9        
 ##  [9] matrixStats_0.54.0          GenomicRanges_1.35.1       
 ## [11] GenomeInfoDb_1.19.1         org.Hs.eg.db_3.7.0         
-## [13] AnnotationDbi_1.45.0        IRanges_2.17.3             
-## [15] S4Vectors_0.21.8            Biobase_2.43.0             
+## [13] AnnotationDbi_1.45.0        IRanges_2.17.4             
+## [15] S4Vectors_0.21.10           Biobase_2.43.1             
 ## [17] BiocGenerics_0.29.1         bindrcpp_0.2.2             
-## [19] BiocFileCache_1.7.0         dbplyr_1.2.2               
+## [19] BiocFileCache_1.7.0         dbplyr_1.3.0               
 ## [21] knitr_1.21                  BiocStyle_2.11.0           
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] bitops_1.0-6             bit64_0.9-7             
 ##  [3] httr_1.4.0               dynamicTreeCut_1.63-1   
 ##  [5] tools_3.6.0              R6_2.3.0                
-##  [7] irlba_2.3.3              HDF5Array_1.11.10       
-##  [9] vipor_0.4.5              DBI_1.0.0               
-## [11] lazyeval_0.2.1           colorspace_1.3-2        
-## [13] withr_2.1.2              processx_3.2.1          
-## [15] tidyselect_0.2.5         gridExtra_2.3           
-## [17] bit_1.1-14               curl_3.2                
-## [19] compiler_3.6.0           BiocNeighbors_1.1.7     
-## [21] labeling_0.3             bookdown_0.9            
-## [23] scales_1.0.0             callr_3.1.1             
-## [25] rappdirs_0.3.1           stringr_1.3.1           
-## [27] digest_0.6.18            rmarkdown_1.11          
-## [29] XVector_0.23.0           pkgconfig_2.0.2         
-## [31] htmltools_0.3.6          limma_3.39.3            
-## [33] highr_0.7                rlang_0.3.0.1           
-## [35] RSQLite_2.1.1            DelayedMatrixStats_1.5.0
-## [37] bindr_0.1.1              dplyr_0.7.8             
-## [39] RCurl_1.95-4.11          magrittr_1.5            
-## [41] simpleSingleCell_1.7.10  GenomeInfoDbData_1.2.0  
+##  [7] irlba_2.3.3              vipor_0.4.5             
+##  [9] DBI_1.0.0                lazyeval_0.2.1          
+## [11] colorspace_1.4-0         withr_2.1.2             
+## [13] processx_3.2.1           tidyselect_0.2.5        
+## [15] gridExtra_2.3            bit_1.1-14              
+## [17] curl_3.3                 compiler_3.6.0          
+## [19] BiocNeighbors_1.1.11     labeling_0.3            
+## [21] bookdown_0.9             scales_1.0.0            
+## [23] callr_3.1.1              rappdirs_0.3.1          
+## [25] stringr_1.3.1            digest_0.6.18           
+## [27] rmarkdown_1.11           XVector_0.23.0          
+## [29] pkgconfig_2.0.2          htmltools_0.3.6         
+## [31] limma_3.39.5             highr_0.7               
+## [33] rlang_0.3.1              RSQLite_2.1.1           
+## [35] DelayedMatrixStats_1.5.2 bindr_0.1.1             
+## [37] dplyr_0.7.8              RCurl_1.95-4.11         
+## [39] magrittr_1.5             BiocSingular_0.99.0     
+## [41] simpleSingleCell_1.7.16  GenomeInfoDbData_1.2.0  
 ## [43] Matrix_1.2-15            Rcpp_1.0.0              
 ## [45] ggbeeswarm_0.6.0         munsell_0.5.0           
-## [47] Rhdf5lib_1.5.1           viridis_0.5.1           
-## [49] stringi_1.2.4            yaml_2.2.0              
-## [51] edgeR_3.25.2             zlibbioc_1.29.0         
-## [53] rhdf5_2.27.4             plyr_1.8.4              
-## [55] grid_3.6.0               blob_1.1.1              
-## [57] crayon_1.3.4             lattice_0.20-38         
-## [59] cowplot_0.9.3            locfit_1.5-9.1          
-## [61] ps_1.3.0                 pillar_1.3.1            
-## [63] igraph_1.2.2             codetools_0.2-16        
-## [65] glue_1.3.0               evaluate_0.12           
-## [67] BiocManager_1.30.4       gtable_0.2.0            
-## [69] purrr_0.2.5              assertthat_0.2.0        
-## [71] xfun_0.4                 viridisLite_0.3.0       
-## [73] tibble_1.4.2             beeswarm_0.2.3          
-## [75] memoise_1.1.0            statmod_1.4.30
+## [47] viridis_0.5.1            stringi_1.2.4           
+## [49] yaml_2.2.0               edgeR_3.25.3            
+## [51] zlibbioc_1.29.0          plyr_1.8.4              
+## [53] grid_3.6.0               blob_1.1.1              
+## [55] crayon_1.3.4             lattice_0.20-38         
+## [57] cowplot_0.9.4            locfit_1.5-9.1          
+## [59] ps_1.3.0                 pillar_1.3.1            
+## [61] igraph_1.2.2             codetools_0.2-16        
+## [63] glue_1.3.0               evaluate_0.12           
+## [65] BiocManager_1.30.4       gtable_0.2.0            
+## [67] purrr_0.3.0              assertthat_0.2.0        
+## [69] xfun_0.4                 rsvd_1.0.0              
+## [71] viridisLite_0.3.0        tibble_2.0.1            
+## [73] beeswarm_0.2.3           memoise_1.1.0           
+## [75] statmod_1.4.30
 ```
 
 # References

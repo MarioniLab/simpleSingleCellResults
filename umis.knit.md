@@ -12,7 +12,7 @@ author:
   - *CRUK
   - *EMBL
   - Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
-date: "2019-01-04"
+date: "2019-02-08"
 vignette: >
   %\VignetteIndexEntry{03. UMI count data}
   %\VignetteEngine{knitr::rmarkdown}
@@ -677,16 +677,6 @@ head(marker.set[,1:8], 10) # only first 8 columns, for brevity
 
 
 
-We save the list of candidate marker genes for further examination, using compression to reduce the file size.
-The `overlapExprs` function may also be useful for summarizing differences between clusters, as previously mentioned.
-
-
-```r
-gzout <- gzfile("brain_marker_1.tsv.gz", open="wb")
-write.table(marker.set, file=gzout, sep="\t", quote=FALSE, col.names=NA)
-close(gzout)
-```
-
 Figure \@ref(fig:heatmapmarkerbrain) indicates that most of the top markers are strongly DE in cells of cluster 4 compared to some or all of the other clusters.
 We can use these markers to identify cells from cluster 4 in validation studies with an independent population of cells.
 A quick look at the markers suggest that cluster 4 represents interneurons based on expression of *Gad1* and *Slc6a1* [@zeng2012largescale],
@@ -704,6 +694,38 @@ plotHeatmap(sce, features=top.markers, columns=order(my.clusters),
 <img src="umis_files/figure-html/heatmapmarkerbrain-1.png" alt="Heatmap of mean-centred and normalized log-expression values for the top set of markers for cluster 4 in the brain dataset. Column colours represent the cluster to which each cell is assigned, as indicated by the legend." width="100%"  class="widefigure" />
 <p class="caption">(\#fig:heatmapmarkerbrain)Heatmap of mean-centred and normalized log-expression values for the top set of markers for cluster 4 in the brain dataset. Column colours represent the cluster to which each cell is assigned, as indicated by the legend.</p>
 </div>
+
+An alternative visualization approach is to plot the log-fold changes to all other clusters directly (Figure \@ref(fig:heatmaplfcbrain)).
+This is more concise and is useful in situations involving many clusters that contain different numbers of cells.
+
+
+```r
+logFCs <- as.matrix(marker.set[1:50,-(1:3)])
+colnames(logFCs) <- sub("logFC.", "", colnames(logFCs))
+
+library(pheatmap)
+max.lfc <- max(abs(range(logFCs)))
+pheatmap(logFCs, breaks=seq(-5, 5, length.out=101))
+```
+
+<div class="figure">
+<img src="umis_files/figure-html/heatmaplfcbrain-1.png" alt="Heatmap of log-fold changes in expression for the top set of markers for cluster 4, compared to every other cluster in the brain data set." width="100%" />
+<p class="caption">(\#fig:heatmaplfcbrain)Heatmap of log-fold changes in expression for the top set of markers for cluster 4, compared to every other cluster in the brain data set.</p>
+</div>
+
+We save the list of candidate marker genes for further examination, using compression to reduce the file size.
+
+
+```r
+gzout <- gzfile("brain_marker_1.tsv.gz", open="wb")
+write.table(marker.set, file=gzout, sep="\t", quote=FALSE, col.names=NA)
+close(gzout)
+```
+
+**Comments from Aaron:**
+
+- The `overlapExprs()` function may also be useful for summarizing differences between clusters.
+This is discussed in more detail [here](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/de.html#using-the-wilcoxon-rank-sum-test).
 
 # Concluding remarks
 
@@ -727,32 +749,37 @@ sessionInfo()
 ```
 
 ```
-## R Under development (unstable) (2018-12-07 r75787)
-## Platform: x86_64-apple-darwin15.6.0 (64-bit)
-## Running under: OS X El Capitan 10.11.6
+## R Under development (unstable) (2019-01-14 r75992)
+## Platform: x86_64-pc-linux-gnu (64-bit)
+## Running under: Ubuntu 16.04.5 LTS
 ## 
 ## Matrix products: default
-## BLAS: /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRblas.0.dylib
-## LAPACK: /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRlapack.dylib
+## BLAS: /home/cri.camres.org/lun01/Software/R/trunk/lib/libRblas.so
+## LAPACK: /home/cri.camres.org/lun01/Software/R/trunk/lib/libRlapack.so
 ## 
 ## locale:
-## [1] en_GB.UTF-8/en_GB.UTF-8/en_GB.UTF-8/C/en_GB.UTF-8/en_GB.UTF-8
+##  [1] LC_CTYPE=en_GB.UTF-8       LC_NUMERIC=C              
+##  [3] LC_TIME=en_GB.UTF-8        LC_COLLATE=en_GB.UTF-8    
+##  [5] LC_MONETARY=en_GB.UTF-8    LC_MESSAGES=en_GB.UTF-8   
+##  [7] LC_PAPER=en_GB.UTF-8       LC_NAME=C                 
+##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+## [11] LC_MEASUREMENT=en_GB.UTF-8 LC_IDENTIFICATION=C       
 ## 
 ## attached base packages:
 ## [1] parallel  stats4    stats     graphics  grDevices utils     datasets 
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] pheatmap_1.0.10             scran_1.11.12              
-##  [3] scater_1.11.5               ggplot2_3.1.0              
+##  [1] pheatmap_1.0.12             scran_1.11.20              
+##  [3] scater_1.11.11              ggplot2_3.1.0              
 ##  [5] org.Mm.eg.db_3.7.0          AnnotationDbi_1.45.0       
-##  [7] SingleCellExperiment_1.5.1  SummarizedExperiment_1.13.0
-##  [9] DelayedArray_0.9.5          BiocParallel_1.17.3        
-## [11] matrixStats_0.54.0          Biobase_2.43.0             
+##  [7] SingleCellExperiment_1.5.2  SummarizedExperiment_1.13.0
+##  [9] DelayedArray_0.9.8          BiocParallel_1.17.9        
+## [11] matrixStats_0.54.0          Biobase_2.43.1             
 ## [13] GenomicRanges_1.35.1        GenomeInfoDb_1.19.1        
-## [15] IRanges_2.17.3              S4Vectors_0.21.8           
+## [15] IRanges_2.17.4              S4Vectors_0.21.10          
 ## [17] BiocGenerics_0.29.1         bindrcpp_0.2.2             
-## [19] BiocFileCache_1.7.0         dbplyr_1.2.2               
+## [19] BiocFileCache_1.7.0         dbplyr_1.3.0               
 ## [21] knitr_1.21                  BiocStyle_2.11.0           
 ## 
 ## loaded via a namespace (and not attached):
@@ -760,39 +787,41 @@ sessionInfo()
 ##  [3] RColorBrewer_1.1-2       httr_1.4.0              
 ##  [5] dynamicTreeCut_1.63-1    tools_3.6.0             
 ##  [7] R6_2.3.0                 irlba_2.3.3             
-##  [9] HDF5Array_1.11.10        vipor_0.4.5             
-## [11] DBI_1.0.0                lazyeval_0.2.1          
-## [13] colorspace_1.3-2         withr_2.1.2             
+##  [9] vipor_0.4.5              DBI_1.0.0               
+## [11] lazyeval_0.2.1           colorspace_1.4-0        
+## [13] withr_2.1.2              processx_3.2.1          
 ## [15] tidyselect_0.2.5         gridExtra_2.3           
-## [17] bit_1.1-14               curl_3.2                
-## [19] compiler_3.6.0           BiocNeighbors_1.1.7     
+## [17] bit_1.1-14               curl_3.3                
+## [19] compiler_3.6.0           BiocNeighbors_1.1.11    
 ## [21] labeling_0.3             bookdown_0.9            
-## [23] scales_1.0.0             rappdirs_0.3.1          
-## [25] stringr_1.3.1            digest_0.6.18           
-## [27] rmarkdown_1.11           XVector_0.23.0          
-## [29] pkgconfig_2.0.2          htmltools_0.3.6         
-## [31] limma_3.39.3             highr_0.7               
-## [33] rlang_0.3.0.1            RSQLite_2.1.1           
-## [35] DelayedMatrixStats_1.5.0 bindr_0.1.1             
-## [37] dplyr_0.7.8              RCurl_1.95-4.11         
-## [39] magrittr_1.5             GenomeInfoDbData_1.2.0  
-## [41] Matrix_1.2-15            Rcpp_1.0.0              
-## [43] ggbeeswarm_0.6.0         munsell_0.5.0           
-## [45] Rhdf5lib_1.5.1           viridis_0.5.1           
-## [47] stringi_1.2.4            yaml_2.2.0              
-## [49] edgeR_3.25.2             zlibbioc_1.29.0         
-## [51] rhdf5_2.27.4             Rtsne_0.15              
-## [53] plyr_1.8.4               grid_3.6.0              
-## [55] blob_1.1.1               crayon_1.3.4            
-## [57] lattice_0.20-38          cowplot_0.9.3           
-## [59] locfit_1.5-9.1           pillar_1.3.1            
-## [61] igraph_1.2.2             codetools_0.2-16        
-## [63] glue_1.3.0               evaluate_0.12           
-## [65] BiocManager_1.30.4       gtable_0.2.0            
-## [67] purrr_0.2.5              assertthat_0.2.0        
-## [69] xfun_0.4                 viridisLite_0.3.0       
-## [71] tibble_1.4.2             beeswarm_0.2.3          
-## [73] memoise_1.1.0            statmod_1.4.30
+## [23] scales_1.0.0             callr_3.1.1             
+## [25] rappdirs_0.3.1           stringr_1.3.1           
+## [27] digest_0.6.18            rmarkdown_1.11          
+## [29] XVector_0.23.0           pkgconfig_2.0.2         
+## [31] htmltools_0.3.6          limma_3.39.5            
+## [33] highr_0.7                rlang_0.3.1             
+## [35] RSQLite_2.1.1            DelayedMatrixStats_1.5.2
+## [37] bindr_0.1.1              dplyr_0.7.8             
+## [39] RCurl_1.95-4.11          magrittr_1.5            
+## [41] BiocSingular_0.99.0      simpleSingleCell_1.7.16 
+## [43] GenomeInfoDbData_1.2.0   Matrix_1.2-15           
+## [45] Rcpp_1.0.0               ggbeeswarm_0.6.0        
+## [47] munsell_0.5.0            viridis_0.5.1           
+## [49] stringi_1.2.4            yaml_2.2.0              
+## [51] edgeR_3.25.3             zlibbioc_1.29.0         
+## [53] Rtsne_0.15               plyr_1.8.4              
+## [55] grid_3.6.0               blob_1.1.1              
+## [57] crayon_1.3.4             lattice_0.20-38         
+## [59] cowplot_0.9.4            locfit_1.5-9.1          
+## [61] ps_1.3.0                 pillar_1.3.1            
+## [63] igraph_1.2.2             codetools_0.2-16        
+## [65] glue_1.3.0               evaluate_0.12           
+## [67] BiocManager_1.30.4       gtable_0.2.0            
+## [69] purrr_0.3.0              assertthat_0.2.0        
+## [71] xfun_0.4                 rsvd_1.0.0              
+## [73] viridisLite_0.3.0        tibble_2.0.1            
+## [75] beeswarm_0.2.3           memoise_1.1.0           
+## [77] statmod_1.4.30
 ```
 
 # References
