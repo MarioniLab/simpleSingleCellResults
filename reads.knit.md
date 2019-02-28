@@ -12,7 +12,7 @@ author:
   - *CRUK
   - *EMBL
   - Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
-date: "2019-02-08"
+date: "2019-02-28"
 vignette: >
   %\VignetteIndexEntry{02. Read count data}
   %\VignetteEngine{knitr::rmarkdown}
@@ -48,7 +48,7 @@ lun.zip <- bfcrpath(bfc,
 lun.sdrf <- bfcrpath(bfc, 
     file.path("https://www.ebi.ac.uk/arrayexpress/files",
         "E-MTAB-5522/E-MTAB-5522.sdrf.txt"))
-unzip(lun.zip)
+unzip(lun.zip, exdir=tempdir())
 ```
 
 <!--
@@ -69,9 +69,9 @@ Subsequently, the count in each entry of the matrix represents the number of rea
 
 
 ```r
-plate1 <- read.delim("counts_Calero_20160113.tsv", 
+plate1 <- read.delim(file.path(tempdir(), "counts_Calero_20160113.tsv"), 
     header=TRUE, row.names=1, check.names=FALSE)
-plate2 <- read.delim("counts_Calero_20160325.tsv", 
+plate2 <- read.delim(file.path(tempdir(), "counts_Calero_20160325.tsv"), 
     header=TRUE, row.names=1, check.names=FALSE)
 
 gene.lengths <- plate1$Length # First column is the gene length.
@@ -1247,7 +1247,7 @@ sessionInfo()
 ```
 
 ```
-## R Under development (unstable) (2019-01-14 r75992)
+## R Under development (unstable) (2019-02-19 r76128)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
 ## Running under: Ubuntu 16.04.5 LTS
 ## 
@@ -1270,10 +1270,10 @@ sessionInfo()
 ## other attached packages:
 ##  [1] cluster_2.0.7-1                       
 ##  [2] dynamicTreeCut_1.63-1                 
-##  [3] limma_3.39.5                          
+##  [3] limma_3.39.12                         
 ##  [4] scran_1.11.20                         
 ##  [5] TxDb.Mmusculus.UCSC.mm10.ensGene_3.4.0
-##  [6] GenomicFeatures_1.35.6                
+##  [6] GenomicFeatures_1.35.7                
 ##  [7] scater_1.11.11                        
 ##  [8] ggplot2_3.1.0                         
 ##  [9] org.Mm.eg.db_3.7.0                    
@@ -1281,65 +1281,63 @@ sessionInfo()
 ## [11] SingleCellExperiment_1.5.2            
 ## [12] SummarizedExperiment_1.13.0           
 ## [13] DelayedArray_0.9.8                    
-## [14] BiocParallel_1.17.9                   
+## [14] BiocParallel_1.17.15                  
 ## [15] matrixStats_0.54.0                    
 ## [16] Biobase_2.43.1                        
 ## [17] GenomicRanges_1.35.1                  
-## [18] GenomeInfoDb_1.19.1                   
+## [18] GenomeInfoDb_1.19.2                   
 ## [19] IRanges_2.17.4                        
 ## [20] S4Vectors_0.21.10                     
 ## [21] BiocGenerics_0.29.1                   
-## [22] bindrcpp_0.2.2                        
-## [23] BiocFileCache_1.7.0                   
-## [24] dbplyr_1.3.0                          
-## [25] knitr_1.21                            
-## [26] BiocStyle_2.11.0                      
+## [22] BiocFileCache_1.7.0                   
+## [23] dbplyr_1.3.0                          
+## [24] knitr_1.21                            
+## [25] BiocStyle_2.11.0                      
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] bitops_1.0-6             bit64_0.9-7             
 ##  [3] RColorBrewer_1.1-2       progress_1.2.0          
 ##  [5] httr_1.4.0               tools_3.6.0             
-##  [7] R6_2.3.0                 irlba_2.3.3             
+##  [7] R6_2.4.0                 irlba_2.3.3             
 ##  [9] KernSmooth_2.23-15       vipor_0.4.5             
 ## [11] DBI_1.0.0                lazyeval_0.2.1          
 ## [13] colorspace_1.4-0         withr_2.1.2             
 ## [15] processx_3.2.1           tidyselect_0.2.5        
 ## [17] gridExtra_2.3            prettyunits_1.0.2       
 ## [19] bit_1.1-14               curl_3.3                
-## [21] compiler_3.6.0           BiocNeighbors_1.1.11    
+## [21] compiler_3.6.0           BiocNeighbors_1.1.12    
 ## [23] rtracklayer_1.43.1       labeling_0.3            
 ## [25] bookdown_0.9             scales_1.0.0            
 ## [27] callr_3.1.1              rappdirs_0.3.1          
-## [29] stringr_1.3.1            digest_0.6.18           
-## [31] Rsamtools_1.35.2         rmarkdown_1.11          
+## [29] stringr_1.4.0            digest_0.6.18           
+## [31] Rsamtools_1.99.2         rmarkdown_1.11          
 ## [33] XVector_0.23.0           pkgconfig_2.0.2         
 ## [35] htmltools_0.3.6          highr_0.7               
 ## [37] rlang_0.3.1              RSQLite_2.1.1           
-## [39] DelayedMatrixStats_1.5.2 bindr_0.1.1             
-## [41] dplyr_0.7.8              RCurl_1.95-4.11         
-## [43] magrittr_1.5             BiocSingular_0.99.0     
-## [45] simpleSingleCell_1.7.16  GenomeInfoDbData_1.2.0  
-## [47] Matrix_1.2-15            Rcpp_1.0.0              
-## [49] ggbeeswarm_0.6.0         munsell_0.5.0           
-## [51] viridis_0.5.1            edgeR_3.25.3            
-## [53] stringi_1.2.4            yaml_2.2.0              
-## [55] zlibbioc_1.29.0          Rtsne_0.15              
-## [57] plyr_1.8.4               grid_3.6.0              
-## [59] blob_1.1.1               crayon_1.3.4            
-## [61] lattice_0.20-38          Biostrings_2.51.2       
-## [63] cowplot_0.9.4            hms_0.4.2               
-## [65] locfit_1.5-9.1           ps_1.3.0                
-## [67] pillar_1.3.1             igraph_1.2.2            
-## [69] reshape2_1.4.3           codetools_0.2-16        
-## [71] biomaRt_2.39.2           XML_3.98-1.16           
-## [73] glue_1.3.0               evaluate_0.12           
-## [75] BiocManager_1.30.4       gtable_0.2.0            
-## [77] purrr_0.3.0              assertthat_0.2.0        
-## [79] xfun_0.4                 rsvd_1.0.0              
-## [81] viridisLite_0.3.0        pheatmap_1.0.12         
-## [83] tibble_2.0.1             GenomicAlignments_1.19.1
-## [85] beeswarm_0.2.3           memoise_1.1.0           
-## [87] statmod_1.4.30
+## [39] DelayedMatrixStats_1.5.2 dplyr_0.8.0.1           
+## [41] RCurl_1.95-4.11          magrittr_1.5            
+## [43] BiocSingular_0.99.12     simpleSingleCell_1.7.17 
+## [45] GenomeInfoDbData_1.2.0   Matrix_1.2-16           
+## [47] Rcpp_1.0.0               ggbeeswarm_0.6.0        
+## [49] munsell_0.5.0            viridis_0.5.1           
+## [51] edgeR_3.25.3             stringi_1.3.1           
+## [53] yaml_2.2.0               zlibbioc_1.29.0         
+## [55] Rtsne_0.15               plyr_1.8.4              
+## [57] grid_3.6.0               blob_1.1.1              
+## [59] crayon_1.3.4             lattice_0.20-38         
+## [61] Biostrings_2.51.2        cowplot_0.9.4           
+## [63] hms_0.4.2                locfit_1.5-9.1          
+## [65] ps_1.3.0                 pillar_1.3.1            
+## [67] igraph_1.2.4             reshape2_1.4.3          
+## [69] codetools_0.2-16         biomaRt_2.39.2          
+## [71] XML_3.98-1.17            glue_1.3.0              
+## [73] evaluate_0.13            BiocManager_1.30.4      
+## [75] gtable_0.2.0             purrr_0.3.0             
+## [77] assertthat_0.2.0         xfun_0.5                
+## [79] rsvd_1.0.0               viridisLite_0.3.0       
+## [81] pheatmap_1.0.12          tibble_2.0.1            
+## [83] GenomicAlignments_1.19.1 beeswarm_0.2.3          
+## [85] memoise_1.1.0            statmod_1.4.30
 ```
 
 # References

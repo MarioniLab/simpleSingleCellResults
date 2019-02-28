@@ -3,7 +3,7 @@ title: Scalable analyses for big scRNA-seq data with Bioconductor
 author:
 - name: Aaron T. L. Lun
   affiliation: &CRUK Cancer Research UK Cambridge Institute, Li Ka Shing Centre, Robinson Way, Cambridge CB2 0RE, United Kingdom
-date: "2019-02-08"
+date: "2019-02-28"
 vignette: >
   %\VignetteIndexEntry{11. Scalability for big data}
   %\VignetteEngine{knitr::rmarkdown}
@@ -257,7 +257,9 @@ all.equal(alt, sce)
 
 - Efficiently combining parallelization with file-backed matrix representations is likely to require systems that support parallel I/O.
 
-# Approximate nearest neighbours searching
+# Fast approximate algorithms
+
+## Nearest neighbours searching
 
 Identification of neighbouring cells in PC or expression space is a common procedure that is used in many functions, e.g., `buildSNNGraph()`, `doubletCells()`.
 The default is to favour accuracy over speed by using an exact nearest neighbour search, implemented with the k-means for k-nearest neighbours algorithm [@wang2012fast]. 
@@ -294,25 +296,80 @@ table(Exact=sce.pbmc$Cluster, Approx=clusters$membership)
 
 ```
 ##      Approx
-## Exact   1   2   3   4   5   6   7   8   9  10  11  12  13
-##    1  651   0 155   1   0   0   0   0   0   0   0   0   0
-##    2    0 402   0   1   0   0   0   0 182   0   0   0   0
-##    3    0   0   0   0 199   0   0   0   4   0   0   0   0
-##    4    0   1   0 507   0   0   0   0   2   0   0   0   0
-##    5    0   0   0   0   0 516   0   0   0   0   0   0   0
-##    6    0   0   0   0   0   0  47   0   0   0   0   0   0
-##    7    4   0   0   0   0   0   0 122   0   0   0   0   0
-##    8    0   0   0   0   0   0   0   0 790   0   0   0   0
-##    9    0   0   0   0   0   0   0   0   0  46   0   0   0
-##    10  38   0   0   0   0   0   0   0   1   0   0   0   0
-##    11   0   0   0   0   0   0   0   0   0   0 152   0   0
-##    12   0   0   0   0   0   0   0   0   0   0   0  92   0
-##    13   0   0   0   0   0   0   0   0   0   0   0   0  14
+## Exact   1   2   3   4   5   6   7   8   9  10  11  12
+##    1  773   0   0   1   0   0   0   1   2   0   0   0
+##    2    0 560   0   1   0   0   8   0   0   1   0   0
+##    3    0   0 511   0   0   0   0   0   0   0   0   0
+##    4    0   1   0 525   0   0   0   0   0   0   0   0
+##    5    0   0   0   1 194   0   0   0   0   0   0   0
+##    6   51   0   0   0   0   0   1   0   1   0   0   0
+##    7    2   0   0   0   0 127   0   0   0   0   0   0
+##    8    0   0   0   0   0   0 788   0   0  15   0   0
+##    9    0   0   0   0   0   0   0  45   0   0   0   0
+##    10   0   0   0   0   0   0   0   0  93   0   0   0
+##    11   0   0   0   0   0   0   0   0   0   0  22   0
+##    12   0   0   0   0   0   0   0   0   0 141   0   0
+##    13   0   0   0   0   0   0   0   0   0   0   0  36
 ```
 
 **Comments from Aaron:**
 
 - The neighbour search algorithms are interoperable with *[BiocParallel](https://bioconductor.org/packages/3.9/BiocParallel)*, so it is straightforward to parallelize the search for greater speed.
+
+## Principal components analysis
+
+We have already introduced the `IrlbaParam()` function, which creates an `IrlbaParam` parameter object from the *[BiocSingular](https://bioconductor.org/packages/3.9/BiocSingular)* package.
+If passed to a function via the `BSPARAM=` argument, this instructs the function to use fast approximate methods from *[irlba](https://CRAN.R-project.org/package=irlba)* to perform SVD or PCA.
+However, this is not the only SVD strategy that is provided in the *[BiocSingular](https://bioconductor.org/packages/3.9/BiocSingular)* framework.
+For example, one could perform randomized SVD^[Via the *[rsvd](https://CRAN.R-project.org/package=rsvd)* package.] to perform an approximate SVD.
+
+
+```r
+library(BiocSingular)
+
+# As the name suggests, it is random, so we need to set the seed.
+set.seed(999)    
+r.out <- BiocSingular::runPCA(t(logcounts(sce.pbmc)), rank=20, 
+    BSPARAM=RandomParam(deferred=TRUE))
+str(r.out)
+```
+
+```
+## List of 3
+##  $ sdev    : num [1:20] 10.56 7.05 5.56 4.27 3.39 ...
+##  $ rotation: num [1:33694, 1:20] -1.06e-16 7.48e-17 -7.66e-17 -9.39e-05 -7.94e-05 ...
+##   ..- attr(*, "dimnames")=List of 2
+##   .. ..$ : NULL
+##   .. ..$ : chr [1:20] "PC1" "PC2" "PC3" "PC4" ...
+##  $ x       : num [1:3901, 1:20] -17.33 -16.33 9.83 9.09 -8.32 ...
+##   ..- attr(*, "dimnames")=List of 2
+##   .. ..$ : NULL
+##   .. ..$ : chr [1:20] "PC1" "PC2" "PC3" "PC4" ...
+```
+
+```r
+# For comparison:    
+i.out <- BiocSingular::runPCA(t(logcounts(sce.pbmc)), rank=20, 
+    BSPARAM=IrlbaParam(fold=Inf))
+str(i.out)
+```
+
+```
+## List of 3
+##  $ sdev    : num [1:20] 10.56 7.05 5.56 4.27 3.39 ...
+##  $ rotation: num [1:33694, 1:20] -3.80e-20 -1.86e-19 -1.23e-18 9.38e-05 7.93e-05 ...
+##   ..- attr(*, "dimnames")=List of 2
+##   .. ..$ : NULL
+##   .. ..$ : chr [1:20] "PC1" "PC2" "PC3" "PC4" ...
+##  $ x       : num [1:3901, 1:20] 17.33 16.33 -9.83 -9.09 8.32 ...
+##   ..- attr(*, "dimnames")=List of 2
+##   .. ..$ : NULL
+##   .. ..$ : chr [1:20] "PC1" "PC2" "PC3" "PC4" ...
+```
+
+Users can often obtain considerable speed-ups through a careful choice of `BSPARAM=` that considers the structure of the underlying matrix data.
+For example, setting `deferred=TRUE` will defer the centering during matrix multiplications to avoid loss of sparsity.
+Another consideration would be whether the data are stored on file, in which case one may prefer an algorithm that performs fewer reads at the expense of more computations.
 
 # Concluding remarks
 
@@ -325,7 +382,7 @@ sessionInfo()
 ```
 
 ```
-## R Under development (unstable) (2019-01-14 r75992)
+## R Under development (unstable) (2019-02-19 r76128)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
 ## Running under: Ubuntu 16.04.5 LTS
 ## 
@@ -346,21 +403,22 @@ sessionInfo()
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] BiocNeighbors_1.1.11        scran_1.11.20              
-##  [3] scater_1.11.11              ggplot2_3.1.0              
-##  [5] TENxBrainData_1.3.0         HDF5Array_1.11.10          
-##  [7] rhdf5_2.27.9                SingleCellExperiment_1.5.2 
-##  [9] SummarizedExperiment_1.13.0 DelayedArray_0.9.8         
-## [11] BiocParallel_1.17.9         matrixStats_0.54.0         
-## [13] Biobase_2.43.1              GenomicRanges_1.35.1       
-## [15] GenomeInfoDb_1.19.1         IRanges_2.17.4             
-## [17] S4Vectors_0.21.10           BiocGenerics_0.29.1        
-## [19] knitr_1.21                  BiocStyle_2.11.0           
+##  [1] BiocSingular_0.99.12        BiocNeighbors_1.1.12       
+##  [3] scran_1.11.20               scater_1.11.11             
+##  [5] ggplot2_3.1.0               TENxBrainData_1.3.0        
+##  [7] HDF5Array_1.11.10           rhdf5_2.27.12              
+##  [9] SingleCellExperiment_1.5.2  SummarizedExperiment_1.13.0
+## [11] DelayedArray_0.9.8          BiocParallel_1.17.15       
+## [13] matrixStats_0.54.0          Biobase_2.43.1             
+## [15] GenomicRanges_1.35.1        GenomeInfoDb_1.19.2        
+## [17] IRanges_2.17.4              S4Vectors_0.21.10          
+## [19] BiocGenerics_0.29.1         knitr_1.21                 
+## [21] BiocStyle_2.11.0           
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] bitops_1.0-6                  bit64_0.9-7                  
 ##  [3] httr_1.4.0                    dynamicTreeCut_1.63-1        
-##  [5] tools_3.6.0                   R6_2.3.0                     
+##  [5] tools_3.6.0                   R6_2.4.0                     
 ##  [7] irlba_2.3.3                   vipor_0.4.5                  
 ##  [9] DBI_1.0.0                     lazyeval_0.2.1               
 ## [11] colorspace_1.4-0              withr_2.1.2                  
@@ -368,37 +426,36 @@ sessionInfo()
 ## [15] processx_3.2.1                bit_1.1-14                   
 ## [17] curl_3.3                      compiler_3.6.0               
 ## [19] bookdown_0.9                  scales_1.0.0                 
-## [21] callr_3.1.1                   stringr_1.3.1                
+## [21] callr_3.1.1                   stringr_1.4.0                
 ## [23] digest_0.6.18                 rmarkdown_1.11               
 ## [25] XVector_0.23.0                pkgconfig_2.0.2              
-## [27] htmltools_0.3.6               limma_3.39.5                 
+## [27] htmltools_0.3.6               limma_3.39.12                
 ## [29] rlang_0.3.1                   RSQLite_2.1.1                
 ## [31] shiny_1.2.0                   DelayedMatrixStats_1.5.2     
-## [33] bindr_0.1.1                   dplyr_0.7.8                  
-## [35] RCurl_1.95-4.11               magrittr_1.5                 
-## [37] BiocSingular_0.99.0           simpleSingleCell_1.7.16      
-## [39] GenomeInfoDbData_1.2.0        Matrix_1.2-15                
-## [41] Rcpp_1.0.0                    ggbeeswarm_0.6.0             
-## [43] munsell_0.5.0                 Rhdf5lib_1.5.1               
-## [45] viridis_0.5.1                 edgeR_3.25.3                 
-## [47] stringi_1.2.4                 yaml_2.2.0                   
-## [49] zlibbioc_1.29.0               plyr_1.8.4                   
-## [51] AnnotationHub_2.15.5          grid_3.6.0                   
-## [53] blob_1.1.1                    promises_1.0.1               
-## [55] ExperimentHub_1.9.1           crayon_1.3.4                 
-## [57] lattice_0.20-38               locfit_1.5-9.1               
-## [59] ps_1.3.0                      pillar_1.3.1                 
-## [61] igraph_1.2.2                  codetools_0.2-16             
-## [63] glue_1.3.0                    evaluate_0.12                
-## [65] BiocManager_1.30.4            httpuv_1.4.5.1               
-## [67] gtable_0.2.0                  purrr_0.3.0                  
-## [69] assertthat_0.2.0              xfun_0.4                     
-## [71] rsvd_1.0.0                    mime_0.6                     
-## [73] xtable_1.8-3                  later_0.7.5                  
-## [75] viridisLite_0.3.0             tibble_2.0.1                 
-## [77] AnnotationDbi_1.45.0          beeswarm_0.2.3               
-## [79] memoise_1.1.0                 bindrcpp_0.2.2               
-## [81] statmod_1.4.30                interactiveDisplayBase_1.21.0
+## [33] dplyr_0.8.0.1                 RCurl_1.95-4.11              
+## [35] magrittr_1.5                  simpleSingleCell_1.7.17      
+## [37] GenomeInfoDbData_1.2.0        Matrix_1.2-16                
+## [39] Rcpp_1.0.0                    ggbeeswarm_0.6.0             
+## [41] munsell_0.5.0                 Rhdf5lib_1.5.1               
+## [43] viridis_0.5.1                 edgeR_3.25.3                 
+## [45] stringi_1.3.1                 yaml_2.2.0                   
+## [47] zlibbioc_1.29.0               plyr_1.8.4                   
+## [49] AnnotationHub_2.15.7          grid_3.6.0                   
+## [51] blob_1.1.1                    promises_1.0.1               
+## [53] ExperimentHub_1.9.1           crayon_1.3.4                 
+## [55] lattice_0.20-38               locfit_1.5-9.1               
+## [57] ps_1.3.0                      pillar_1.3.1                 
+## [59] igraph_1.2.4                  codetools_0.2-16             
+## [61] glue_1.3.0                    evaluate_0.13                
+## [63] BiocManager_1.30.4            httpuv_1.4.5.1               
+## [65] gtable_0.2.0                  purrr_0.3.0                  
+## [67] assertthat_0.2.0              xfun_0.5                     
+## [69] rsvd_1.0.0                    mime_0.6                     
+## [71] xtable_1.8-3                  later_0.8.0                  
+## [73] viridisLite_0.3.0             tibble_2.0.1                 
+## [75] AnnotationDbi_1.45.0          beeswarm_0.2.3               
+## [77] memoise_1.1.0                 statmod_1.4.30               
+## [79] interactiveDisplayBase_1.21.0
 ```
 
 # References 

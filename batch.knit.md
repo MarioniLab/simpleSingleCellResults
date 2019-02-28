@@ -5,7 +5,7 @@ author:
   affiliation: Cancer Research UK Cambridge Institute, Li Ka Shing Centre, Robinson Way, Cambridge CB2 0RE, United Kingdom
 - name: Michael D. Morgan
   affiliation: Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
-date: "2019-02-08"
+date: "2019-02-28"
 vignette: >
   %\VignetteIndexEntry{05. Correcting batch effects}
   %\VignetteEngine{knitr::rmarkdown}
@@ -192,8 +192,9 @@ This is done with pre-clustering by `quickCluster()` to avoid pooling together v
 
 ```r
 library(scran)
+library(BiocSingular)
 set.seed(1000) # for irlba. 
-clusters <- quickCluster(sce.gse81076, use.ranks=FALSE, pc.approx=TRUE)
+clusters <- quickCluster(sce.gse81076, use.ranks=FALSE, BSPARAM=IrlbaParam())
 table(clusters)
 ```
 
@@ -440,7 +441,7 @@ We compute size factors for the endogenous genes and spike-in transcripts, and u
 
 ```r
 set.seed(1000)
-clusters <- quickCluster(sce.gse85241, use.ranks=FALSE, pc.approx=TRUE)
+clusters <- quickCluster(sce.gse85241, use.ranks=FALSE, BSPARAM=IrlbaParam())
 table(clusters)
 ```
 
@@ -1037,8 +1038,6 @@ plot(tout.all$Y[,1], tout.all$Y[,2], main="Final",
 
 **Comments from Aaron:**
 
-- Here, we have applied `multiBatchPCA()` to the batch-level inputs for convenience.
-It is also possible to supply donor-level matrices to equalize contributions across donors.
 - One might ask why a larger `k` was not needed in Figure \@ref(fig:tsne-batch) as well.
 This was probably because the outliers were masked by inter-donor heterogeneity when the t-SNE plots were generated without removing the donor effects.
 - In this specific example, cells from the same donor will occupy contiguous rows in the `mnn.out3$corrected` matrix.
@@ -1281,7 +1280,7 @@ sessionInfo()
 ```
 
 ```
-## R Under development (unstable) (2019-01-14 r75992)
+## R Under development (unstable) (2019-02-19 r76128)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
 ## Running under: Ubuntu 16.04.5 LTS
 ## 
@@ -1302,57 +1301,56 @@ sessionInfo()
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] Rtsne_0.15                  scran_1.11.20              
-##  [3] scater_1.11.11              ggplot2_3.1.0              
-##  [5] SingleCellExperiment_1.5.2  SummarizedExperiment_1.13.0
-##  [7] DelayedArray_0.9.8          BiocParallel_1.17.9        
-##  [9] matrixStats_0.54.0          GenomicRanges_1.35.1       
-## [11] GenomeInfoDb_1.19.1         org.Hs.eg.db_3.7.0         
-## [13] AnnotationDbi_1.45.0        IRanges_2.17.4             
-## [15] S4Vectors_0.21.10           Biobase_2.43.1             
-## [17] BiocGenerics_0.29.1         bindrcpp_0.2.2             
+##  [1] Rtsne_0.15                  BiocSingular_0.99.12       
+##  [3] scran_1.11.20               scater_1.11.11             
+##  [5] ggplot2_3.1.0               SingleCellExperiment_1.5.2 
+##  [7] SummarizedExperiment_1.13.0 DelayedArray_0.9.8         
+##  [9] BiocParallel_1.17.15        matrixStats_0.54.0         
+## [11] GenomicRanges_1.35.1        GenomeInfoDb_1.19.2        
+## [13] org.Hs.eg.db_3.7.0          AnnotationDbi_1.45.0       
+## [15] IRanges_2.17.4              S4Vectors_0.21.10          
+## [17] Biobase_2.43.1              BiocGenerics_0.29.1        
 ## [19] BiocFileCache_1.7.0         dbplyr_1.3.0               
 ## [21] knitr_1.21                  BiocStyle_2.11.0           
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] bitops_1.0-6             bit64_0.9-7             
 ##  [3] httr_1.4.0               dynamicTreeCut_1.63-1   
-##  [5] tools_3.6.0              R6_2.3.0                
+##  [5] tools_3.6.0              R6_2.4.0                
 ##  [7] irlba_2.3.3              vipor_0.4.5             
 ##  [9] DBI_1.0.0                lazyeval_0.2.1          
 ## [11] colorspace_1.4-0         withr_2.1.2             
-## [13] tidyselect_0.2.5         gridExtra_2.3           
-## [15] processx_3.2.1           bit_1.1-14              
+## [13] processx_3.2.1           tidyselect_0.2.5        
+## [15] gridExtra_2.3            bit_1.1-14              
 ## [17] curl_3.3                 compiler_3.6.0          
-## [19] BiocNeighbors_1.1.11     labeling_0.3            
+## [19] BiocNeighbors_1.1.12     labeling_0.3            
 ## [21] bookdown_0.9             scales_1.0.0            
 ## [23] callr_3.1.1              rappdirs_0.3.1          
-## [25] stringr_1.3.1            digest_0.6.18           
+## [25] stringr_1.4.0            digest_0.6.18           
 ## [27] rmarkdown_1.11           XVector_0.23.0          
 ## [29] pkgconfig_2.0.2          htmltools_0.3.6         
-## [31] highr_0.7                limma_3.39.5            
+## [31] limma_3.39.12            highr_0.7               
 ## [33] rlang_0.3.1              RSQLite_2.1.1           
-## [35] DelayedMatrixStats_1.5.2 bindr_0.1.1             
-## [37] dplyr_0.7.8              RCurl_1.95-4.11         
-## [39] magrittr_1.5             BiocSingular_0.99.1     
-## [41] simpleSingleCell_1.7.17  GenomeInfoDbData_1.2.0  
-## [43] Matrix_1.2-15            Rcpp_1.0.0              
-## [45] ggbeeswarm_0.6.0         munsell_0.5.0           
-## [47] viridis_0.5.1            stringi_1.2.4           
-## [49] yaml_2.2.0               edgeR_3.25.3            
-## [51] zlibbioc_1.29.0          plyr_1.8.4              
-## [53] grid_3.6.0               blob_1.1.1              
-## [55] crayon_1.3.4             lattice_0.20-38         
-## [57] cowplot_0.9.4            locfit_1.5-9.1          
-## [59] ps_1.3.0                 pillar_1.3.1            
-## [61] igraph_1.2.2             codetools_0.2-16        
-## [63] glue_1.3.0               evaluate_0.12           
-## [65] BiocManager_1.30.4       gtable_0.2.0            
-## [67] purrr_0.3.0              assertthat_0.2.0        
-## [69] xfun_0.4                 rsvd_1.0.0              
-## [71] viridisLite_0.3.0        tibble_2.0.1            
-## [73] beeswarm_0.2.3           memoise_1.1.0           
-## [75] statmod_1.4.30
+## [35] DelayedMatrixStats_1.5.2 dplyr_0.8.0.1           
+## [37] RCurl_1.95-4.11          magrittr_1.5            
+## [39] simpleSingleCell_1.7.17  GenomeInfoDbData_1.2.0  
+## [41] Matrix_1.2-16            Rcpp_1.0.0              
+## [43] ggbeeswarm_0.6.0         munsell_0.5.0           
+## [45] viridis_0.5.1            stringi_1.3.1           
+## [47] yaml_2.2.0               edgeR_3.25.3            
+## [49] zlibbioc_1.29.0          plyr_1.8.4              
+## [51] grid_3.6.0               blob_1.1.1              
+## [53] crayon_1.3.4             lattice_0.20-38         
+## [55] cowplot_0.9.4            locfit_1.5-9.1          
+## [57] ps_1.3.0                 pillar_1.3.1            
+## [59] igraph_1.2.4             codetools_0.2-16        
+## [61] glue_1.3.0               evaluate_0.13           
+## [63] BiocManager_1.30.4       gtable_0.2.0            
+## [65] purrr_0.3.0              assertthat_0.2.0        
+## [67] xfun_0.5                 rsvd_1.0.0              
+## [69] viridisLite_0.3.0        tibble_2.0.1            
+## [71] beeswarm_0.2.3           memoise_1.1.0           
+## [73] statmod_1.4.30
 ```
 
 # References

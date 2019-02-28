@@ -3,7 +3,7 @@ title: Analyzing single-cell RNA sequencing data from droplet-based protocols
 author: 
 - name: Aaron T. L. Lun
   affiliation: Cancer Research UK Cambridge Institute, Li Ka Shing Centre, Robinson Way, Cambridge CB2 0RE, United Kingdom
-date: "2019-02-08"
+date: "2019-02-28"
 vignette: >
   %\VignetteIndexEntry{04. Droplet-based data}
   %\VignetteEngine{knitr::rmarkdown}
@@ -33,7 +33,7 @@ library(BiocFileCache)
 bfc <- BiocFileCache("raw_data", ask = FALSE)
 raw.path <- bfcrpath(bfc, file.path("http://cf.10xgenomics.com/samples",
     "cell-exp/2.1.0/pbmc4k/pbmc4k_raw_gene_bc_matrices.tar.gz"))
-untar(raw.path, exdir="pbmc4k")
+untar(raw.path, exdir=file.path(tempdir(), "pbmc4k"))
 ```
 
 # Setting up the data
@@ -46,7 +46,7 @@ This will create a `SingleCellExperiment` object where each column corresponds t
 
 ```r
 library(DropletUtils)
-fname <- "pbmc4k/raw_gene_bc_matrices/GRCh38"
+fname <- file.path(tempdir(), "pbmc4k/raw_gene_bc_matrices/GRCh38")
 sce <- read10xCounts(fname, col.names=TRUE)
 sce
 ```
@@ -158,7 +158,7 @@ sum(e.out$FDR <= 0.001, na.rm=TRUE)
 ```
 
 ```
-## [1] 4237
+## [1] 4208
 ```
 
 We then subset our `SingleCellExperiment` object to retain only the detected cells.
@@ -198,8 +198,8 @@ table(Sig=e.out$FDR <= 0.01, Limited=e.out$Limited)
 ```
 ##        Limited
 ## Sig     FALSE TRUE
-##   FALSE   927    0
-##   TRUE   1832 2530
+##   FALSE   937    0
+##   TRUE   1981 2371
 ```
 
 As mentioned above, `emptyDrops()` assumes that barcodes with low total UMI counts are empty droplets.
@@ -262,7 +262,7 @@ summary(high.mito)
 
 ```
 ##    Mode   FALSE    TRUE 
-## logical    3927     310
+## logical    3901     307
 ```
 
 **Comments from Aaron:**
@@ -309,20 +309,21 @@ plotHighestExprs(sce)
 # Normalizing for cell-specific biases
 
 We perform some pre-clustering as described [previously](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/umis.html#normalization-of-cell-specific-biases).
-Recall that we need to set the seed when using `pc.approx=TRUE` due to the randomness of *[irlba](https://CRAN.R-project.org/package=irlba)*. 
+Recall that we need to set the seed when using `BSPARAM=IrlbaParam()` due to the randomness of *[irlba](https://CRAN.R-project.org/package=irlba)*. 
 
 
 ```r
 library(scran)
+library(BiocSingular)
 set.seed(1000)
-clusters <- quickCluster(sce, use.ranks=FALSE, pc.approx=TRUE)
+clusters <- quickCluster(sce, use.ranks=FALSE, BSPARAM=IrlbaParam())
 table(clusters)
 ```
 
 ```
 ## clusters
-##    1    2    3    4    5    6    7    8 
-##  372  674  503  616  376 1099  160  127
+##   1   2   3   4   5   6   7   8   9  10  11  12  13 
+## 159 264 395 218 416 252 349 332 611 161 350 184 210
 ```
 
 We apply the deconvolution method to compute size factors for all cells [@lun2016pooling].
@@ -337,7 +338,7 @@ summary(sizeFactors(sce))
 
 ```
 ##      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
-##  0.000983  0.709306  0.870530  1.000000  1.094430 11.954870
+##  0.002026  0.702812  0.858347  1.000000  1.091496 11.978815
 ```
 
 The size factors are well correlated against the library sizes (Figure \@ref(fig:sfplot)), indicating that capture efficiency and sequencing depth are the major biases.
@@ -416,12 +417,12 @@ head(top.dec)
 ## DataFrame with 6 rows and 6 columns
 ##                     mean            total              bio              tech
 ##                <numeric>        <numeric>        <numeric>         <numeric>
-## LYZ     1.98439137942878 5.14036911600168 4.51227338997385 0.628095726027826
-## S100A9  1.95891443219613 4.65018654869279  4.0181531762503 0.632033372442491
-## S100A8  1.72794462749961  4.5172745961365 3.85603339530558 0.661241200830916
-## HLA-DRA 2.10230972005318 3.75630516417143 3.14783809568087 0.608467068490557
-## CD74    2.90443667945225 3.33713280593544  2.8834466304442 0.453686175491244
-## CST3     1.5010372946582 3.02462480027789 2.34984258954562 0.674782210732269
+## LYZ     1.98138463729506 5.12132172403086 4.48690282179644 0.634418902234414
+## S100A9  1.95700535641729 4.63939214928657 4.00122727798629 0.638164871300285
+## S100A8  1.72489912932768 4.50597241502433  3.8387786732806  0.66719374174373
+## HLA-DRA 2.09813751939737 3.71902122454211 3.10393804856875 0.615083175973363
+## CD74    2.90762668222629 3.29253130024517 2.83365837625953 0.458872923985642
+## CST3    1.49951237409505 2.99420445889825 2.31406532582785 0.680139133070393
 ##           p.value       FDR
 ##         <numeric> <numeric>
 ## LYZ             0         0
@@ -456,17 +457,17 @@ Nonetheless, if they are deemed to be uninteresting, their impact can be reduced
 # Dimensionality reduction
 
 We use the `denoisePCA()` function with the assumed Poisson technical trend to choose the number of dimensions to retain after PCA.
-Recall that this involves a random initialization when `approximate=TRUE`, which motivates the call to `set.seed()` to obtain reproducible results.
+Recall that this involves a random initialization when `BSPARAM=IrlbaParam()`, which motivates the call to `set.seed()` to obtain reproducible results.
 
 
 ```r
 set.seed(1000)
-sce <- denoisePCA(sce, technical=new.trend, approximate=TRUE)
+sce <- denoisePCA(sce, technical=new.trend, BSPARAM=IrlbaParam())
 ncol(reducedDim(sce, "PCA"))
 ```
 
 ```
-## [1] 14
+## [1] 16
 ```
 
 
@@ -523,7 +524,7 @@ table(sce$Cluster)
 ```
 ## 
 ##   1   2   3   4   5   6   7   8   9  10  11  12  13 
-## 807 585 203 510 516  47 126 790  46  39 152  92  14
+## 777 570 511 526 195  53 129 803  45  93  22 141  36
 ```
 
 We look at the ratio of the observed and expected edge weights to confirm that the clusters are modular.
@@ -580,42 +581,30 @@ head(marker.set[,1:8], 10) # only first 8 columns, for brevity
 
 ```
 ## DataFrame with 10 rows and 8 columns
-##                 Top              p.value                  FDR
-##           <integer>            <numeric>            <numeric>
-## PF4               1 1.70721625716368e-29 5.75229445688731e-25
-## TAGLN2            1 2.99166656659263e-24 3.36004044315907e-20
-## TMSB4X            2  4.4627578572629e-29 7.51840816213079e-25
-## SDPR              2 1.22530295149563e-21 1.03213394119235e-17
-## B2M               3 6.89735766236593e-21 3.87332615126263e-17
-## NRGN              3 3.91954244119406e-21 2.64130126027185e-17
-## GPX1              4 9.92135077150974e-20 4.17862491119062e-16
-## PPBP              4 5.57911472831314e-20 2.68546702365403e-16
-## HIST1H2AC         6  1.6059986319309e-18 5.41125179042799e-15
-## ACTB              7    6.05048064744e-19 2.26516549927605e-15
-##                    logFC.1          logFC.2          logFC.3
-##                  <numeric>        <numeric>        <numeric>
-## PF4       7.25679856477077  7.3045287421145  7.3042842273026
-## TAGLN2    5.22185788080801 5.01280635916981 5.17647733126683
-## TMSB4X    3.12406328360886 3.47124463540495 3.76944420404423
-## SDPR      5.97127253659018 6.01775614734224 6.02432631992538
-## B2M       2.18320635116997 1.66648176326608 1.65040834974051
-## NRGN      5.21679045907656 5.44767004267579 5.45490583411146
-## GPX1      3.24738954031262 5.55543584399255 5.74864823420056
-## PPBP      6.81831106062476 6.90236145593299 6.91021363042703
-## HIST1H2AC 5.89203212490953 5.92078959651487 5.94674603085075
-## ACTB      3.12401577813728 3.91172509338832 3.52313142155693
-##                    logFC.4          logFC.5
-##                  <numeric>        <numeric>
-## PF4       7.31034660245878 7.31189287548287
-## TAGLN2    5.19557908201902 4.89096713081308
-## TMSB4X    3.54096333125848 4.11450107743419
-## SDPR      6.02432631992538 6.01800803163108
-## B2M       1.49777214868441 2.38160588954119
-## NRGN      5.45453680428722 5.45084540253421
-## GPX1      5.68135911748578 5.23928445630973
-## PPBP      6.91109566740711 6.90300646072055
-## HIST1H2AC 5.92234095046611 5.84781580009597
-## ACTB      3.72307886150859 4.28800048032883
+##              Top              p.value                  FDR          logFC.1
+##        <integer>            <numeric>            <numeric>        <numeric>
+## TMSB4X         1 1.75655768961075e-36 5.91854547937445e-32 3.43251818293592
+## PF4            1 6.08574623748646e-36 1.02526566862934e-31 7.55806680131126
+## TAGLN2         2 2.71467298083351e-25 3.04893971387349e-21 5.54322439743901
+## B2M            3 3.73219986816033e-24 3.14381855894484e-20 2.47717385581024
+## NRGN           3 2.18264162350006e-22 1.22569878103685e-18 5.49841506763193
+## ACTB           4 4.04214646680473e-22 1.94565832932169e-18 3.42384725636914
+## SDPR           4 1.69666659028603e-22 1.14334968186195e-18 6.26476492232097
+## GPX1           5 2.65203636727399e-21 1.11697141698662e-17 3.49256553235956
+## PPBP           6 1.86816527470777e-20 6.99399564066708e-17 7.02595718332157
+## GNG11          7 3.97528939109675e-19 1.33943400743614e-15 6.04972217071574
+##                 logFC.2          logFC.3          logFC.4          logFC.5
+##               <numeric>        <numeric>        <numeric>        <numeric>
+## TMSB4X 3.83325881154297 4.44552464486817  3.8717920453254 4.06081138276042
+## PF4    7.61527696774217 7.62071714593035 7.61927674644531 7.61231233004745
+## TAGLN2 5.29783382464481 5.22120586705293 5.52823005352989 5.49705799887376
+## B2M    2.01799807466617 2.69419237490933 1.80961091176373 1.94917113301043
+## NRGN   5.73690185040304  5.7425658996953 5.74660955366819 5.74640549845668
+## ACTB   4.23579700001051 4.61584693653781 4.06706769287874 3.79674036656366
+## SDPR   6.31619815950909 6.31803721188798 6.32459101598652 6.32459101598652
+## GPX1   5.79651986761114 5.52099876658685 5.96021455325442  6.0120677730703
+## PPBP   7.11555492455421 7.11670079605627 7.12532638948129 7.12335024721486
+## GNG11  6.10345949807053 6.07136151265328 6.10538698012571 6.11038104935908
 ```
 
 
@@ -655,7 +644,7 @@ sessionInfo()
 ```
 
 ```
-## R Under development (unstable) (2019-01-14 r75992)
+## R Under development (unstable) (2019-02-19 r76128)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
 ## Running under: Ubuntu 16.04.5 LTS
 ## 
@@ -672,72 +661,72 @@ sessionInfo()
 ## [11] LC_MEASUREMENT=en_GB.UTF-8 LC_IDENTIFICATION=C       
 ## 
 ## attached base packages:
-## [1] stats4    parallel  stats     graphics  grDevices utils     datasets 
+## [1] parallel  stats4    stats     graphics  grDevices utils     datasets 
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] pheatmap_1.0.12             scran_1.11.20              
-##  [3] EnsDb.Hsapiens.v86_2.99.0   ensembldb_2.7.8            
-##  [5] AnnotationFilter_1.7.0      GenomicFeatures_1.35.6     
-##  [7] AnnotationDbi_1.45.0        scater_1.11.11             
-##  [9] ggplot2_3.1.0               DropletUtils_1.3.9         
-## [11] SingleCellExperiment_1.5.2  SummarizedExperiment_1.13.0
-## [13] DelayedArray_0.9.8          BiocParallel_1.17.9        
-## [15] matrixStats_0.54.0          Biobase_2.43.1             
-## [17] GenomicRanges_1.35.1        GenomeInfoDb_1.19.1        
-## [19] IRanges_2.17.4              S4Vectors_0.21.10          
-## [21] BiocGenerics_0.29.1         bindrcpp_0.2.2             
+##  [1] pheatmap_1.0.12             BiocSingular_0.99.12       
+##  [3] scran_1.11.20               EnsDb.Hsapiens.v86_2.99.0  
+##  [5] ensembldb_2.7.9             AnnotationFilter_1.7.0     
+##  [7] GenomicFeatures_1.35.7      AnnotationDbi_1.45.0       
+##  [9] scater_1.11.11              ggplot2_3.1.0              
+## [11] DropletUtils_1.3.9          SingleCellExperiment_1.5.2 
+## [13] SummarizedExperiment_1.13.0 DelayedArray_0.9.8         
+## [15] BiocParallel_1.17.15        matrixStats_0.54.0         
+## [17] Biobase_2.43.1              GenomicRanges_1.35.1       
+## [19] GenomeInfoDb_1.19.2         IRanges_2.17.4             
+## [21] S4Vectors_0.21.10           BiocGenerics_0.29.1        
 ## [23] BiocFileCache_1.7.0         dbplyr_1.3.0               
 ## [25] knitr_1.21                  BiocStyle_2.11.0           
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] Rtsne_0.15               ggbeeswarm_0.6.0        
 ##  [3] colorspace_1.4-0         dynamicTreeCut_1.63-1   
-##  [5] XVector_0.23.0           BiocNeighbors_1.1.11    
+##  [5] XVector_0.23.0           BiocNeighbors_1.1.12    
 ##  [7] bit64_0.9-7              codetools_0.2-16        
-##  [9] R.methodsS3_1.7.1        Rsamtools_1.35.2        
+##  [9] R.methodsS3_1.7.1        Rsamtools_1.99.2        
 ## [11] R.oo_1.22.0              HDF5Array_1.11.10       
 ## [13] BiocManager_1.30.4       compiler_3.6.0          
-## [15] httr_1.4.0               assertthat_0.2.0        
-## [17] Matrix_1.2-15            lazyeval_0.2.1          
-## [19] limma_3.39.5             BiocSingular_0.99.0     
+## [15] httr_1.4.0               dqrng_0.0.5.1           
+## [17] assertthat_0.2.0         Matrix_1.2-16           
+## [19] lazyeval_0.2.1           limma_3.39.12           
 ## [21] htmltools_0.3.6          prettyunits_1.0.2       
 ## [23] tools_3.6.0              rsvd_1.0.0              
-## [25] igraph_1.2.2             gtable_0.2.0            
+## [25] igraph_1.2.4             gtable_0.2.0            
 ## [27] glue_1.3.0               GenomeInfoDbData_1.2.0  
-## [29] reshape2_1.4.3           dplyr_0.7.8             
+## [29] reshape2_1.4.3           dplyr_0.8.0.1           
 ## [31] rappdirs_0.3.1           Rcpp_1.0.0              
 ## [33] Biostrings_2.51.2        rtracklayer_1.43.1      
-## [35] DelayedMatrixStats_1.5.2 xfun_0.4                
-## [37] stringr_1.3.1            ps_1.3.0                
+## [35] DelayedMatrixStats_1.5.2 xfun_0.5                
+## [37] stringr_1.4.0            ps_1.3.0                
 ## [39] irlba_2.3.3              statmod_1.4.30          
-## [41] XML_3.98-1.16            edgeR_3.25.3            
+## [41] XML_3.98-1.17            edgeR_3.25.3            
 ## [43] zlibbioc_1.29.0          scales_1.0.0            
 ## [45] hms_0.4.2                ProtGenerics_1.15.0     
-## [47] rhdf5_2.27.9             RColorBrewer_1.1-2      
+## [47] rhdf5_2.27.12            RColorBrewer_1.1-2      
 ## [49] yaml_2.2.0               curl_3.3                
 ## [51] memoise_1.1.0            gridExtra_2.3           
-## [53] biomaRt_2.39.2           stringi_1.2.4           
+## [53] biomaRt_2.39.2           stringi_1.3.1           
 ## [55] RSQLite_2.1.1            highr_0.7               
-## [57] simpleSingleCell_1.7.16  rlang_0.3.1             
+## [57] simpleSingleCell_1.7.17  rlang_0.3.1             
 ## [59] pkgconfig_2.0.2          bitops_1.0-6            
-## [61] evaluate_0.12            lattice_0.20-38         
+## [61] evaluate_0.13            lattice_0.20-38         
 ## [63] purrr_0.3.0              Rhdf5lib_1.5.1          
-## [65] bindr_0.1.1              GenomicAlignments_1.19.1
-## [67] labeling_0.3             cowplot_0.9.4           
-## [69] bit_1.1-14               tidyselect_0.2.5        
-## [71] processx_3.2.1           plyr_1.8.4              
-## [73] magrittr_1.5             bookdown_0.9            
-## [75] R6_2.3.0                 DBI_1.0.0               
-## [77] pillar_1.3.1             withr_2.1.2             
-## [79] RCurl_1.95-4.11          tibble_2.0.1            
-## [81] crayon_1.3.4             rmarkdown_1.11          
-## [83] viridis_0.5.1            progress_1.2.0          
-## [85] locfit_1.5-9.1           grid_3.6.0              
-## [87] blob_1.1.1               callr_3.1.1             
-## [89] digest_0.6.18            R.utils_2.7.0           
-## [91] munsell_0.5.0            beeswarm_0.2.3          
-## [93] viridisLite_0.3.0        vipor_0.4.5
+## [65] GenomicAlignments_1.19.1 labeling_0.3            
+## [67] cowplot_0.9.4            bit_1.1-14              
+## [69] tidyselect_0.2.5         processx_3.2.1          
+## [71] plyr_1.8.4               magrittr_1.5            
+## [73] bookdown_0.9             R6_2.4.0                
+## [75] DBI_1.0.0                pillar_1.3.1            
+## [77] withr_2.1.2              RCurl_1.95-4.11         
+## [79] tibble_2.0.1             crayon_1.3.4            
+## [81] rmarkdown_1.11           viridis_0.5.1           
+## [83] progress_1.2.0           locfit_1.5-9.1          
+## [85] grid_3.6.0               blob_1.1.1              
+## [87] callr_3.1.1              digest_0.6.18           
+## [89] R.utils_2.8.0            munsell_0.5.0           
+## [91] beeswarm_0.2.3           viridisLite_0.3.0       
+## [93] vipor_0.4.5
 ```
 
 # References

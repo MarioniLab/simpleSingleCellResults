@@ -12,7 +12,7 @@ author:
   - *CRUK
   - *EMBL
   - Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
-date: "2019-02-08"
+date: "2019-02-28"
 vignette: >
   %\VignetteIndexEntry{06. Quality control details}
   %\VignetteEngine{knitr::rmarkdown}
@@ -199,26 +199,26 @@ head(info[order(info$logFC, decreasing=TRUE),], 20)
 
 ```
 ##              logFC      Lost       Kept
-## PF4       6.616982 4.2897608 0.17408778
-## PPBP      6.500611 4.9178588 0.27064142
-## HIST1H2AC 6.293033 3.1644139 0.14424559
-## GNG11     6.163746 2.5494003 0.10095712
-## SDPR      5.951772 2.1739017 0.09747183
-## TUBB1     5.612127 1.6715191 0.08982500
-## CLU       5.463767 1.3392323 0.05555081
-## ACRBP     5.327090 1.2105285 0.05432616
-## NRGN      5.120059 1.3344553 0.12983106
-## RGS18     5.013472 1.6750095 0.25282927
-## MAP3K7CL  4.897522 1.0093448 0.08996294
-## SPARC     4.648030 0.6654153 0.02485659
-## MMD       4.617642 0.7558164 0.06362947
-## PGRMC1    4.504958 0.7441379 0.08242182
-## CMTM5     4.168175 0.4534258 0.01642109
-## TSC22D1   4.121740 0.5201837 0.05915892
-## HRAT92    4.117779 0.4274828 0.01143656
-## GP9       4.092676 0.4677161 0.03701111
-## CTSA      3.985470 0.8413689 0.27152316
-## MARCH2    3.967861 0.5736393 0.12219870
+## PF4       6.668019 4.3696131 0.17566713
+## PPBP      6.548488 5.0020215 0.27309672
+## HIST1H2AC 6.344409 3.2233183 0.14555421
+## GNG11     6.218699 2.5968564 0.10122003
+## SDPR      6.003830 2.2143681 0.09835611
+## TUBB1     5.664169 1.7026339 0.09063991
+## CLU       5.516478 1.3641616 0.05605478
+## ACRBP     5.379732 1.2330620 0.05481902
+## NRGN      5.172992 1.3592957 0.13054332
+## RGS18     5.073244 1.7061891 0.25175703
+## MAP3K7CL  4.953282 1.0281334 0.08985204
+## SPARC     4.700745 0.6778018 0.02508210
+## MMD       4.669388 0.7698856 0.06420673
+## PGRMC1    4.563096 0.7579898 0.08169815
+## CMTM5     4.220330 0.4618661 0.01657007
+## TSC22D1   4.172856 0.5298668 0.05969562
+## HRAT92    4.169966 0.4354403 0.01154032
+## GP9       4.144189 0.4764224 0.03734688
+## CTSA      4.039108 0.8570307 0.27227760
+## F13A1     4.011858 0.4597065 0.05299097
 ```
 
 ## Avoiding loss of cell types
@@ -299,7 +299,7 @@ sessionInfo()
 ```
 
 ```
-## R Under development (unstable) (2019-01-14 r75992)
+## R Under development (unstable) (2019-02-19 r76128)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
 ## Running under: Ubuntu 16.04.5 LTS
 ## 
@@ -321,12 +321,12 @@ sessionInfo()
 ## 
 ## other attached packages:
 ##  [1] scRNAseq_1.9.0              edgeR_3.25.3               
-##  [3] limma_3.39.5                scater_1.11.11             
+##  [3] limma_3.39.12               scater_1.11.11             
 ##  [5] ggplot2_3.1.0               SingleCellExperiment_1.5.2 
 ##  [7] SummarizedExperiment_1.13.0 DelayedArray_0.9.8         
-##  [9] BiocParallel_1.17.9         matrixStats_0.54.0         
+##  [9] BiocParallel_1.17.15        matrixStats_0.54.0         
 ## [11] Biobase_2.43.1              GenomicRanges_1.35.1       
-## [13] GenomeInfoDb_1.19.1         IRanges_2.17.4             
+## [13] GenomeInfoDb_1.19.2         IRanges_2.17.4             
 ## [15] S4Vectors_0.21.10           BiocGenerics_0.29.1        
 ## [17] knitr_1.21                  BiocStyle_2.11.0           
 ## 
@@ -335,59 +335,58 @@ sessionInfo()
 ##   [3] mvoutlier_2.0.9          modeltools_0.2-22       
 ##   [5] class_7.3-15             rio_0.5.16              
 ##   [7] mclust_5.4.2             XVector_0.23.0          
-##   [9] pls_2.7-0                BiocNeighbors_1.1.11    
-##  [11] cvTools_0.3.2            flexmix_2.3-14          
-##  [13] mvtnorm_1.0-8            splines_3.6.0           
-##  [15] sROC_0.1-2               codetools_0.2-16        
-##  [17] robustbase_0.93-3        robCompositions_2.0.9   
-##  [19] kernlab_0.9-27           cluster_2.0.7-1         
-##  [21] BiocManager_1.30.4       rrcov_1.4-7             
-##  [23] compiler_3.6.0           assertthat_0.2.0        
-##  [25] Matrix_1.2-15            lazyeval_0.2.1          
-##  [27] BiocSingular_0.99.0      htmltools_0.3.6         
-##  [29] tools_3.6.0              bindrcpp_0.2.2          
+##   [9] pls_2.7-0                BiocNeighbors_1.1.12    
+##  [11] cvTools_0.3.2            flexmix_2.3-15          
+##  [13] mvtnorm_1.0-8            ranger_0.11.1           
+##  [15] splines_3.6.0            sROC_0.1-2              
+##  [17] codetools_0.2-16         robustbase_0.93-3       
+##  [19] robCompositions_2.0.10   kernlab_0.9-27          
+##  [21] cluster_2.0.7-1          BiocManager_1.30.4      
+##  [23] rrcov_1.4-7              compiler_3.6.0          
+##  [25] assertthat_0.2.0         Matrix_1.2-16           
+##  [27] lazyeval_0.2.1           BiocSingular_0.99.12    
+##  [29] htmltools_0.3.6          tools_3.6.0             
 ##  [31] rsvd_1.0.0               gtable_0.2.0            
 ##  [33] glue_1.3.0               GenomeInfoDbData_1.2.0  
-##  [35] dplyr_0.7.8              Rcpp_1.0.0              
+##  [35] dplyr_0.8.0.1            Rcpp_1.0.0              
 ##  [37] carData_3.0-2            trimcluster_0.1-2.1     
-##  [39] cellranger_1.1.0         zCompositions_1.1.2     
+##  [39] cellranger_1.1.0         zCompositions_1.2.0     
 ##  [41] sgeostat_1.0-27          fpc_2.1-11.1            
 ##  [43] DelayedMatrixStats_1.5.2 lmtest_0.9-36           
-##  [45] xfun_0.4                 laeken_0.5.0            
-##  [47] stringr_1.3.1            ps_1.3.0                
+##  [45] xfun_0.5                 laeken_0.5.0            
+##  [47] stringr_1.4.0            ps_1.3.0                
 ##  [49] openxlsx_4.1.0           irlba_2.3.3             
 ##  [51] DEoptimR_1.0-8           zoo_1.8-4               
 ##  [53] zlibbioc_1.29.0          MASS_7.3-51.1           
-##  [55] scales_1.0.0             VIM_4.7.0               
+##  [55] scales_1.0.0             VIM_4.8.0               
 ##  [57] hms_0.4.2                RColorBrewer_1.1-2      
 ##  [59] yaml_2.2.0               curl_3.3                
 ##  [61] NADA_1.6-1               gridExtra_2.3           
-##  [63] reshape_0.8.8            stringi_1.2.4           
+##  [63] reshape_0.8.8            stringi_1.3.1           
 ##  [65] highr_0.7                pcaPP_1.9-73            
-##  [67] simpleSingleCell_1.7.16  e1071_1.7-0.1           
-##  [69] boot_1.3-20              zip_1.0.0               
+##  [67] simpleSingleCell_1.7.17  e1071_1.7-0.1           
+##  [69] boot_1.3-20              zip_2.0.0               
 ##  [71] truncnorm_1.0-8          prabclus_2.2-7          
 ##  [73] rlang_0.3.1              pkgconfig_2.0.2         
-##  [75] bitops_1.0-6             evaluate_0.12           
+##  [75] bitops_1.0-6             evaluate_0.13           
 ##  [77] lattice_0.20-38          purrr_0.3.0             
-##  [79] bindr_0.1.1              processx_3.2.1          
-##  [81] tidyselect_0.2.5         GGally_1.4.0            
-##  [83] plyr_1.8.4               magrittr_1.5            
-##  [85] bookdown_0.9             R6_2.3.0                
-##  [87] pillar_1.3.1             haven_2.0.0             
-##  [89] foreign_0.8-71           withr_2.1.2             
-##  [91] survival_2.43-3          abind_1.4-5             
-##  [93] RCurl_1.95-4.11          sp_1.3-1                
-##  [95] nnet_7.3-12              tibble_2.0.1            
-##  [97] crayon_1.3.4             car_3.0-2               
-##  [99] rmarkdown_1.11           viridis_0.5.1           
-## [101] locfit_1.5-9.1           grid_3.6.0              
-## [103] readxl_1.2.0             data.table_1.12.0       
-## [105] callr_3.1.1              forcats_0.3.0           
-## [107] diptest_0.75-7           vcd_1.4-4               
-## [109] digest_0.6.18            munsell_0.5.0           
-## [111] beeswarm_0.2.3           viridisLite_0.3.0       
-## [113] vipor_0.4.5
+##  [79] processx_3.2.1           tidyselect_0.2.5        
+##  [81] GGally_1.4.0             plyr_1.8.4              
+##  [83] magrittr_1.5             bookdown_0.9            
+##  [85] R6_2.4.0                 pillar_1.3.1            
+##  [87] haven_2.1.0              foreign_0.8-71          
+##  [89] withr_2.1.2              survival_2.43-3         
+##  [91] abind_1.4-5              RCurl_1.95-4.11         
+##  [93] sp_1.3-1                 nnet_7.3-12             
+##  [95] tibble_2.0.1             crayon_1.3.4            
+##  [97] car_3.0-2                rmarkdown_1.11          
+##  [99] viridis_0.5.1            locfit_1.5-9.1          
+## [101] grid_3.6.0               readxl_1.3.0            
+## [103] data.table_1.12.0        callr_3.1.1             
+## [105] forcats_0.4.0            diptest_0.75-7          
+## [107] vcd_1.4-4                digest_0.6.18           
+## [109] munsell_0.5.0            beeswarm_0.2.3          
+## [111] viridisLite_0.3.0        vipor_0.4.5
 ```
 
 # References

@@ -3,7 +3,7 @@ title: Detecting doublets in single-cell RNA-seq data
 author:
 - name: Aaron T. L. Lun
   affiliation: &CRUK Cancer Research UK Cambridge Institute, Li Ka Shing Centre, Robinson Way, Cambridge CB2 0RE, United Kingdom
-date: "2019-02-08"
+date: "2019-02-28"
 vignette: >
   %\VignetteIndexEntry{08. Detecting doublets}
   %\VignetteEngine{knitr::rmarkdown}
@@ -160,8 +160,9 @@ sce <- sce[,!discard]
 
 ```r
 library(scran)
+library(BiocSingular)
 set.seed(1000)
-clusters <- quickCluster(sce, use.ranks=FALSE, pc.approx=TRUE)
+clusters <- quickCluster(sce, use.ranks=FALSE, BSPARAM=IrlbaParam())
 table(clusters)
 ```
 
@@ -214,12 +215,12 @@ curve(tech.trend(x), add=TRUE, col="red")
 </div>
 
 We use `denoisePCA()` to choose the number of principal components (PCs) to retain based on the technical noise per gene.
-We need to set the seed for reproducibility when `approximate=TRUE`, due to the use of randomized methods from *[irlba](https://bioconductor.org/packages/3.9/irlba)*.
+We need to set the seed for reproducibility when `BSPARAM=IrlbaParam()`, due to the use of randomized methods from *[irlba](https://bioconductor.org/packages/3.9/irlba)*.
 
 
 ```r
 set.seed(12345)
-sce <- denoisePCA(sce, technical=tech.trend, approximate=TRUE)
+sce <- denoisePCA(sce, technical=tech.trend, BSPARAM=IrlbaParam())
 ncol(reducedDim(sce))
 ```
 
@@ -397,7 +398,7 @@ We see the function in action below:
 
 ```r
 set.seed(100)
-dbl.dens <- doubletCells(sce, approximate=TRUE)
+dbl.dens <- doubletCells(sce, BSPARAM=IrlbaParam())
 summary(dbl.dens)
 ```
 
@@ -434,7 +435,7 @@ plotColData(sce, x="Cluster", y="DoubletScore", colour_by="Cluster")
 **Comments from Aaron:**
 
 - To speed up the density calculations, `doubletCells()` will perform a PCA on the log-expression matrix. 
-When `approximate=TRUE`, methods from the *[irlba](https://CRAN.R-project.org/package=irlba)* package are used to perform a fast approximate PCA.
+When `BSPARAM=IrlbaParam()`, methods from the *[irlba](https://CRAN.R-project.org/package=irlba)* package are used to perform a fast approximate PCA.
 This involves randomization so it is necessary to call `set.seed()` to ensure that results are reproducible.
 
 ## Strengths and weaknesses 
@@ -491,7 +492,7 @@ We save the `SingleCellExperiment` object with its associated data to file for f
 
 
 ```r
-saveRDS(sce, file="mammary.rds")
+saveRDS(sce, file="mammary_data.rds")
 ```
 
 All software packages used in this workflow are publicly available from the Comprehensive R Archive Network (https://cran.r-project.org) or the Bioconductor project (http://bioconductor.org).
@@ -503,7 +504,7 @@ sessionInfo()
 ```
 
 ```
-## R Under development (unstable) (2019-01-14 r75992)
+## R Under development (unstable) (2019-02-19 r76128)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
 ## Running under: Ubuntu 16.04.5 LTS
 ## 
@@ -524,25 +525,25 @@ sessionInfo()
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] scran_1.11.20                         
-##  [2] TxDb.Mmusculus.UCSC.mm10.ensGene_3.4.0
-##  [3] GenomicFeatures_1.35.6                
-##  [4] AnnotationDbi_1.45.0                  
-##  [5] Matrix_1.2-15                         
-##  [6] scater_1.11.11                        
-##  [7] ggplot2_3.1.0                         
-##  [8] SingleCellExperiment_1.5.2            
-##  [9] SummarizedExperiment_1.13.0           
-## [10] DelayedArray_0.9.8                    
-## [11] BiocParallel_1.17.9                   
-## [12] matrixStats_0.54.0                    
-## [13] Biobase_2.43.1                        
-## [14] GenomicRanges_1.35.1                  
-## [15] GenomeInfoDb_1.19.1                   
-## [16] IRanges_2.17.4                        
-## [17] S4Vectors_0.21.10                     
-## [18] BiocGenerics_0.29.1                   
-## [19] bindrcpp_0.2.2                        
+##  [1] BiocSingular_0.99.12                  
+##  [2] scran_1.11.20                         
+##  [3] TxDb.Mmusculus.UCSC.mm10.ensGene_3.4.0
+##  [4] GenomicFeatures_1.35.7                
+##  [5] AnnotationDbi_1.45.0                  
+##  [6] Matrix_1.2-16                         
+##  [7] scater_1.11.11                        
+##  [8] ggplot2_3.1.0                         
+##  [9] SingleCellExperiment_1.5.2            
+## [10] SummarizedExperiment_1.13.0           
+## [11] DelayedArray_0.9.8                    
+## [12] BiocParallel_1.17.15                  
+## [13] matrixStats_0.54.0                    
+## [14] Biobase_2.43.1                        
+## [15] GenomicRanges_1.35.1                  
+## [16] GenomeInfoDb_1.19.2                   
+## [17] IRanges_2.17.4                        
+## [18] S4Vectors_0.21.10                     
+## [19] BiocGenerics_0.29.1                   
 ## [20] BiocFileCache_1.7.0                   
 ## [21] dbplyr_1.3.0                          
 ## [22] knitr_1.21                            
@@ -552,46 +553,45 @@ sessionInfo()
 ##  [1] bitops_1.0-6             bit64_0.9-7             
 ##  [3] RColorBrewer_1.1-2       progress_1.2.0          
 ##  [5] httr_1.4.0               dynamicTreeCut_1.63-1   
-##  [7] tools_3.6.0              R6_2.3.0                
+##  [7] tools_3.6.0              R6_2.4.0                
 ##  [9] irlba_2.3.3              vipor_0.4.5             
 ## [11] DBI_1.0.0                lazyeval_0.2.1          
 ## [13] colorspace_1.4-0         withr_2.1.2             
 ## [15] processx_3.2.1           tidyselect_0.2.5        
 ## [17] gridExtra_2.3            prettyunits_1.0.2       
 ## [19] bit_1.1-14               curl_3.3                
-## [21] compiler_3.6.0           BiocNeighbors_1.1.11    
+## [21] compiler_3.6.0           BiocNeighbors_1.1.12    
 ## [23] labeling_0.3             rtracklayer_1.43.1      
 ## [25] bookdown_0.9             scales_1.0.0            
 ## [27] callr_3.1.1              rappdirs_0.3.1          
-## [29] stringr_1.3.1            digest_0.6.18           
-## [31] Rsamtools_1.35.2         rmarkdown_1.11          
+## [29] stringr_1.4.0            digest_0.6.18           
+## [31] Rsamtools_1.99.2         rmarkdown_1.11          
 ## [33] XVector_0.23.0           pkgconfig_2.0.2         
 ## [35] htmltools_0.3.6          highr_0.7               
-## [37] limma_3.39.5             rlang_0.3.1             
+## [37] limma_3.39.12            rlang_0.3.1             
 ## [39] RSQLite_2.1.1            DelayedMatrixStats_1.5.2
-## [41] bindr_0.1.1              dplyr_0.7.8             
-## [43] RCurl_1.95-4.11          magrittr_1.5            
-## [45] BiocSingular_0.99.0      simpleSingleCell_1.7.16 
-## [47] GenomeInfoDbData_1.2.0   Rcpp_1.0.0              
-## [49] ggbeeswarm_0.6.0         munsell_0.5.0           
-## [51] viridis_0.5.1            edgeR_3.25.3            
-## [53] stringi_1.2.4            yaml_2.2.0              
-## [55] zlibbioc_1.29.0          Rtsne_0.15              
-## [57] plyr_1.8.4               grid_3.6.0              
-## [59] blob_1.1.1               crayon_1.3.4            
-## [61] lattice_0.20-38          cowplot_0.9.4           
-## [63] Biostrings_2.51.2        hms_0.4.2               
-## [65] locfit_1.5-9.1           ps_1.3.0                
-## [67] pillar_1.3.1             igraph_1.2.2            
-## [69] codetools_0.2-16         biomaRt_2.39.2          
-## [71] XML_3.98-1.16            glue_1.3.0              
-## [73] evaluate_0.12            BiocManager_1.30.4      
-## [75] gtable_0.2.0             purrr_0.3.0             
-## [77] assertthat_0.2.0         xfun_0.4                
-## [79] rsvd_1.0.0               viridisLite_0.3.0       
-## [81] pheatmap_1.0.12          tibble_2.0.1            
-## [83] GenomicAlignments_1.19.1 beeswarm_0.2.3          
-## [85] memoise_1.1.0            statmod_1.4.30
+## [41] dplyr_0.8.0.1            RCurl_1.95-4.11         
+## [43] magrittr_1.5             simpleSingleCell_1.7.17 
+## [45] GenomeInfoDbData_1.2.0   Rcpp_1.0.0              
+## [47] ggbeeswarm_0.6.0         munsell_0.5.0           
+## [49] viridis_0.5.1            stringi_1.3.1           
+## [51] yaml_2.2.0               edgeR_3.25.3            
+## [53] zlibbioc_1.29.0          Rtsne_0.15              
+## [55] plyr_1.8.4               grid_3.6.0              
+## [57] blob_1.1.1               crayon_1.3.4            
+## [59] lattice_0.20-38          cowplot_0.9.4           
+## [61] Biostrings_2.51.2        hms_0.4.2               
+## [63] locfit_1.5-9.1           ps_1.3.0                
+## [65] pillar_1.3.1             igraph_1.2.4            
+## [67] codetools_0.2-16         biomaRt_2.39.2          
+## [69] XML_3.98-1.17            glue_1.3.0              
+## [71] evaluate_0.13            BiocManager_1.30.4      
+## [73] gtable_0.2.0             purrr_0.3.0             
+## [75] assertthat_0.2.0         xfun_0.5                
+## [77] rsvd_1.0.0               viridisLite_0.3.0       
+## [79] pheatmap_1.0.12          tibble_2.0.1            
+## [81] GenomicAlignments_1.19.1 beeswarm_0.2.3          
+## [83] memoise_1.1.0            statmod_1.4.30
 ```
 
 # References

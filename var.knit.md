@@ -12,7 +12,7 @@ author:
   - *CRUK
   - *EMBL
   - Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
-date: "2019-02-08"
+date: "2019-02-28"
 vignette: >
   %\VignetteIndexEntry{09. Advanced variance modelling}
   %\VignetteEngine{knitr::rmarkdown}
@@ -500,7 +500,7 @@ sessionInfo()
 ```
 
 ```
-## R Under development (unstable) (2019-01-14 r75992)
+## R Under development (unstable) (2019-02-19 r76128)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
 ## Running under: Ubuntu 16.04.5 LTS
 ## 
@@ -524,55 +524,54 @@ sessionInfo()
 ##  [1] scran_1.11.20               scater_1.11.11             
 ##  [3] ggplot2_3.1.0               SingleCellExperiment_1.5.2 
 ##  [5] SummarizedExperiment_1.13.0 DelayedArray_0.9.8         
-##  [7] BiocParallel_1.17.9         matrixStats_0.54.0         
+##  [7] BiocParallel_1.17.15        matrixStats_0.54.0         
 ##  [9] Biobase_2.43.1              GenomicRanges_1.35.1       
-## [11] GenomeInfoDb_1.19.1         IRanges_2.17.4             
+## [11] GenomeInfoDb_1.19.2         IRanges_2.17.4             
 ## [13] S4Vectors_0.21.10           BiocGenerics_0.29.1        
-## [15] readxl_1.2.0                R.utils_2.7.0              
+## [15] readxl_1.3.0                R.utils_2.8.0              
 ## [17] R.oo_1.22.0                 R.methodsS3_1.7.1          
-## [19] bindrcpp_0.2.2              BiocFileCache_1.7.0        
-## [21] dbplyr_1.3.0                knitr_1.21                 
-## [23] BiocStyle_2.11.0           
+## [19] BiocFileCache_1.7.0         dbplyr_1.3.0               
+## [21] knitr_1.21                  BiocStyle_2.11.0           
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] bitops_1.0-6             bit64_0.9-7             
-##  [3] httr_1.4.0               dynamicTreeCut_1.63-1   
-##  [5] tools_3.6.0              R6_2.3.0                
-##  [7] irlba_2.3.3              vipor_0.4.5             
-##  [9] DBI_1.0.0                lazyeval_0.2.1          
-## [11] colorspace_1.4-0         withr_2.1.2             
-## [13] tidyselect_0.2.5         gridExtra_2.3           
-## [15] processx_3.2.1           bit_1.1-14              
-## [17] curl_3.3                 compiler_3.6.0          
-## [19] BiocNeighbors_1.1.11     labeling_0.3            
-## [21] bookdown_0.9             scales_1.0.0            
-## [23] callr_3.1.1              rappdirs_0.3.1          
-## [25] stringr_1.3.1            digest_0.6.18           
-## [27] rmarkdown_1.11           XVector_0.23.0          
-## [29] pkgconfig_2.0.2          htmltools_0.3.6         
-## [31] limma_3.39.5             highr_0.7               
-## [33] rlang_0.3.1              RSQLite_2.1.1           
-## [35] DelayedMatrixStats_1.5.2 bindr_0.1.1             
-## [37] dplyr_0.7.8              RCurl_1.95-4.11         
-## [39] magrittr_1.5             BiocSingular_0.99.0     
-## [41] simpleSingleCell_1.7.16  GenomeInfoDbData_1.2.0  
-## [43] Matrix_1.2-15            Rcpp_1.0.0              
-## [45] ggbeeswarm_0.6.0         munsell_0.5.0           
-## [47] viridis_0.5.1            stringi_1.2.4           
-## [49] yaml_2.2.0               edgeR_3.25.3            
-## [51] zlibbioc_1.29.0          plyr_1.8.4              
-## [53] grid_3.6.0               blob_1.1.1              
-## [55] crayon_1.3.4             lattice_0.20-38         
-## [57] cowplot_0.9.4            locfit_1.5-9.1          
-## [59] ps_1.3.0                 pillar_1.3.1            
-## [61] igraph_1.2.2             codetools_0.2-16        
-## [63] glue_1.3.0               evaluate_0.12           
-## [65] BiocManager_1.30.4       cellranger_1.1.0        
-## [67] gtable_0.2.0             purrr_0.3.0             
-## [69] assertthat_0.2.0         xfun_0.4                
-## [71] rsvd_1.0.0               viridisLite_0.3.0       
-## [73] tibble_2.0.1             beeswarm_0.2.3          
-## [75] memoise_1.1.0            statmod_1.4.30
+##  [1] dynamicTreeCut_1.63-1    viridis_0.5.1           
+##  [3] httr_1.4.0               edgeR_3.25.3            
+##  [5] BiocSingular_0.99.12     viridisLite_0.3.0       
+##  [7] bit64_0.9-7              DelayedMatrixStats_1.5.2
+##  [9] assertthat_0.2.0         statmod_1.4.30          
+## [11] highr_0.7                BiocManager_1.30.4      
+## [13] blob_1.1.1               vipor_0.4.5             
+## [15] GenomeInfoDbData_1.2.0   cellranger_1.1.0        
+## [17] yaml_2.2.0               pillar_1.3.1            
+## [19] RSQLite_2.1.1            lattice_0.20-38         
+## [21] limma_3.39.12            glue_1.3.0              
+## [23] digest_0.6.18            XVector_0.23.0          
+## [25] colorspace_1.4-0         cowplot_0.9.4           
+## [27] htmltools_0.3.6          Matrix_1.2-16           
+## [29] plyr_1.8.4               pkgconfig_2.0.2         
+## [31] bookdown_0.9             zlibbioc_1.29.0         
+## [33] purrr_0.3.0              scales_1.0.0            
+## [35] processx_3.2.1           tibble_2.0.1            
+## [37] withr_2.1.2              lazyeval_0.2.1          
+## [39] magrittr_1.5             crayon_1.3.4            
+## [41] memoise_1.1.0            evaluate_0.13           
+## [43] ps_1.3.0                 simpleSingleCell_1.7.17 
+## [45] beeswarm_0.2.3           tools_3.6.0             
+## [47] stringr_1.4.0            locfit_1.5-9.1          
+## [49] munsell_0.5.0            irlba_2.3.3             
+## [51] callr_3.1.1              compiler_3.6.0          
+## [53] rsvd_1.0.0               rlang_0.3.1             
+## [55] grid_3.6.0               RCurl_1.95-4.11         
+## [57] BiocNeighbors_1.1.12     rappdirs_0.3.1          
+## [59] igraph_1.2.4             labeling_0.3            
+## [61] bitops_1.0-6             rmarkdown_1.11          
+## [63] gtable_0.2.0             codetools_0.2-16        
+## [65] DBI_1.0.0                curl_3.3                
+## [67] R6_2.4.0                 gridExtra_2.3           
+## [69] dplyr_0.8.0.1            bit_1.1-14              
+## [71] stringi_1.3.1            ggbeeswarm_0.6.0        
+## [73] Rcpp_1.0.0               tidyselect_0.2.5        
+## [75] xfun_0.5
 ```
 
 # References

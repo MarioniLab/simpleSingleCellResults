@@ -3,7 +3,7 @@ title: Detecting differental expression from single-cell RNA-seq data
 author: 
 - name: Aaron T. L. Lun
   affiliation: &CRUK Cancer Research UK Cambridge Institute, Li Ka Shing Centre, Robinson Way, Cambridge CB2 0RE, United Kingdom
-date: "2019-02-08"
+date: "2019-02-28"
 vignette: >
   %\VignetteIndexEntry{10. Detecting differential expression}
   %\VignetteEngine{knitr::rmarkdown}
@@ -340,42 +340,36 @@ combos <- with(colData(sce.416b), paste(cluster, Plate, sep="."))
 ##         14          5          8
 ```
 
-We average the count profiles for all cells in each level of `combos`^[After dividing by size factors in `sce.416b`, to avoid unnecessary variability due to technical scaling biases.].
+We sum the count profiles for all cells in each level of `combos`.
 This yields a set of pseudo-bulk samples that are more amenable to standard DE analysis as the counts are higher and per-observation variance is lower.
 It also ensures that the variance is modelled across samples rather than across cells.
-Each sample is represented no more than once for each condition in the `averaged` matrix, avoiding problems from unmodelled correlations between samples. 
+Each sample is represented no more than once for each condition in the `summed` matrix, avoiding problems from unmodelled correlations between samples. 
 
 
 ```r
-# Computing (non-transformed) normalized expression values. 
-sce.416b <- normalize(sce.416b, return_log=FALSE)
-
-# Averaging within each level of 'combos'.
-library(DelayedMatrixStats) 
-averaged <- colsum(normcounts(sce.416b), group=combos)
-num <- num[match(colnames(averaged), names(num))]
-averaged <- sweep(averaged, 2, num, "/")
-head(averaged)
+library(scater)
+summed <- sumCountsAcrossCells(counts(sce.416b), combos)
+head(summed)
 ```
 
 ```
-##                     1.20160113 1.20160325 2.20160113 2.20160325 3.20160113
-## ENSMUSG00000103377 0.000000000 0.00000000 0.00000000 0.00000000          0
-## ENSMUSG00000103147 0.000000000 0.25874285 0.00000000 0.00000000          0
-## ENSMUSG00000103161 0.000000000 0.00000000 0.00000000 0.04663610          0
-## ENSMUSG00000102331 0.000000000 0.00000000 0.16038423 0.00000000          0
-## ENSMUSG00000102948 0.006832897 0.04588272 0.05571615 0.07970595          0
-## Rp1                3.354680751 0.84325911 0.00000000 0.06534831          0
+##                    1.20160113 1.20160325 2.20160113 2.20160325 3.20160113
+## ENSMUSG00000103377          0          0          0          0          0
+## ENSMUSG00000103147          0          7          0          0          0
+## ENSMUSG00000103161          0          0          0          2          0
+## ENSMUSG00000102331          0          0          4          0          0
+## ENSMUSG00000102948          1          1          1          3          0
+## Rp1                        97         48          0          1          0
 ##                    3.20160325 4.20160113 4.20160325 5.20160113 5.20160325
-## ENSMUSG00000103377 0.00000000          0          0  0.3567784  0.0000000
-## ENSMUSG00000103147 0.00000000          0          0  0.0000000  0.0000000
-## ENSMUSG00000103161 0.00000000          0          0  0.0000000  0.0000000
-## ENSMUSG00000102331 0.14882442          0          0  0.0000000  0.0000000
-## ENSMUSG00000102948 0.07015579          0          0  0.0000000  1.1876183
-## Rp1                0.00000000          0          0  0.0000000  0.2775208
+## ENSMUSG00000103377          0          0          0          2          0
+## ENSMUSG00000103147          0          0          0          0          0
+## ENSMUSG00000103161          0          0          0          0          0
+## ENSMUSG00000102331          2          0          0          0          0
+## ENSMUSG00000102948          1          0          0          0          9
+## Rp1                         0          0          0          0          2
 ```
 
-Finally, we perform a standard *[edgeR](https://bioconductor.org/packages/3.9/edgeR)* analysis using the quasi-likelihood framework [@chen2016from].
+We perform a standard *[edgeR](https://bioconductor.org/packages/3.9/edgeR)* analysis using the quasi-likelihood framework [@chen2016from].
 We ignore spike-in transcripts and low-abundance genes;
 set up the design matrix so that the plate of origin is an additive effect;
 weight each pseudo-bulk count by the number of cells used to compute it; 
@@ -384,19 +378,15 @@ and test for DE between the first two clusters.
 
 ```r
 library(edgeR)
-y <- DGEList(averaged)
+y <- DGEList(summed)
 y <- y[aveLogCPM(y) > 1 & !isSpike(sce.416b),]
 y <- calcNormFactors(y)
 
-# Adding a matrix of sample weights.
-w <- as.numeric(num)
-y$weights <- makeCompressedMatrix(w, dim(y), byrow=TRUE)
-
 # Building the design matrix.
-ave.factors <- strsplit(colnames(y), split="\\.")
-ave.clust <- unlist(lapply(ave.factors, "[[", i=1))
-ave.plate <- unlist(lapply(ave.factors, "[[", i=2))
-design <- model.matrix(~0 + ave.clust + ave.plate)
+sum.factors <- strsplit(colnames(y), split="\\.")
+sum.clust <- unlist(lapply(sum.factors, "[[", i=1))
+sum.plate <- unlist(lapply(sum.factors, "[[", i=2))
+design <- model.matrix(~0 + sum.clust + sum.plate)
 
 # Running through the remaining edgeR functions.
 y <- estimateDisp(y, design)
@@ -406,18 +396,18 @@ res <- glmQLFTest(fit, contrast=c(1, -1, 0, 0, 0, 0))
 ```
 
 ```
-## Coefficient:  1*ave.clust1 -1*ave.clust2 
-##           logFC   logCPM         F       PValue          FDR
-## H2afx -4.786267 7.301251 2075.9990 1.268793e-09 1.802320e-05
-## Cenpf -4.019964 7.348619 1338.0335 5.519868e-09 3.920486e-05
-## Ube2c -6.597884 8.051286  938.3938 2.751505e-08 1.302838e-04
-## Plk4  -6.271306 5.292440  656.1603 5.954153e-08 1.358478e-04
-## Lst1   3.311667 7.460206  612.8069 7.475172e-08 1.358478e-04
-## Spc24 -5.172029 5.726840  594.7888 8.255381e-08 1.358478e-04
-## Srm   -3.179802 7.995532  650.8267 8.981760e-08 1.358478e-04
-## Cip2a -4.582759 5.752809  573.9298 9.296009e-08 1.358478e-04
-## Mki67 -3.053341 8.010079  628.2231 1.006734e-07 1.358478e-04
-## Cks1b -3.992811 7.592255  617.4474 1.064543e-07 1.358478e-04
+## Coefficient:  1*sum.clust1 -1*sum.clust2 
+##            logFC   logCPM        F       PValue          FDR
+## H2afx  -4.705118 7.660453 759.0851 2.483667e-08 0.0002868884
+## Cenpf  -3.908109 7.787069 388.5249 2.930229e-07 0.0016923539
+## Pmf1   -3.489725 6.825686 264.7124 9.031752e-07 0.0020504630
+## Mki67  -3.071246 8.525429 263.9944 1.182572e-06 0.0020504630
+## Cdk1   -3.878273 8.772554 261.4039 1.221613e-06 0.0020504630
+## Dut    -3.222792 7.980844 259.1590 1.256806e-06 0.0020504630
+## Ube2c  -6.562471 8.544501 243.4641 1.543614e-06 0.0020504630
+## Mad2l1 -3.334600 7.228002 224.9613 1.773234e-06 0.0020504630
+## Ctsg   -9.810366 4.476225 210.1129 1.968233e-06 0.0020504630
+## Srm    -3.371245 8.179901 225.0141 1.999676e-06 0.0020504630
 ```
 
 ```r
@@ -425,10 +415,10 @@ summary(decideTests(res))
 ```
 
 ```
-##        1*ave.clust1 -1*ave.clust2
-## Down                         1580
-## NotSig                      11634
-## Up                            991
+##        1*sum.clust1 -1*sum.clust2
+## Down                          707
+## NotSig                      10439
+## Up                            405
 ```
 
 The DE analysis on pseudo-bulk counts does not explicitly penalize DE genes that are highly variable across cells within each sample.
