@@ -46,7 +46,9 @@ all: intro.knit.md \
 
 # Cleaning commands.
 clean: 
-	rm -rf *.Rmd *.html *_files *_cache *.knit.md 
+	rm -rf *.Rmd *.html *_files *_cache *.utf8.md *.rds *.tsv *.xls
+	git stash
+	if [ `git stash list | wc -l` -ne 0 ]; then git stash drop; fi
 
 distclean: clean
 	rm -rf raw_data
