@@ -3,7 +3,7 @@ title: Analyzing single-cell RNA sequencing data from droplet-based protocols
 author: 
 - name: Aaron T. L. Lun
   affiliation: Cancer Research UK Cambridge Institute, Li Ka Shing Centre, Robinson Way, Cambridge CB2 0RE, United Kingdom
-date: "2019-02-28"
+date: "2019-04-13"
 vignette: >
   %\VignetteIndexEntry{04. Droplet-based data}
   %\VignetteEngine{knitr::rmarkdown}
@@ -644,86 +644,86 @@ sessionInfo()
 ```
 
 ```
-## R Under development (unstable) (2019-02-19 r76128)
+## R Under development (unstable) (2019-04-11 r76379)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
-## Running under: Ubuntu 16.04.5 LTS
+## Running under: Ubuntu 18.04.2 LTS
 ## 
 ## Matrix products: default
-## BLAS: /home/cri.camres.org/lun01/Software/R/trunk/lib/libRblas.so
-## LAPACK: /home/cri.camres.org/lun01/Software/R/trunk/lib/libRlapack.so
+## BLAS:   /home/luna/Software/R/trunk/lib/libRblas.so
+## LAPACK: /home/luna/Software/R/trunk/lib/libRlapack.so
 ## 
 ## locale:
-##  [1] LC_CTYPE=en_GB.UTF-8       LC_NUMERIC=C              
-##  [3] LC_TIME=en_GB.UTF-8        LC_COLLATE=en_GB.UTF-8    
-##  [5] LC_MONETARY=en_GB.UTF-8    LC_MESSAGES=en_GB.UTF-8   
-##  [7] LC_PAPER=en_GB.UTF-8       LC_NAME=C                 
+##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+##  [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+##  [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+##  [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
 ##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
-## [11] LC_MEASUREMENT=en_GB.UTF-8 LC_IDENTIFICATION=C       
+## [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
 ## 
 ## attached base packages:
 ## [1] parallel  stats4    stats     graphics  grDevices utils     datasets 
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] pheatmap_1.0.12             BiocSingular_0.99.12       
-##  [3] scran_1.11.20               EnsDb.Hsapiens.v86_2.99.0  
-##  [5] ensembldb_2.7.9             AnnotationFilter_1.7.0     
-##  [7] GenomicFeatures_1.35.7      AnnotationDbi_1.45.0       
-##  [9] scater_1.11.11              ggplot2_3.1.0              
-## [11] DropletUtils_1.3.9          SingleCellExperiment_1.5.2 
-## [13] SummarizedExperiment_1.13.0 DelayedArray_0.9.8         
-## [15] BiocParallel_1.17.15        matrixStats_0.54.0         
+##  [1] pheatmap_1.0.12             BiocSingular_0.99.15       
+##  [3] scran_1.11.26               EnsDb.Hsapiens.v86_2.99.0  
+##  [5] ensembldb_2.7.12            AnnotationFilter_1.7.0     
+##  [7] GenomicFeatures_1.35.10     AnnotationDbi_1.45.1       
+##  [9] scater_1.11.16              ggplot2_3.1.1              
+## [11] DropletUtils_1.3.14         SingleCellExperiment_1.5.2 
+## [13] SummarizedExperiment_1.13.0 DelayedArray_0.9.9         
+## [15] BiocParallel_1.17.18        matrixStats_0.54.0         
 ## [17] Biobase_2.43.1              GenomicRanges_1.35.1       
-## [19] GenomeInfoDb_1.19.2         IRanges_2.17.4             
-## [21] S4Vectors_0.21.10           BiocGenerics_0.29.1        
-## [23] BiocFileCache_1.7.0         dbplyr_1.3.0               
-## [25] knitr_1.21                  BiocStyle_2.11.0           
+## [19] GenomeInfoDb_1.19.3         IRanges_2.17.4             
+## [21] S4Vectors_0.21.23           BiocGenerics_0.29.2        
+## [23] BiocFileCache_1.7.9         dbplyr_1.3.0               
+## [25] knitr_1.22                  BiocStyle_2.11.0           
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] Rtsne_0.15               ggbeeswarm_0.6.0        
-##  [3] colorspace_1.4-0         dynamicTreeCut_1.63-1   
-##  [5] XVector_0.23.0           BiocNeighbors_1.1.12    
+##  [3] colorspace_1.4-1         dynamicTreeCut_1.63-1   
+##  [5] XVector_0.23.2           BiocNeighbors_1.1.13    
 ##  [7] bit64_0.9-7              codetools_0.2-16        
-##  [9] R.methodsS3_1.7.1        Rsamtools_1.99.2        
-## [11] R.oo_1.22.0              HDF5Array_1.11.10       
-## [13] BiocManager_1.30.4       compiler_3.6.0          
-## [15] httr_1.4.0               dqrng_0.0.5.1           
-## [17] assertthat_0.2.0         Matrix_1.2-16           
-## [19] lazyeval_0.2.1           limma_3.39.12           
+##  [9] R.methodsS3_1.7.1        Rsamtools_1.99.5        
+## [11] R.oo_1.22.0              HDF5Array_1.11.11       
+## [13] BiocManager_1.30.4       compiler_3.7.0          
+## [15] httr_1.4.0               dqrng_0.1.1             
+## [17] assertthat_0.2.1         Matrix_1.2-17           
+## [19] lazyeval_0.2.2           limma_3.39.14           
 ## [21] htmltools_0.3.6          prettyunits_1.0.2       
-## [23] tools_3.6.0              rsvd_1.0.0              
-## [25] igraph_1.2.4             gtable_0.2.0            
-## [27] glue_1.3.0               GenomeInfoDbData_1.2.0  
+## [23] tools_3.7.0              rsvd_1.0.0              
+## [25] igraph_1.2.4             gtable_0.3.0            
+## [27] glue_1.3.1               GenomeInfoDbData_1.2.1  
 ## [29] reshape2_1.4.3           dplyr_0.8.0.1           
-## [31] rappdirs_0.3.1           Rcpp_1.0.0              
-## [33] Biostrings_2.51.2        rtracklayer_1.43.1      
-## [35] DelayedMatrixStats_1.5.2 xfun_0.5                
+## [31] rappdirs_0.3.1           Rcpp_1.0.1              
+## [33] Biostrings_2.51.5        rtracklayer_1.43.3      
+## [35] DelayedMatrixStats_1.5.2 xfun_0.6                
 ## [37] stringr_1.4.0            ps_1.3.0                
 ## [39] irlba_2.3.3              statmod_1.4.30          
-## [41] XML_3.98-1.17            edgeR_3.25.3            
+## [41] XML_3.98-1.19            edgeR_3.25.3            
 ## [43] zlibbioc_1.29.0          scales_1.0.0            
 ## [45] hms_0.4.2                ProtGenerics_1.15.0     
-## [47] rhdf5_2.27.12            RColorBrewer_1.1-2      
+## [47] rhdf5_2.27.15            RColorBrewer_1.1-2      
 ## [49] yaml_2.2.0               curl_3.3                
 ## [51] memoise_1.1.0            gridExtra_2.3           
-## [53] biomaRt_2.39.2           stringi_1.3.1           
-## [55] RSQLite_2.1.1            highr_0.7               
-## [57] simpleSingleCell_1.7.17  rlang_0.3.1             
+## [53] biomaRt_2.39.2           stringi_1.4.3           
+## [55] RSQLite_2.1.1            highr_0.8               
+## [57] simpleSingleCell_1.7.20  rlang_0.3.4             
 ## [59] pkgconfig_2.0.2          bitops_1.0-6            
 ## [61] evaluate_0.13            lattice_0.20-38         
-## [63] purrr_0.3.0              Rhdf5lib_1.5.1          
+## [63] purrr_0.3.2              Rhdf5lib_1.5.4          
 ## [65] GenomicAlignments_1.19.1 labeling_0.3            
 ## [67] cowplot_0.9.4            bit_1.1-14              
-## [69] tidyselect_0.2.5         processx_3.2.1          
+## [69] tidyselect_0.2.5         processx_3.3.0          
 ## [71] plyr_1.8.4               magrittr_1.5            
 ## [73] bookdown_0.9             R6_2.4.0                
 ## [75] DBI_1.0.0                pillar_1.3.1            
-## [77] withr_2.1.2              RCurl_1.95-4.11         
-## [79] tibble_2.0.1             crayon_1.3.4            
-## [81] rmarkdown_1.11           viridis_0.5.1           
+## [77] withr_2.1.2              RCurl_1.95-4.12         
+## [79] tibble_2.1.1             crayon_1.3.4            
+## [81] rmarkdown_1.12           viridis_0.5.1           
 ## [83] progress_1.2.0           locfit_1.5-9.1          
-## [85] grid_3.6.0               blob_1.1.1              
-## [87] callr_3.1.1              digest_0.6.18           
+## [85] grid_3.7.0               blob_1.1.1              
+## [87] callr_3.2.0              digest_0.6.18           
 ## [89] R.utils_2.8.0            munsell_0.5.0           
 ## [91] beeswarm_0.2.3           viridisLite_0.3.0       
 ## [93] vipor_0.4.5

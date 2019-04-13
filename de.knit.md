@@ -3,7 +3,7 @@ title: Detecting differental expression from single-cell RNA-seq data
 author: 
 - name: Aaron T. L. Lun
   affiliation: &CRUK Cancer Research UK Cambridge Institute, Li Ka Shing Centre, Robinson Way, Cambridge CB2 0RE, United Kingdom
-date: "2019-02-28"
+date: "2019-04-13"
 vignette: >
   %\VignetteIndexEntry{10. Detecting differential expression}
   %\VignetteEngine{knitr::rmarkdown}
@@ -43,34 +43,47 @@ sce.pancreas <- readRDS("pancreas_data.rds")
 # Same code as in pancreas MNN correction workflow.
 library(scran)
 m.out <- findMarkers(sce.pancreas, sce.pancreas$Cluster, 
-    block=sce.pancreas$Batch, direction="up") 
+    block=sce.pancreas$batch, direction="up", assay.type="original") 
 demo <- m.out[["1"]] 
 as.data.frame(demo[demo$Top <= 5,1:3])
 ```
 
 ```
-##           Top      p.value          FDR
-## KCNQ1OT1    1 3.938748e-56 5.809259e-52
-## PGM5P2      1 9.973107e-50 4.903112e-46
-## TMEM212     1 5.507935e-34 1.353942e-30
-## TLCD2       1 1.159434e-28 1.900055e-25
-## SMG1        1 1.411506e-26 1.301144e-23
-## TSIX        1 1.256427e-16 1.748212e-14
-## UGDH-AS1    2 3.066164e-54 2.261143e-50
-## LOC643406   2 7.330958e-32 1.544633e-28
-## NLRP12      2 3.128190e-25 2.306884e-22
-## ODF2L       2 4.193889e-24 2.577320e-21
-## ARMC9       2 5.531674e-16 6.633062e-14
-## MAB21L3     3 9.131242e-44 3.366917e-40
-## FBXL20      3 6.670172e-23 2.981163e-20
-## GPR155      3 1.300526e-14 1.245550e-12
-## TFDP2       4 8.851044e-28 1.186764e-24
-## LRRC57      4 4.148010e-22 1.699417e-19
-## TUBA3FP     4 3.278619e-14 2.878354e-12
-## FBLIM1      5 1.730417e-40 5.104383e-37
-## CCL5        5 1.322838e-26 1.300703e-23
-## PNPT1       5 7.818870e-21 2.745726e-18
-## TRPM7       5 2.002259e-14 1.834243e-12
+##           Top       p.value           FDR
+## REG1A       1  0.000000e+00  0.000000e+00
+## SPINK1      1  0.000000e+00  0.000000e+00
+## GSTA1       1 3.041862e-312 5.608053e-309
+## BCAT1       1 2.254987e-252 1.750463e-249
+## TM4SF1      1 4.675497e-228 2.298630e-225
+## CDH1        1 5.426508e-225 2.353987e-222
+## VAMP8       1 1.099126e-190 2.894822e-188
+## KIAA1522    1 9.008017e-176 1.845267e-173
+## LSR         1 4.655537e-118 2.746581e-116
+## CD24        2  0.000000e+00  0.000000e+00
+## ZFP36L1     2 6.545507e-314 1.608995e-310
+## PRSS3P2     2 2.736460e-293 4.036005e-290
+## MARCKS      2 2.583296e-219 1.002659e-216
+## GATM        2 6.179406e-180 1.302001e-177
+## ALDH2       2 8.631194e-161 1.326057e-158
+## CLDN4       2 2.147564e-147 2.417895e-145
+## CTRB2       3  0.000000e+00  0.000000e+00
+## GSTA2       3 7.234471e-263 6.668826e-260
+## MGST1       3 4.408828e-255 3.612545e-252
+## PLA2G1B     3 1.791166e-242 1.320895e-239
+## MECOM       3 4.442180e-148 5.078893e-146
+## PRSS1       4  0.000000e+00  0.000000e+00
+## TACSTD2     4 6.946474e-232 3.794576e-229
+## PRSS3       4 1.162855e-225 5.359669e-223
+## KRT8        4 1.474984e-207 5.059193e-205
+## RAB11FIP1   4 1.935042e-207 6.486347e-205
+## DDR1        4 2.913466e-152 3.769360e-150
+## LMAN2       4  4.947516e-69  9.729455e-68
+## TMSB4X      5 7.629152e-313 1.607462e-309
+## PTPRF       5 1.297514e-192 3.610762e-190
+## CLDN7       5 2.387031e-192 6.401150e-190
+## KLK1        5 2.776903e-167 4.818417e-165
+## LGALS2      5 1.220973e-141 1.208599e-139
+## KRTCAP3     5 1.171037e-135 1.004164e-133
 ```
 
 Intra-batch comparisons with `block=` are robust to difference in the log-fold changes or variance between batches.
@@ -88,29 +101,30 @@ There is also a slight increase in power when information is shared across clust
 ```r
 # Setting up the design matrix (we remove intercept for full rank
 # in the final design matrix with the cluster-specific terms).
-design <- model.matrix(~sce.pancreas$Batch)
+design <- model.matrix(~sce.pancreas$batch)
 design <- design[,-1,drop=FALSE]
 
 m.alt <- findMarkers(sce.pancreas, sce.pancreas$Cluster, 
-    design=design, direction="up")
+    design=design, direction="up", assay.type="original")
 demo <- m.alt[["1"]]
 as.data.frame(demo[demo$Top <= 5,1:3])
 ```
 
 ```
 ##         Top       p.value           FDR
-## CCL5      1  0.000000e+00  0.000000e+00
-## PGM5P2    1 3.831712e-314 1.412848e-310
-## PCDH11Y   2  0.000000e+00  0.000000e+00
-## LPAL2     2 5.313572e-318 2.612330e-314
-## TMEM212   2 3.302215e-300 8.117395e-297
-## LAIR1     3 3.407370e-304 1.005106e-300
-## VSTM4     3 1.288202e-296 2.374962e-293
-## TFDP2     3 3.422123e-296 5.608100e-293
-## ZNF665    4 8.652004e-298 1.822977e-294
-## LRRC57    4 1.925200e-258 7.472310e-256
-## LPP       5 1.184317e-262 5.634675e-260
-## FBXL20    5 1.342461e-248 4.829257e-246
+## CTRB2     1  0.000000e+00  0.000000e+00
+## PRSS1     1  0.000000e+00  0.000000e+00
+## RPL15     1 1.514088e-241 1.561628e-239
+## SPINK1    2  0.000000e+00  0.000000e+00
+## PRSS3P2   2  0.000000e+00  0.000000e+00
+## B2M       2 5.543657e-300 8.343204e-298
+## GSTA1     3  0.000000e+00  0.000000e+00
+## RPS29     3 2.303125e-205 1.846130e-203
+## GSTA2     4  0.000000e+00  0.000000e+00
+## RPL41     4 1.473686e-210 1.256382e-208
+## REG1A     5  0.000000e+00  0.000000e+00
+## PLA2G1B   5  0.000000e+00  0.000000e+00
+## RPS14     5 1.599544e-204 1.275225e-202
 ```
 
 The use of a linear model makes a few some strong assumptions, necessitating some caution when interpreting the results.
@@ -321,8 +335,10 @@ However, these are difficult to implement from both a theoretical and practical 
 A faster approach is to use a summation strategy [@lun2017overcoming], where all cells in each combination of sample and condition (or cluster) are summed together.
 This yields a single pseudo-bulk count profile per combination, to which standard methods like *[edgeR](https://bioconductor.org/packages/3.9/edgeR)* or *[limma](https://bioconductor.org/packages/3.9/limma)* can be applied.
 
+# Using pseudo-bulk counts 
+
 We demonstrate this procedure on the [416B data set](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/reads.html) again.
-We first create a factor containing all combinations of the per-cell factors of interest.
+We create a factor containing all combinations of the per-cell factors of interest.
 Here, the factors of interest are the assigned cluster and the plate of origin for each cell^[Cluster is nested in oncogene induction status so that latter will not be used here.].
 All cells from one plate with the same oncogene induction status were obtained from the same biological sample.
 
@@ -369,11 +385,8 @@ head(summed)
 ## Rp1                         0          0          0          0          2
 ```
 
-We perform a standard *[edgeR](https://bioconductor.org/packages/3.9/edgeR)* analysis using the quasi-likelihood framework [@chen2016from].
-We ignore spike-in transcripts and low-abundance genes;
-set up the design matrix so that the plate of origin is an additive effect;
-weight each pseudo-bulk count by the number of cells used to compute it; 
-and test for DE between the first two clusters.
+We perform a standard *[edgeR](https://bioconductor.org/packages/3.9/edgeR)* analysis using the quasi-likelihood (QL) framework [@chen2016from] to identify differential expression between clusters.
+We ignore spike-in transcripts and low-abundance genes, and we compute normalization factors^[Not the same as size factors!] using the `calcNormFactors()` function.
 
 
 ```r
@@ -381,17 +394,60 @@ library(edgeR)
 y <- DGEList(summed)
 y <- y[aveLogCPM(y) > 1 & !isSpike(sce.416b),]
 y <- calcNormFactors(y)
+```
 
-# Building the design matrix.
-sum.factors <- strsplit(colnames(y), split="\\.")
-sum.clust <- unlist(lapply(sum.factors, "[[", i=1))
-sum.plate <- unlist(lapply(sum.factors, "[[", i=2))
+We set up the design matrix so that the plate of origin is an additive effect.
+
+
+```r
+sum.terms <- strsplit(colnames(y), split="\\.")
+sum.clust <- unlist(lapply(sum.terms, "[[", i=1))
+sum.plate <- unlist(lapply(sum.terms, "[[", i=2))
 design <- model.matrix(~0 + sum.clust + sum.plate)
+```
 
-# Running through the remaining edgeR functions.
+We estimate the negative binomial and QL dispersions using `estimateDisp()` and `glmQLFit()`, respectively.
+Larger dispersions represent greater variability between replicate plates, not cells.
+
+
+```r
 y <- estimateDisp(y, design)
+summary(y$trended.dispersion)    
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+## 0.02974 0.11443 0.25894 0.38510 0.60977 1.06925
+```
+
+```r
 fit <- glmQLFit(y, design, robust=TRUE)
+summary(fit$df.prior)    
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   2.737   2.737   2.737   2.788   2.859   2.920
+```
+
+We test for DE between the first two clusters using `glmQLFTest()`.
+This yields a number of potentially interesting DE genes involved in cell division,
+consistent with the differences in cell cycle activity between clusters.
+
+
+```r
 res <- glmQLFTest(fit, contrast=c(1, -1, 0, 0, 0, 0))
+summary(decideTests(res))
+```
+
+```
+##        1*sum.clust1 -1*sum.clust2
+## Down                          707
+## NotSig                      10439
+## Up                            405
+```
+
+```r
 (top <- topTags(res))
 ```
 
@@ -408,17 +464,6 @@ res <- glmQLFTest(fit, contrast=c(1, -1, 0, 0, 0, 0))
 ## Mad2l1 -3.334600 7.228002 224.9613 1.773234e-06 0.0020504630
 ## Ctsg   -9.810366 4.476225 210.1129 1.968233e-06 0.0020504630
 ## Srm    -3.371245 8.179901 225.0141 1.999676e-06 0.0020504630
-```
-
-```r
-summary(decideTests(res))
-```
-
-```
-##        1*sum.clust1 -1*sum.clust2
-## Down                          707
-## NotSig                      10439
-## Up                            405
 ```
 
 The DE analysis on pseudo-bulk counts does not explicitly penalize DE genes that are highly variable across cells within each sample.

@@ -3,7 +3,7 @@ title: Scalable analyses for big scRNA-seq data with Bioconductor
 author:
 - name: Aaron T. L. Lun
   affiliation: &CRUK Cancer Research UK Cambridge Institute, Li Ka Shing Centre, Robinson Way, Cambridge CB2 0RE, United Kingdom
-date: "2019-02-28"
+date: "2019-04-13"
 vignette: >
   %\VignetteIndexEntry{11. Scalability for big data}
   %\VignetteEngine{knitr::rmarkdown}
@@ -382,80 +382,82 @@ sessionInfo()
 ```
 
 ```
-## R Under development (unstable) (2019-02-19 r76128)
+## R Under development (unstable) (2019-04-11 r76379)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
-## Running under: Ubuntu 16.04.5 LTS
+## Running under: Ubuntu 18.04.2 LTS
 ## 
 ## Matrix products: default
-## BLAS: /home/cri.camres.org/lun01/Software/R/trunk/lib/libRblas.so
-## LAPACK: /home/cri.camres.org/lun01/Software/R/trunk/lib/libRlapack.so
+## BLAS:   /home/luna/Software/R/trunk/lib/libRblas.so
+## LAPACK: /home/luna/Software/R/trunk/lib/libRlapack.so
 ## 
 ## locale:
-##  [1] LC_CTYPE=en_GB.UTF-8       LC_NUMERIC=C              
-##  [3] LC_TIME=en_GB.UTF-8        LC_COLLATE=en_GB.UTF-8    
-##  [5] LC_MONETARY=en_GB.UTF-8    LC_MESSAGES=en_GB.UTF-8   
-##  [7] LC_PAPER=en_GB.UTF-8       LC_NAME=C                 
+##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+##  [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+##  [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+##  [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
 ##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
-## [11] LC_MEASUREMENT=en_GB.UTF-8 LC_IDENTIFICATION=C       
+## [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
 ## 
 ## attached base packages:
 ## [1] parallel  stats4    stats     graphics  grDevices utils     datasets 
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] BiocSingular_0.99.12        BiocNeighbors_1.1.12       
-##  [3] scran_1.11.20               scater_1.11.11             
-##  [5] ggplot2_3.1.0               TENxBrainData_1.3.0        
-##  [7] HDF5Array_1.11.10           rhdf5_2.27.12              
+##  [1] BiocSingular_0.99.15        BiocNeighbors_1.1.13       
+##  [3] scran_1.11.26               scater_1.11.16             
+##  [5] ggplot2_3.1.1               TENxBrainData_1.3.0        
+##  [7] HDF5Array_1.11.11           rhdf5_2.27.15              
 ##  [9] SingleCellExperiment_1.5.2  SummarizedExperiment_1.13.0
-## [11] DelayedArray_0.9.8          BiocParallel_1.17.15       
+## [11] DelayedArray_0.9.9          BiocParallel_1.17.18       
 ## [13] matrixStats_0.54.0          Biobase_2.43.1             
-## [15] GenomicRanges_1.35.1        GenomeInfoDb_1.19.2        
-## [17] IRanges_2.17.4              S4Vectors_0.21.10          
-## [19] BiocGenerics_0.29.1         knitr_1.21                 
+## [15] GenomicRanges_1.35.1        GenomeInfoDb_1.19.3        
+## [17] IRanges_2.17.4              S4Vectors_0.21.23          
+## [19] BiocGenerics_0.29.2         knitr_1.22                 
 ## [21] BiocStyle_2.11.0           
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] bitops_1.0-6                  bit64_0.9-7                  
 ##  [3] httr_1.4.0                    dynamicTreeCut_1.63-1        
-##  [5] tools_3.6.0                   R6_2.4.0                     
+##  [5] tools_3.7.0                   R6_2.4.0                     
 ##  [7] irlba_2.3.3                   vipor_0.4.5                  
-##  [9] DBI_1.0.0                     lazyeval_0.2.1               
-## [11] colorspace_1.4-0              withr_2.1.2                  
+##  [9] DBI_1.0.0                     lazyeval_0.2.2               
+## [11] colorspace_1.4-1              withr_2.1.2                  
 ## [13] tidyselect_0.2.5              gridExtra_2.3                
-## [15] processx_3.2.1                bit_1.1-14                   
-## [17] curl_3.3                      compiler_3.6.0               
+## [15] processx_3.3.0                bit_1.1-14                   
+## [17] curl_3.3                      compiler_3.7.0               
 ## [19] bookdown_0.9                  scales_1.0.0                 
-## [21] callr_3.1.1                   stringr_1.4.0                
-## [23] digest_0.6.18                 rmarkdown_1.11               
-## [25] XVector_0.23.0                pkgconfig_2.0.2              
-## [27] htmltools_0.3.6               limma_3.39.12                
-## [29] rlang_0.3.1                   RSQLite_2.1.1                
-## [31] shiny_1.2.0                   DelayedMatrixStats_1.5.2     
-## [33] dplyr_0.8.0.1                 RCurl_1.95-4.11              
-## [35] magrittr_1.5                  simpleSingleCell_1.7.17      
-## [37] GenomeInfoDbData_1.2.0        Matrix_1.2-16                
-## [39] Rcpp_1.0.0                    ggbeeswarm_0.6.0             
-## [41] munsell_0.5.0                 Rhdf5lib_1.5.1               
-## [43] viridis_0.5.1                 edgeR_3.25.3                 
-## [45] stringi_1.3.1                 yaml_2.2.0                   
-## [47] zlibbioc_1.29.0               plyr_1.8.4                   
-## [49] AnnotationHub_2.15.7          grid_3.6.0                   
-## [51] blob_1.1.1                    promises_1.0.1               
-## [53] ExperimentHub_1.9.1           crayon_1.3.4                 
-## [55] lattice_0.20-38               locfit_1.5-9.1               
-## [57] ps_1.3.0                      pillar_1.3.1                 
-## [59] igraph_1.2.4                  codetools_0.2-16             
-## [61] glue_1.3.0                    evaluate_0.13                
-## [63] BiocManager_1.30.4            httpuv_1.4.5.1               
-## [65] gtable_0.2.0                  purrr_0.3.0                  
-## [67] assertthat_0.2.0              xfun_0.5                     
-## [69] rsvd_1.0.0                    mime_0.6                     
-## [71] xtable_1.8-3                  later_0.8.0                  
-## [73] viridisLite_0.3.0             tibble_2.0.1                 
-## [75] AnnotationDbi_1.45.0          beeswarm_0.2.3               
-## [77] memoise_1.1.0                 statmod_1.4.30               
-## [79] interactiveDisplayBase_1.21.0
+## [21] callr_3.2.0                   rappdirs_0.3.1               
+## [23] stringr_1.4.0                 digest_0.6.18                
+## [25] rmarkdown_1.12                XVector_0.23.2               
+## [27] pkgconfig_2.0.2               htmltools_0.3.6              
+## [29] limma_3.39.14                 dbplyr_1.3.0                 
+## [31] rlang_0.3.4                   RSQLite_2.1.1                
+## [33] shiny_1.3.1                   DelayedMatrixStats_1.5.2     
+## [35] dplyr_0.8.0.1                 RCurl_1.95-4.12              
+## [37] magrittr_1.5                  simpleSingleCell_1.7.20      
+## [39] GenomeInfoDbData_1.2.1        Matrix_1.2-17                
+## [41] Rcpp_1.0.1                    ggbeeswarm_0.6.0             
+## [43] munsell_0.5.0                 Rhdf5lib_1.5.4               
+## [45] viridis_0.5.1                 edgeR_3.25.3                 
+## [47] stringi_1.4.3                 yaml_2.2.0                   
+## [49] zlibbioc_1.29.0               plyr_1.8.4                   
+## [51] BiocFileCache_1.7.9           AnnotationHub_2.15.12        
+## [53] grid_3.7.0                    blob_1.1.1                   
+## [55] dqrng_0.1.1                   promises_1.0.1               
+## [57] ExperimentHub_1.9.3           crayon_1.3.4                 
+## [59] lattice_0.20-38               beachmat_1.99.8              
+## [61] locfit_1.5-9.1                ps_1.3.0                     
+## [63] pillar_1.3.1                  igraph_1.2.4                 
+## [65] codetools_0.2-16              glue_1.3.1                   
+## [67] evaluate_0.13                 BiocManager_1.30.4           
+## [69] httpuv_1.5.1                  gtable_0.3.0                 
+## [71] purrr_0.3.2                   assertthat_0.2.1             
+## [73] xfun_0.6                      rsvd_1.0.0                   
+## [75] mime_0.6                      xtable_1.8-3                 
+## [77] later_0.8.0                   viridisLite_0.3.0            
+## [79] tibble_2.1.1                  AnnotationDbi_1.45.1         
+## [81] beeswarm_0.2.3                memoise_1.1.0                
+## [83] statmod_1.4.30                interactiveDisplayBase_1.21.0
 ```
 
 # References 

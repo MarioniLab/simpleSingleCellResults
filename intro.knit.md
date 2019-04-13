@@ -12,7 +12,7 @@ author:
   - *CRUK
   - *EMBL
   - Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
-date: "2019-02-28"
+date: "2019-04-13"
 vignette: >
   %\VignetteIndexEntry{01. Introduction}
   %\VignetteEngine{knitr::rmarkdown}
@@ -27,11 +27,11 @@ bibliography: ref.bib
 
 # Workflow version information
 
-**R version**: R Under development (unstable) (2019-02-19 r76128)
+**R version**: R Under development (unstable) (2019-04-11 r76379)
 
 **Bioconductor version**: 3.9
 
-**Package**: 1.7.17
+**Package**: 1.7.20
 
 # Motivation
 

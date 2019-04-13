@@ -12,7 +12,7 @@ author:
   - *CRUK
   - *EMBL
   - Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
-date: "2019-02-28"
+date: "2019-04-13"
 vignette: >
   %\VignetteIndexEntry{07. Spike-in normalization}
   %\VignetteEngine{knitr::rmarkdown}
@@ -195,72 +195,73 @@ sessionInfo()
 ```
 
 ```
-## R Under development (unstable) (2019-02-19 r76128)
+## R Under development (unstable) (2019-04-11 r76379)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
-## Running under: Ubuntu 16.04.5 LTS
+## Running under: Ubuntu 18.04.2 LTS
 ## 
 ## Matrix products: default
-## BLAS: /home/cri.camres.org/lun01/Software/R/trunk/lib/libRblas.so
-## LAPACK: /home/cri.camres.org/lun01/Software/R/trunk/lib/libRlapack.so
+## BLAS:   /home/luna/Software/R/trunk/lib/libRblas.so
+## LAPACK: /home/luna/Software/R/trunk/lib/libRlapack.so
 ## 
 ## locale:
-##  [1] LC_CTYPE=en_GB.UTF-8       LC_NUMERIC=C              
-##  [3] LC_TIME=en_GB.UTF-8        LC_COLLATE=en_GB.UTF-8    
-##  [5] LC_MONETARY=en_GB.UTF-8    LC_MESSAGES=en_GB.UTF-8   
-##  [7] LC_PAPER=en_GB.UTF-8       LC_NAME=C                 
+##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+##  [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+##  [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+##  [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
 ##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
-## [11] LC_MEASUREMENT=en_GB.UTF-8 LC_IDENTIFICATION=C       
+## [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
 ## 
 ## attached base packages:
 ## [1] parallel  stats4    stats     graphics  grDevices utils     datasets 
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] scran_1.11.20               scater_1.11.11             
-##  [3] ggplot2_3.1.0               SingleCellExperiment_1.5.2 
-##  [5] SummarizedExperiment_1.13.0 DelayedArray_0.9.8         
-##  [7] BiocParallel_1.17.15        matrixStats_0.54.0         
+##  [1] scran_1.11.26               scater_1.11.16             
+##  [3] ggplot2_3.1.1               SingleCellExperiment_1.5.2 
+##  [5] SummarizedExperiment_1.13.0 DelayedArray_0.9.9         
+##  [7] BiocParallel_1.17.18        matrixStats_0.54.0         
 ##  [9] Biobase_2.43.1              GenomicRanges_1.35.1       
-## [11] GenomeInfoDb_1.19.2         IRanges_2.17.4             
-## [13] S4Vectors_0.21.10           BiocGenerics_0.29.1        
-## [15] BiocFileCache_1.7.0         dbplyr_1.3.0               
-## [17] knitr_1.21                  BiocStyle_2.11.0           
+## [11] GenomeInfoDb_1.19.3         IRanges_2.17.4             
+## [13] S4Vectors_0.21.23           BiocGenerics_0.29.2        
+## [15] BiocFileCache_1.7.9         dbplyr_1.3.0               
+## [17] knitr_1.22                  BiocStyle_2.11.0           
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] dynamicTreeCut_1.63-1    viridis_0.5.1           
 ##  [3] httr_1.4.0               edgeR_3.25.3            
-##  [5] BiocSingular_0.99.12     bit64_0.9-7             
+##  [5] BiocSingular_0.99.15     bit64_0.9-7             
 ##  [7] viridisLite_0.3.0        DelayedMatrixStats_1.5.2
-##  [9] assertthat_0.2.0         statmod_1.4.30          
-## [11] highr_0.7                BiocManager_1.30.4      
-## [13] blob_1.1.1               GenomeInfoDbData_1.2.0  
-## [15] vipor_0.4.5              yaml_2.2.0              
-## [17] pillar_1.3.1             RSQLite_2.1.1           
-## [19] lattice_0.20-38          limma_3.39.12           
-## [21] glue_1.3.0               digest_0.6.18           
-## [23] XVector_0.23.0           colorspace_1.4-0        
-## [25] htmltools_0.3.6          Matrix_1.2-16           
-## [27] plyr_1.8.4               pkgconfig_2.0.2         
-## [29] bookdown_0.9             zlibbioc_1.29.0         
-## [31] purrr_0.3.0              scales_1.0.0            
-## [33] tibble_2.0.1             withr_2.1.2             
-## [35] lazyeval_0.2.1           magrittr_1.5            
-## [37] crayon_1.3.4             memoise_1.1.0           
-## [39] evaluate_0.13            beeswarm_0.2.3          
-## [41] tools_3.6.0              stringr_1.4.0           
-## [43] locfit_1.5-9.1           munsell_0.5.0           
-## [45] irlba_2.3.3              compiler_3.6.0          
-## [47] rsvd_1.0.0               rlang_0.3.1             
-## [49] grid_3.6.0               RCurl_1.95-4.11         
-## [51] BiocNeighbors_1.1.12     rappdirs_0.3.1          
-## [53] igraph_1.2.4             bitops_1.0-6            
-## [55] rmarkdown_1.11           gtable_0.2.0            
-## [57] codetools_0.2-16         DBI_1.0.0               
-## [59] curl_3.3                 R6_2.4.0                
-## [61] gridExtra_2.3            dplyr_0.8.0.1           
-## [63] bit_1.1-14               stringi_1.3.1           
-## [65] ggbeeswarm_0.6.0         Rcpp_1.0.0              
-## [67] tidyselect_0.2.5         xfun_0.5
+##  [9] assertthat_0.2.1         statmod_1.4.30          
+## [11] highr_0.8                BiocManager_1.30.4      
+## [13] dqrng_0.1.1              blob_1.1.1              
+## [15] GenomeInfoDbData_1.2.1   vipor_0.4.5             
+## [17] yaml_2.2.0               pillar_1.3.1            
+## [19] RSQLite_2.1.1            lattice_0.20-38         
+## [21] limma_3.39.14            glue_1.3.1              
+## [23] digest_0.6.18            XVector_0.23.2          
+## [25] colorspace_1.4-1         htmltools_0.3.6         
+## [27] Matrix_1.2-17            plyr_1.8.4              
+## [29] pkgconfig_2.0.2          bookdown_0.9            
+## [31] zlibbioc_1.29.0          purrr_0.3.2             
+## [33] scales_1.0.0             tibble_2.1.1            
+## [35] withr_2.1.2              lazyeval_0.2.2          
+## [37] magrittr_1.5             crayon_1.3.4            
+## [39] memoise_1.1.0            evaluate_0.13           
+## [41] beeswarm_0.2.3           tools_3.7.0             
+## [43] stringr_1.4.0            locfit_1.5-9.1          
+## [45] munsell_0.5.0            irlba_2.3.3             
+## [47] compiler_3.7.0           rsvd_1.0.0              
+## [49] rlang_0.3.4              grid_3.7.0              
+## [51] RCurl_1.95-4.12          BiocNeighbors_1.1.13    
+## [53] rappdirs_0.3.1           igraph_1.2.4            
+## [55] bitops_1.0-6             rmarkdown_1.12          
+## [57] gtable_0.3.0             codetools_0.2-16        
+## [59] DBI_1.0.0                curl_3.3                
+## [61] R6_2.4.0                 gridExtra_2.3           
+## [63] dplyr_0.8.0.1            bit_1.1-14              
+## [65] stringi_1.4.3            ggbeeswarm_0.6.0        
+## [67] Rcpp_1.0.1               tidyselect_0.2.5        
+## [69] xfun_0.6
 ```
 
 # References

@@ -12,7 +12,7 @@ author:
   - *CRUK
   - *EMBL
   - Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
-date: "2019-02-28"
+date: "2019-04-13"
 vignette: >
   %\VignetteIndexEntry{02. Read count data}
   %\VignetteEngine{knitr::rmarkdown}
@@ -489,7 +489,7 @@ table(sce$phases)
 ```
 ## 
 ##  G1 G2M   S 
-##  98  62  23
+##  99  62  22
 ```
 
 Pre-trained classifiers are available in *[scran](https://bioconductor.org/packages/3.9/scran)* for human and mouse data. 
@@ -531,14 +531,14 @@ plotHighestExprs(sce, n=50) + fontsize
 
 ## Filtering out low-abundance genes
 
-Low-abundance genes are problematic as zero or near-zero counts do not contain much information for reliable statistical inference [@bourgon2010independent].
-These genes typically do not provide enough evidence to reject the null hypothesis during testing, yet they still increase the severity of the multiple testing correction.
-In addition, the discreteness of the counts may interfere with statistical procedures, e.g., by compromising the accuracy of continuous approximations.
+Low-abundance genes are problematic as zero or near-zero counts do not contain much information for reliable statistical inference.
+In applications involving hypothesis testing, these genes typically do not provide enough evidence to reject the null hypothesis yet they still increase the severity of the multiple testing correction.
+The discreteness of the counts may also interfere with statistical procedures, e.g., by compromising the accuracy of continuous approximations.
 Thus, low-abundance genes are often removed in many RNA-seq analysis pipelines before the application of downstream methods.
 
 The "optimal" choice of filtering strategy depends on the downstream application.
 A more aggressive filter is usually required to remove discreteness (e.g., for normalization) compared to that required for removing underpowered tests.
-For hypothesis testing, the filter statistic should also be independent of the test statistic under the null hypothesis.
+For hypothesis testing, the filter statistic should also be independent of the test statistic under the null hypothesis [@bourgon2010independent].
 Thus, we (or the relevant function) will filter at each step as needed, rather than applying a single filter for the entire analysis.
 
 Several metrics can be used to define low-abundance genes.
@@ -1247,97 +1247,98 @@ sessionInfo()
 ```
 
 ```
-## R Under development (unstable) (2019-02-19 r76128)
+## R Under development (unstable) (2019-04-11 r76379)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
-## Running under: Ubuntu 16.04.5 LTS
+## Running under: Ubuntu 18.04.2 LTS
 ## 
 ## Matrix products: default
-## BLAS: /home/cri.camres.org/lun01/Software/R/trunk/lib/libRblas.so
-## LAPACK: /home/cri.camres.org/lun01/Software/R/trunk/lib/libRlapack.so
+## BLAS:   /home/luna/Software/R/trunk/lib/libRblas.so
+## LAPACK: /home/luna/Software/R/trunk/lib/libRlapack.so
 ## 
 ## locale:
-##  [1] LC_CTYPE=en_GB.UTF-8       LC_NUMERIC=C              
-##  [3] LC_TIME=en_GB.UTF-8        LC_COLLATE=en_GB.UTF-8    
-##  [5] LC_MONETARY=en_GB.UTF-8    LC_MESSAGES=en_GB.UTF-8   
-##  [7] LC_PAPER=en_GB.UTF-8       LC_NAME=C                 
+##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+##  [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+##  [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+##  [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
 ##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
-## [11] LC_MEASUREMENT=en_GB.UTF-8 LC_IDENTIFICATION=C       
+## [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
 ## 
 ## attached base packages:
 ## [1] parallel  stats4    stats     graphics  grDevices utils     datasets 
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] cluster_2.0.7-1                       
+##  [1] cluster_2.0.8                         
 ##  [2] dynamicTreeCut_1.63-1                 
-##  [3] limma_3.39.12                         
-##  [4] scran_1.11.20                         
+##  [3] limma_3.39.14                         
+##  [4] scran_1.11.26                         
 ##  [5] TxDb.Mmusculus.UCSC.mm10.ensGene_3.4.0
-##  [6] GenomicFeatures_1.35.7                
-##  [7] scater_1.11.11                        
-##  [8] ggplot2_3.1.0                         
+##  [6] GenomicFeatures_1.35.10               
+##  [7] scater_1.11.16                        
+##  [8] ggplot2_3.1.1                         
 ##  [9] org.Mm.eg.db_3.7.0                    
-## [10] AnnotationDbi_1.45.0                  
+## [10] AnnotationDbi_1.45.1                  
 ## [11] SingleCellExperiment_1.5.2            
 ## [12] SummarizedExperiment_1.13.0           
-## [13] DelayedArray_0.9.8                    
-## [14] BiocParallel_1.17.15                  
+## [13] DelayedArray_0.9.9                    
+## [14] BiocParallel_1.17.18                  
 ## [15] matrixStats_0.54.0                    
 ## [16] Biobase_2.43.1                        
 ## [17] GenomicRanges_1.35.1                  
-## [18] GenomeInfoDb_1.19.2                   
+## [18] GenomeInfoDb_1.19.3                   
 ## [19] IRanges_2.17.4                        
-## [20] S4Vectors_0.21.10                     
-## [21] BiocGenerics_0.29.1                   
-## [22] BiocFileCache_1.7.0                   
+## [20] S4Vectors_0.21.23                     
+## [21] BiocGenerics_0.29.2                   
+## [22] BiocFileCache_1.7.9                   
 ## [23] dbplyr_1.3.0                          
-## [24] knitr_1.21                            
+## [24] knitr_1.22                            
 ## [25] BiocStyle_2.11.0                      
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] bitops_1.0-6             bit64_0.9-7             
 ##  [3] RColorBrewer_1.1-2       progress_1.2.0          
-##  [5] httr_1.4.0               tools_3.6.0             
+##  [5] httr_1.4.0               tools_3.7.0             
 ##  [7] R6_2.4.0                 irlba_2.3.3             
 ##  [9] KernSmooth_2.23-15       vipor_0.4.5             
-## [11] DBI_1.0.0                lazyeval_0.2.1          
-## [13] colorspace_1.4-0         withr_2.1.2             
-## [15] processx_3.2.1           tidyselect_0.2.5        
+## [11] DBI_1.0.0                lazyeval_0.2.2          
+## [13] colorspace_1.4-1         withr_2.1.2             
+## [15] processx_3.3.0           tidyselect_0.2.5        
 ## [17] gridExtra_2.3            prettyunits_1.0.2       
 ## [19] bit_1.1-14               curl_3.3                
-## [21] compiler_3.6.0           BiocNeighbors_1.1.12    
-## [23] rtracklayer_1.43.1       labeling_0.3            
+## [21] compiler_3.7.0           BiocNeighbors_1.1.13    
+## [23] rtracklayer_1.43.3       labeling_0.3            
 ## [25] bookdown_0.9             scales_1.0.0            
-## [27] callr_3.1.1              rappdirs_0.3.1          
+## [27] callr_3.2.0              rappdirs_0.3.1          
 ## [29] stringr_1.4.0            digest_0.6.18           
-## [31] Rsamtools_1.99.2         rmarkdown_1.11          
-## [33] XVector_0.23.0           pkgconfig_2.0.2         
-## [35] htmltools_0.3.6          highr_0.7               
-## [37] rlang_0.3.1              RSQLite_2.1.1           
+## [31] Rsamtools_1.99.5         rmarkdown_1.12          
+## [33] XVector_0.23.2           pkgconfig_2.0.2         
+## [35] htmltools_0.3.6          highr_0.8               
+## [37] rlang_0.3.4              RSQLite_2.1.1           
 ## [39] DelayedMatrixStats_1.5.2 dplyr_0.8.0.1           
-## [41] RCurl_1.95-4.11          magrittr_1.5            
-## [43] BiocSingular_0.99.12     simpleSingleCell_1.7.17 
-## [45] GenomeInfoDbData_1.2.0   Matrix_1.2-16           
-## [47] Rcpp_1.0.0               ggbeeswarm_0.6.0        
+## [41] RCurl_1.95-4.12          magrittr_1.5            
+## [43] BiocSingular_0.99.15     simpleSingleCell_1.7.20 
+## [45] GenomeInfoDbData_1.2.1   Matrix_1.2-17           
+## [47] Rcpp_1.0.1               ggbeeswarm_0.6.0        
 ## [49] munsell_0.5.0            viridis_0.5.1           
-## [51] edgeR_3.25.3             stringi_1.3.1           
+## [51] edgeR_3.25.3             stringi_1.4.3           
 ## [53] yaml_2.2.0               zlibbioc_1.29.0         
 ## [55] Rtsne_0.15               plyr_1.8.4              
-## [57] grid_3.6.0               blob_1.1.1              
-## [59] crayon_1.3.4             lattice_0.20-38         
-## [61] Biostrings_2.51.2        cowplot_0.9.4           
-## [63] hms_0.4.2                locfit_1.5-9.1          
-## [65] ps_1.3.0                 pillar_1.3.1            
-## [67] igraph_1.2.4             reshape2_1.4.3          
-## [69] codetools_0.2-16         biomaRt_2.39.2          
-## [71] XML_3.98-1.17            glue_1.3.0              
-## [73] evaluate_0.13            BiocManager_1.30.4      
-## [75] gtable_0.2.0             purrr_0.3.0             
-## [77] assertthat_0.2.0         xfun_0.5                
-## [79] rsvd_1.0.0               viridisLite_0.3.0       
-## [81] pheatmap_1.0.12          tibble_2.0.1            
-## [83] GenomicAlignments_1.19.1 beeswarm_0.2.3          
-## [85] memoise_1.1.0            statmod_1.4.30
+## [57] grid_3.7.0               blob_1.1.1              
+## [59] dqrng_0.1.1              crayon_1.3.4            
+## [61] lattice_0.20-38          Biostrings_2.51.5       
+## [63] cowplot_0.9.4            hms_0.4.2               
+## [65] locfit_1.5-9.1           ps_1.3.0                
+## [67] pillar_1.3.1             igraph_1.2.4            
+## [69] reshape2_1.4.3           codetools_0.2-16        
+## [71] biomaRt_2.39.2           XML_3.98-1.19           
+## [73] glue_1.3.1               evaluate_0.13           
+## [75] BiocManager_1.30.4       gtable_0.3.0            
+## [77] purrr_0.3.2              assertthat_0.2.1        
+## [79] xfun_0.6                 rsvd_1.0.0              
+## [81] viridisLite_0.3.0        pheatmap_1.0.12         
+## [83] tibble_2.1.1             GenomicAlignments_1.19.1
+## [85] beeswarm_0.2.3           memoise_1.1.0           
+## [87] statmod_1.4.30
 ```
 
 # References
