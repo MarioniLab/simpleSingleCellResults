@@ -3,7 +3,7 @@ title: Analyzing single-cell RNA sequencing data from droplet-based protocols
 author: 
 - name: Aaron T. L. Lun
   affiliation: Cancer Research UK Cambridge Institute, Li Ka Shing Centre, Robinson Way, Cambridge CB2 0RE, United Kingdom
-date: "2019-04-13"
+date: "2019-04-27"
 vignette: >
   %\VignetteIndexEntry{04. Droplet-based data}
   %\VignetteEngine{knitr::rmarkdown}
@@ -158,7 +158,7 @@ sum(e.out$FDR <= 0.001, na.rm=TRUE)
 ```
 
 ```
-## [1] 4208
+## [1] 4237
 ```
 
 We then subset our `SingleCellExperiment` object to retain only the detected cells.
@@ -198,8 +198,8 @@ table(Sig=e.out$FDR <= 0.01, Limited=e.out$Limited)
 ```
 ##        Limited
 ## Sig     FALSE TRUE
-##   FALSE   937    0
-##   TRUE   1981 2371
+##   FALSE   929    0
+##   TRUE   1722 2638
 ```
 
 As mentioned above, `emptyDrops()` assumes that barcodes with low total UMI counts are empty droplets.
@@ -262,7 +262,7 @@ summary(high.mito)
 
 ```
 ##    Mode   FALSE    TRUE 
-## logical    3901     307
+## logical    3925     312
 ```
 
 **Comments from Aaron:**
@@ -322,8 +322,8 @@ table(clusters)
 
 ```
 ## clusters
-##   1   2   3   4   5   6   7   8   9  10  11  12  13 
-## 159 264 395 218 416 252 349 332 611 161 350 184 210
+##   1   2   3   4   5   6   7   8   9  10  11  12 
+## 188 161 391 272 383 944 347 242 347 331 152 167
 ```
 
 We apply the deconvolution method to compute size factors for all cells [@lun2016pooling].
@@ -338,7 +338,7 @@ summary(sizeFactors(sce))
 
 ```
 ##      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
-##  0.002026  0.702812  0.858347  1.000000  1.091496 11.978815
+##  0.000511  0.707189  0.865822  1.000000  1.087737 13.869128
 ```
 
 The size factors are well correlated against the library sizes (Figure \@ref(fig:sfplot)), indicating that capture efficiency and sequencing depth are the major biases.
@@ -417,12 +417,12 @@ head(top.dec)
 ## DataFrame with 6 rows and 6 columns
 ##                     mean            total              bio              tech
 ##                <numeric>        <numeric>        <numeric>         <numeric>
-## LYZ     1.98138463729506 5.12132172403086 4.48690282179644 0.634418902234414
-## S100A9  1.95700535641729 4.63939214928657 4.00122727798629 0.638164871300285
-## S100A8  1.72489912932768 4.50597241502433  3.8387786732806  0.66719374174373
-## HLA-DRA 2.09813751939737 3.71902122454211 3.10393804856875 0.615083175973363
-## CD74    2.90762668222629 3.29253130024517 2.83365837625953 0.458872923985642
-## CST3    1.49951237409505 2.99420445889825 2.31406532582785 0.680139133070393
+## LYZ     1.98875005638816 5.14341260170461 4.51176985000412 0.631642751700493
+## S100A9  1.96174422905567 4.65172391412982  4.0159132208848 0.635810693245017
+## S100A8  1.73152962115248  4.5347219053919  3.8698340831234 0.664887822268501
+## HLA-DRA 2.10323878785893 3.73688775561837 3.12425058096729 0.612637174651078
+## CD74    2.90706397948024 3.31874474040374 2.86026077094717 0.458483969456575
+## CST3    1.50277896589381 3.00840701247919 2.32991598910274  0.67849102337645
 ##           p.value       FDR
 ##         <numeric> <numeric>
 ## LYZ             0         0
@@ -524,7 +524,7 @@ table(sce$Cluster)
 ```
 ## 
 ##   1   2   3   4   5   6   7   8   9  10  11  12  13 
-## 777 570 511 526 195  53 129 803  45  93  22 141  36
+## 818 536 124 553 515 173 836  41  45 149  81  17  37
 ```
 
 We look at the ratio of the observed and expected edge weights to confirm that the clusters are modular.
@@ -583,28 +583,28 @@ head(marker.set[,1:8], 10) # only first 8 columns, for brevity
 ## DataFrame with 10 rows and 8 columns
 ##              Top              p.value                  FDR          logFC.1
 ##        <integer>            <numeric>            <numeric>        <numeric>
-## TMSB4X         1 1.75655768961075e-36 5.91854547937445e-32 3.43251818293592
-## PF4            1 6.08574623748646e-36 1.02526566862934e-31 7.55806680131126
-## TAGLN2         2 2.71467298083351e-25 3.04893971387349e-21 5.54322439743901
-## B2M            3 3.73219986816033e-24 3.14381855894484e-20 2.47717385581024
-## NRGN           3 2.18264162350006e-22 1.22569878103685e-18 5.49841506763193
-## ACTB           4 4.04214646680473e-22 1.94565832932169e-18 3.42384725636914
-## SDPR           4 1.69666659028603e-22 1.14334968186195e-18 6.26476492232097
-## GPX1           5 2.65203636727399e-21 1.11697141698662e-17 3.49256553235956
-## PPBP           6 1.86816527470777e-20 6.99399564066708e-17 7.02595718332157
-## GNG11          7 3.97528939109675e-19 1.33943400743614e-15 6.04972217071574
+## PF4            1 3.40689700480522e-32 1.14791987679907e-27 7.66630703836341
+## TAGLN2         1 6.47484186766419e-24 7.27211072963593e-20 5.64734054340417
+## TMSB4X         2 4.24317841881877e-30 7.14848268218396e-26  3.5479835313661
+## SDPR           2 1.91721010484285e-22 1.61496193181438e-18 6.29292565811117
+## NRGN           3 7.06171472326395e-21 3.39910594122364e-17 5.61079339116364
+## ACTB           4 6.04817751092793e-21 3.39910594122364e-17 3.54952764038114
+## B2M            4 6.39837805023113e-21 3.39910594122364e-17 2.59554547928819
+## GPX1           4 1.80370694415441e-19 6.75267797514879e-16 3.62078799193754
+## PPBP           5 7.35916305435611e-20 3.09949549941844e-16 7.14683150493454
+## CCL5           7 3.31577325558259e-18 9.31013867279998e-15 6.08860014839329
 ##                 logFC.2          logFC.3          logFC.4          logFC.5
 ##               <numeric>        <numeric>        <numeric>        <numeric>
-## TMSB4X 3.83325881154297 4.44552464486817  3.8717920453254 4.06081138276042
-## PF4    7.61527696774217 7.62071714593035 7.61927674644531 7.61231233004745
-## TAGLN2 5.29783382464481 5.22120586705293 5.52823005352989 5.49705799887376
-## B2M    2.01799807466617 2.69419237490933 1.80961091176373 1.94917113301043
-## NRGN   5.73690185040304  5.7425658996953 5.74660955366819 5.74640549845668
-## ACTB   4.23579700001051 4.61584693653781 4.06706769287874 3.79674036656366
-## SDPR   6.31619815950909 6.31803721188798 6.32459101598652 6.32459101598652
-## GPX1   5.79651986761114 5.52099876658685 5.96021455325442  6.0120677730703
-## PPBP   7.11555492455421 7.11670079605627 7.12532638948129 7.12335024721486
-## GNG11  6.10345949807053 6.07136151265328 6.10538698012571 6.11038104935908
+## PF4    7.72240822840049  7.7060871361676 7.72722555160816 7.72853946460267
+## TAGLN2 5.38577335836165 4.90872302060875 5.62509032303173 5.31989255604341
+## TMSB4X  3.9528741990056 3.61045775580167 3.97201059861384 4.54626695104843
+## SDPR   6.34204370413446 6.32085253878529 6.35078759414508 6.34422138799743
+## NRGN   5.84742786465627 5.59314832903448 5.84931609367271 5.84852115240837
+## ACTB   4.37285917900389 3.26329512458978 4.17056364378725 4.72082927537447
+## B2M    2.10307119852859 3.26219276368274 1.91615428748404 2.79416179348316
+## GPX1   5.88278944108498 4.12620545864619 6.04814489379613  5.6105291399479
+## PPBP    7.2393768164112 7.24410907609996 7.24593724855077 7.23959814614347
+## CCL5   5.46437940268433 6.07470706998285 2.54480219458938  6.0551232843156
 ```
 
 
@@ -665,18 +665,18 @@ sessionInfo()
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] pheatmap_1.0.12             BiocSingular_0.99.15       
-##  [3] scran_1.11.26               EnsDb.Hsapiens.v86_2.99.0  
+##  [1] pheatmap_1.0.12             BiocSingular_0.99.18       
+##  [3] scran_1.11.27               EnsDb.Hsapiens.v86_2.99.0  
 ##  [5] ensembldb_2.7.12            AnnotationFilter_1.7.0     
-##  [7] GenomicFeatures_1.35.10     AnnotationDbi_1.45.1       
+##  [7] GenomicFeatures_1.35.11     AnnotationDbi_1.45.1       
 ##  [9] scater_1.11.16              ggplot2_3.1.1              
 ## [11] DropletUtils_1.3.14         SingleCellExperiment_1.5.2 
 ## [13] SummarizedExperiment_1.13.0 DelayedArray_0.9.9         
-## [15] BiocParallel_1.17.18        matrixStats_0.54.0         
+## [15] BiocParallel_1.17.19        matrixStats_0.54.0         
 ## [17] Biobase_2.43.1              GenomicRanges_1.35.1       
-## [19] GenomeInfoDb_1.19.3         IRanges_2.17.4             
-## [21] S4Vectors_0.21.23           BiocGenerics_0.29.2        
-## [23] BiocFileCache_1.7.9         dbplyr_1.3.0               
+## [19] GenomeInfoDb_1.19.3         IRanges_2.17.5             
+## [21] S4Vectors_0.21.24           BiocGenerics_0.29.2        
+## [23] BiocFileCache_1.7.10        dbplyr_1.4.0               
 ## [25] knitr_1.22                  BiocStyle_2.11.0           
 ## 
 ## loaded via a namespace (and not attached):
@@ -684,31 +684,31 @@ sessionInfo()
 ##  [3] colorspace_1.4-1         dynamicTreeCut_1.63-1   
 ##  [5] XVector_0.23.2           BiocNeighbors_1.1.13    
 ##  [7] bit64_0.9-7              codetools_0.2-16        
-##  [9] R.methodsS3_1.7.1        Rsamtools_1.99.5        
-## [11] R.oo_1.22.0              HDF5Array_1.11.11       
+##  [9] R.methodsS3_1.7.1        Rsamtools_1.99.6        
+## [11] R.oo_1.22.0              HDF5Array_1.11.12       
 ## [13] BiocManager_1.30.4       compiler_3.7.0          
-## [15] httr_1.4.0               dqrng_0.1.1             
+## [15] httr_1.4.0               dqrng_0.2.0             
 ## [17] assertthat_0.2.1         Matrix_1.2-17           
-## [19] lazyeval_0.2.2           limma_3.39.14           
+## [19] lazyeval_0.2.2           limma_3.39.18           
 ## [21] htmltools_0.3.6          prettyunits_1.0.2       
 ## [23] tools_3.7.0              rsvd_1.0.0              
-## [25] igraph_1.2.4             gtable_0.3.0            
+## [25] igraph_1.2.4.1           gtable_0.3.0            
 ## [27] glue_1.3.1               GenomeInfoDbData_1.2.1  
 ## [29] reshape2_1.4.3           dplyr_0.8.0.1           
 ## [31] rappdirs_0.3.1           Rcpp_1.0.1              
-## [33] Biostrings_2.51.5        rtracklayer_1.43.3      
+## [33] Biostrings_2.51.5        rtracklayer_1.43.4      
 ## [35] DelayedMatrixStats_1.5.2 xfun_0.6                
 ## [37] stringr_1.4.0            ps_1.3.0                
 ## [39] irlba_2.3.3              statmod_1.4.30          
-## [41] XML_3.98-1.19            edgeR_3.25.3            
+## [41] XML_3.98-1.19            edgeR_3.25.7            
 ## [43] zlibbioc_1.29.0          scales_1.0.0            
 ## [45] hms_0.4.2                ProtGenerics_1.15.0     
-## [47] rhdf5_2.27.15            RColorBrewer_1.1-2      
+## [47] rhdf5_2.27.19            RColorBrewer_1.1-2      
 ## [49] yaml_2.2.0               curl_3.3                
 ## [51] memoise_1.1.0            gridExtra_2.3           
-## [53] biomaRt_2.39.2           stringi_1.4.3           
+## [53] biomaRt_2.39.4           stringi_1.4.3           
 ## [55] RSQLite_2.1.1            highr_0.8               
-## [57] simpleSingleCell_1.7.20  rlang_0.3.4             
+## [57] simpleSingleCell_1.7.21  rlang_0.3.4             
 ## [59] pkgconfig_2.0.2          bitops_1.0-6            
 ## [61] evaluate_0.13            lattice_0.20-38         
 ## [63] purrr_0.3.2              Rhdf5lib_1.5.4          

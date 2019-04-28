@@ -12,7 +12,7 @@ author:
   - *CRUK
   - *EMBL
   - Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
-date: "2019-04-13"
+date: "2019-04-27"
 vignette: >
   %\VignetteIndexEntry{07. Spike-in normalization}
   %\VignetteEngine{knitr::rmarkdown}
@@ -216,28 +216,28 @@ sessionInfo()
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] scran_1.11.26               scater_1.11.16             
+##  [1] scran_1.11.27               scater_1.11.16             
 ##  [3] ggplot2_3.1.1               SingleCellExperiment_1.5.2 
 ##  [5] SummarizedExperiment_1.13.0 DelayedArray_0.9.9         
-##  [7] BiocParallel_1.17.18        matrixStats_0.54.0         
+##  [7] BiocParallel_1.17.19        matrixStats_0.54.0         
 ##  [9] Biobase_2.43.1              GenomicRanges_1.35.1       
-## [11] GenomeInfoDb_1.19.3         IRanges_2.17.4             
-## [13] S4Vectors_0.21.23           BiocGenerics_0.29.2        
-## [15] BiocFileCache_1.7.9         dbplyr_1.3.0               
+## [11] GenomeInfoDb_1.19.3         IRanges_2.17.5             
+## [13] S4Vectors_0.21.24           BiocGenerics_0.29.2        
+## [15] BiocFileCache_1.7.10        dbplyr_1.4.0               
 ## [17] knitr_1.22                  BiocStyle_2.11.0           
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] dynamicTreeCut_1.63-1    viridis_0.5.1           
-##  [3] httr_1.4.0               edgeR_3.25.3            
-##  [5] BiocSingular_0.99.15     bit64_0.9-7             
+##  [3] httr_1.4.0               edgeR_3.25.7            
+##  [5] BiocSingular_0.99.18     bit64_0.9-7             
 ##  [7] viridisLite_0.3.0        DelayedMatrixStats_1.5.2
 ##  [9] assertthat_0.2.1         statmod_1.4.30          
 ## [11] highr_0.8                BiocManager_1.30.4      
-## [13] dqrng_0.1.1              blob_1.1.1              
+## [13] dqrng_0.2.0              blob_1.1.1              
 ## [15] GenomeInfoDbData_1.2.1   vipor_0.4.5             
 ## [17] yaml_2.2.0               pillar_1.3.1            
 ## [19] RSQLite_2.1.1            lattice_0.20-38         
-## [21] limma_3.39.14            glue_1.3.1              
+## [21] limma_3.39.18            glue_1.3.1              
 ## [23] digest_0.6.18            XVector_0.23.2          
 ## [25] colorspace_1.4-1         htmltools_0.3.6         
 ## [27] Matrix_1.2-17            plyr_1.8.4              
@@ -253,7 +253,7 @@ sessionInfo()
 ## [47] compiler_3.7.0           rsvd_1.0.0              
 ## [49] rlang_0.3.4              grid_3.7.0              
 ## [51] RCurl_1.95-4.12          BiocNeighbors_1.1.13    
-## [53] rappdirs_0.3.1           igraph_1.2.4            
+## [53] rappdirs_0.3.1           igraph_1.2.4.1          
 ## [55] bitops_1.0-6             rmarkdown_1.12          
 ## [57] gtable_0.3.0             codetools_0.2-16        
 ## [59] DBI_1.0.0                curl_3.3                

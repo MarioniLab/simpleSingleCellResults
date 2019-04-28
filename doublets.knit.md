@@ -3,7 +3,7 @@ title: Detecting doublets in single-cell RNA-seq data
 author:
 - name: Aaron T. L. Lun
   affiliation: &CRUK Cancer Research UK Cambridge Institute, Li Ka Shing Centre, Robinson Way, Cambridge CB2 0RE, United Kingdom
-date: "2019-04-13"
+date: "2019-04-27"
 vignette: >
   %\VignetteIndexEntry{08. Detecting doublets}
   %\VignetteEngine{knitr::rmarkdown}
@@ -525,10 +525,10 @@ sessionInfo()
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] BiocSingular_0.99.15                  
-##  [2] scran_1.11.26                         
+##  [1] BiocSingular_0.99.18                  
+##  [2] scran_1.11.27                         
 ##  [3] TxDb.Mmusculus.UCSC.mm10.ensGene_3.4.0
-##  [4] GenomicFeatures_1.35.10               
+##  [4] GenomicFeatures_1.35.11               
 ##  [5] AnnotationDbi_1.45.1                  
 ##  [6] Matrix_1.2-17                         
 ##  [7] scater_1.11.16                        
@@ -536,16 +536,16 @@ sessionInfo()
 ##  [9] SingleCellExperiment_1.5.2            
 ## [10] SummarizedExperiment_1.13.0           
 ## [11] DelayedArray_0.9.9                    
-## [12] BiocParallel_1.17.18                  
+## [12] BiocParallel_1.17.19                  
 ## [13] matrixStats_0.54.0                    
 ## [14] Biobase_2.43.1                        
 ## [15] GenomicRanges_1.35.1                  
 ## [16] GenomeInfoDb_1.19.3                   
-## [17] IRanges_2.17.4                        
-## [18] S4Vectors_0.21.23                     
+## [17] IRanges_2.17.5                        
+## [18] S4Vectors_0.21.24                     
 ## [19] BiocGenerics_0.29.2                   
-## [20] BiocFileCache_1.7.9                   
-## [21] dbplyr_1.3.0                          
+## [20] BiocFileCache_1.7.10                  
+## [21] dbplyr_1.4.0                          
 ## [22] knitr_1.22                            
 ## [23] BiocStyle_2.11.0                      
 ## 
@@ -561,30 +561,30 @@ sessionInfo()
 ## [17] gridExtra_2.3            prettyunits_1.0.2       
 ## [19] bit_1.1-14               curl_3.3                
 ## [21] compiler_3.7.0           BiocNeighbors_1.1.13    
-## [23] labeling_0.3             rtracklayer_1.43.3      
+## [23] labeling_0.3             rtracklayer_1.43.4      
 ## [25] bookdown_0.9             scales_1.0.0            
 ## [27] callr_3.2.0              rappdirs_0.3.1          
 ## [29] stringr_1.4.0            digest_0.6.18           
-## [31] Rsamtools_1.99.5         rmarkdown_1.12          
+## [31] Rsamtools_1.99.6         rmarkdown_1.12          
 ## [33] XVector_0.23.2           pkgconfig_2.0.2         
 ## [35] htmltools_0.3.6          highr_0.8               
-## [37] limma_3.39.14            rlang_0.3.4             
+## [37] limma_3.39.18            rlang_0.3.4             
 ## [39] RSQLite_2.1.1            DelayedMatrixStats_1.5.2
 ## [41] dplyr_0.8.0.1            RCurl_1.95-4.12         
-## [43] magrittr_1.5             simpleSingleCell_1.7.20 
+## [43] magrittr_1.5             simpleSingleCell_1.7.21 
 ## [45] GenomeInfoDbData_1.2.1   Rcpp_1.0.1              
 ## [47] ggbeeswarm_0.6.0         munsell_0.5.0           
 ## [49] viridis_0.5.1            stringi_1.4.3           
-## [51] yaml_2.2.0               edgeR_3.25.3            
+## [51] yaml_2.2.0               edgeR_3.25.7            
 ## [53] zlibbioc_1.29.0          Rtsne_0.15              
 ## [55] plyr_1.8.4               grid_3.7.0              
-## [57] blob_1.1.1               dqrng_0.1.1             
+## [57] blob_1.1.1               dqrng_0.2.0             
 ## [59] crayon_1.3.4             lattice_0.20-38         
 ## [61] cowplot_0.9.4            Biostrings_2.51.5       
 ## [63] hms_0.4.2                locfit_1.5-9.1          
 ## [65] ps_1.3.0                 pillar_1.3.1            
-## [67] igraph_1.2.4             codetools_0.2-16        
-## [69] biomaRt_2.39.2           XML_3.98-1.19           
+## [67] igraph_1.2.4.1           codetools_0.2-16        
+## [69] biomaRt_2.39.4           XML_3.98-1.19           
 ## [71] glue_1.3.1               evaluate_0.13           
 ## [73] BiocManager_1.30.4       gtable_0.3.0            
 ## [75] purrr_0.3.2              assertthat_0.2.1        

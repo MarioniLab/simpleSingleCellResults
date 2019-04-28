@@ -12,7 +12,7 @@ author:
   - *CRUK
   - *EMBL
   - Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
-date: "2019-04-13"
+date: "2019-04-27"
 vignette: >
   %\VignetteIndexEntry{01. Introduction}
   %\VignetteEngine{knitr::rmarkdown}
@@ -31,7 +31,7 @@ bibliography: ref.bib
 
 **Bioconductor version**: 3.9
 
-**Package**: 1.7.20
+**Package**: 1.7.21
 
 # Motivation
 

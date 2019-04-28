@@ -12,7 +12,7 @@ author:
   - *CRUK
   - *EMBL
   - Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
-date: "2019-04-13"
+date: "2019-04-27"
 vignette: >
   %\VignetteIndexEntry{02. Read count data}
   %\VignetteEngine{knitr::rmarkdown}
@@ -489,7 +489,7 @@ table(sce$phases)
 ```
 ## 
 ##  G1 G2M   S 
-##  99  62  22
+##  98  62  23
 ```
 
 Pre-trained classifiers are available in *[scran](https://bioconductor.org/packages/3.9/scran)* for human and mouse data. 
@@ -1270,27 +1270,27 @@ sessionInfo()
 ## other attached packages:
 ##  [1] cluster_2.0.8                         
 ##  [2] dynamicTreeCut_1.63-1                 
-##  [3] limma_3.39.14                         
-##  [4] scran_1.11.26                         
+##  [3] limma_3.39.18                         
+##  [4] scran_1.11.27                         
 ##  [5] TxDb.Mmusculus.UCSC.mm10.ensGene_3.4.0
-##  [6] GenomicFeatures_1.35.10               
+##  [6] GenomicFeatures_1.35.11               
 ##  [7] scater_1.11.16                        
 ##  [8] ggplot2_3.1.1                         
-##  [9] org.Mm.eg.db_3.7.0                    
+##  [9] org.Mm.eg.db_3.8.2                    
 ## [10] AnnotationDbi_1.45.1                  
 ## [11] SingleCellExperiment_1.5.2            
 ## [12] SummarizedExperiment_1.13.0           
 ## [13] DelayedArray_0.9.9                    
-## [14] BiocParallel_1.17.18                  
+## [14] BiocParallel_1.17.19                  
 ## [15] matrixStats_0.54.0                    
 ## [16] Biobase_2.43.1                        
 ## [17] GenomicRanges_1.35.1                  
 ## [18] GenomeInfoDb_1.19.3                   
-## [19] IRanges_2.17.4                        
-## [20] S4Vectors_0.21.23                     
+## [19] IRanges_2.17.5                        
+## [20] S4Vectors_0.21.24                     
 ## [21] BiocGenerics_0.29.2                   
-## [22] BiocFileCache_1.7.9                   
-## [23] dbplyr_1.3.0                          
+## [22] BiocFileCache_1.7.10                  
+## [23] dbplyr_1.4.0                          
 ## [24] knitr_1.22                            
 ## [25] BiocStyle_2.11.0                      
 ## 
@@ -1306,31 +1306,31 @@ sessionInfo()
 ## [17] gridExtra_2.3            prettyunits_1.0.2       
 ## [19] bit_1.1-14               curl_3.3                
 ## [21] compiler_3.7.0           BiocNeighbors_1.1.13    
-## [23] rtracklayer_1.43.3       labeling_0.3            
+## [23] rtracklayer_1.43.4       labeling_0.3            
 ## [25] bookdown_0.9             scales_1.0.0            
 ## [27] callr_3.2.0              rappdirs_0.3.1          
 ## [29] stringr_1.4.0            digest_0.6.18           
-## [31] Rsamtools_1.99.5         rmarkdown_1.12          
+## [31] Rsamtools_1.99.6         rmarkdown_1.12          
 ## [33] XVector_0.23.2           pkgconfig_2.0.2         
 ## [35] htmltools_0.3.6          highr_0.8               
 ## [37] rlang_0.3.4              RSQLite_2.1.1           
 ## [39] DelayedMatrixStats_1.5.2 dplyr_0.8.0.1           
 ## [41] RCurl_1.95-4.12          magrittr_1.5            
-## [43] BiocSingular_0.99.15     simpleSingleCell_1.7.20 
+## [43] BiocSingular_0.99.18     simpleSingleCell_1.7.21 
 ## [45] GenomeInfoDbData_1.2.1   Matrix_1.2-17           
 ## [47] Rcpp_1.0.1               ggbeeswarm_0.6.0        
 ## [49] munsell_0.5.0            viridis_0.5.1           
-## [51] edgeR_3.25.3             stringi_1.4.3           
+## [51] edgeR_3.25.7             stringi_1.4.3           
 ## [53] yaml_2.2.0               zlibbioc_1.29.0         
 ## [55] Rtsne_0.15               plyr_1.8.4              
 ## [57] grid_3.7.0               blob_1.1.1              
-## [59] dqrng_0.1.1              crayon_1.3.4            
+## [59] dqrng_0.2.0              crayon_1.3.4            
 ## [61] lattice_0.20-38          Biostrings_2.51.5       
 ## [63] cowplot_0.9.4            hms_0.4.2               
 ## [65] locfit_1.5-9.1           ps_1.3.0                
-## [67] pillar_1.3.1             igraph_1.2.4            
+## [67] pillar_1.3.1             igraph_1.2.4.1          
 ## [69] reshape2_1.4.3           codetools_0.2-16        
-## [71] biomaRt_2.39.2           XML_3.98-1.19           
+## [71] biomaRt_2.39.4           XML_3.98-1.19           
 ## [73] glue_1.3.1               evaluate_0.13           
 ## [75] BiocManager_1.30.4       gtable_0.3.0            
 ## [77] purrr_0.3.2              assertthat_0.2.1        

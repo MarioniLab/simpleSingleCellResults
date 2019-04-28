@@ -12,7 +12,7 @@ author:
   - *CRUK
   - *EMBL
   - Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
-date: "2019-04-13"
+date: "2019-04-27"
 vignette: >
   %\VignetteIndexEntry{12. Further analysis strategies}
   %\VignetteEngine{knitr::rmarkdown}
@@ -58,22 +58,22 @@ head(var.cor)
 
 ```
 ## DataFrame with 6 rows and 6 columns
-##         gene1       gene2               rho             p.value
-##   <character> <character>         <numeric>           <numeric>
-## 1       H2-Aa      H2-Ab1 0.537721745295378  1.999998000002e-06
-## 2      H2-Ab1      H2-Eb1 0.427978052802737 2.7999972000028e-05
-## 3       H2-D1       H2-K1 0.412280566558266 5.7999942000058e-05
-## 4       H2-Aa      H2-Eb1 0.407417967726523 7.3999926000074e-05
-## 5       H2-Q6       H2-Q7 0.339981196923693 0.00104599895400105
-## 6       H2-K2       H2-Q6 0.308678698580522 0.00284599715400285
+##         gene1       gene2               rho              p.value
+##   <character> <character>         <numeric>            <numeric>
+## 1       H2-Aa      H2-Ab1 0.537721745295378   1.999998000002e-06
+## 2      H2-Ab1      H2-Eb1 0.427978052802737  1.7999982000018e-05
+## 3       H2-D1       H2-K1 0.412280566558266  4.1999958000042e-05
+## 4       H2-Aa      H2-Eb1 0.407417967726523  5.1999948000052e-05
+## 5       H2-Q6       H2-Q7 0.339981196923693 0.000943999056000944
+## 6       H2-K2       H2-Q6 0.308678698580522  0.00280599719400281
 ##                   FDR   limited
 ##             <numeric> <logical>
 ## 1 0.00086999913000087      TRUE
-## 2 0.00608999391000609     FALSE
-## 3 0.00804749195250805     FALSE
-## 4 0.00804749195250805     FALSE
-## 5   0.091001908998091     FALSE
-## 6   0.206334793665206     FALSE
+## 2 0.00391499608500391     FALSE
+## 3 0.00565499434500566     FALSE
+## 4 0.00565499434500566     FALSE
+## 5  0.0821279178720821     FALSE
+## 6   0.203434796565203     FALSE
 ```
 
 Correction for multiple testing across many gene pairs is performed by controlling the FDR at 5%.
@@ -286,16 +286,16 @@ sessionInfo()
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] limma_3.39.14               org.Mm.eg.db_3.7.0         
+##  [1] limma_3.39.18               org.Mm.eg.db_3.8.2         
 ##  [3] AnnotationDbi_1.45.1        readxl_1.3.1               
-##  [5] BiocFileCache_1.7.9         dbplyr_1.3.0               
+##  [5] BiocFileCache_1.7.10        dbplyr_1.4.0               
 ##  [7] scater_1.11.16              ggplot2_3.1.1              
-##  [9] scran_1.11.26               SingleCellExperiment_1.5.2 
+##  [9] scran_1.11.27               SingleCellExperiment_1.5.2 
 ## [11] SummarizedExperiment_1.13.0 DelayedArray_0.9.9         
-## [13] BiocParallel_1.17.18        matrixStats_0.54.0         
+## [13] BiocParallel_1.17.19        matrixStats_0.54.0         
 ## [15] Biobase_2.43.1              GenomicRanges_1.35.1       
-## [17] GenomeInfoDb_1.19.3         IRanges_2.17.4             
-## [19] S4Vectors_0.21.23           BiocGenerics_0.29.2        
+## [17] GenomeInfoDb_1.19.3         IRanges_2.17.5             
+## [19] S4Vectors_0.21.24           BiocGenerics_0.29.2        
 ## [21] knitr_1.22                  BiocStyle_2.11.0           
 ## 
 ## loaded via a namespace (and not attached):
@@ -307,11 +307,11 @@ sessionInfo()
 ##  [11] ranger_0.11.2            codetools_0.2-16        
 ##  [13] robustbase_0.93-4        BiocManager_1.30.4      
 ##  [15] compiler_3.7.0           httr_1.4.0              
-##  [17] dqrng_0.1.1              assertthat_0.2.1        
+##  [17] dqrng_0.2.0              assertthat_0.2.1        
 ##  [19] Matrix_1.2-17            lazyeval_0.2.2          
-##  [21] BiocSingular_0.99.15     htmltools_0.3.6         
+##  [21] BiocSingular_0.99.18     htmltools_0.3.6         
 ##  [23] tools_3.7.0              rsvd_1.0.0              
-##  [25] igraph_1.2.4             gtable_0.3.0            
+##  [25] igraph_1.2.4.1           gtable_0.3.0            
 ##  [27] glue_1.3.1               GenomeInfoDbData_1.2.1  
 ##  [29] dplyr_0.8.0.1            ggthemes_4.1.1          
 ##  [31] rappdirs_0.3.1           Rcpp_1.0.1              
@@ -320,7 +320,7 @@ sessionInfo()
 ##  [37] laeken_0.5.0             xfun_0.6                
 ##  [39] stringr_1.4.0            ps_1.3.0                
 ##  [41] openxlsx_4.1.0           irlba_2.3.3             
-##  [43] statmod_1.4.30           edgeR_3.25.3            
+##  [43] statmod_1.4.30           edgeR_3.25.7            
 ##  [45] DEoptimR_1.0-8           zoo_1.8-5               
 ##  [47] zlibbioc_1.29.0          MASS_7.3-51.4           
 ##  [49] scales_1.0.0             VIM_4.8.0               
@@ -328,7 +328,7 @@ sessionInfo()
 ##  [53] curl_3.3                 memoise_1.1.0           
 ##  [55] gridExtra_2.3            stringi_1.4.3           
 ##  [57] RSQLite_2.1.1            highr_0.8               
-##  [59] simpleSingleCell_1.7.20  e1071_1.7-1             
+##  [59] simpleSingleCell_1.7.21  e1071_1.7-1             
 ##  [61] destiny_2.13.0           TTR_0.23-4              
 ##  [63] boot_1.3-22              zip_2.0.1               
 ##  [65] rlang_0.3.4              pkgconfig_2.0.2         

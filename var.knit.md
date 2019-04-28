@@ -12,7 +12,7 @@ author:
   - *CRUK
   - *EMBL
   - Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
-date: "2019-04-13"
+date: "2019-04-27"
 vignette: >
   %\VignetteIndexEntry{09. Advanced variance modelling}
   %\VignetteEngine{knitr::rmarkdown}
@@ -521,16 +521,16 @@ sessionInfo()
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] scran_1.11.26               scater_1.11.16             
+##  [1] scran_1.11.27               scater_1.11.16             
 ##  [3] ggplot2_3.1.1               SingleCellExperiment_1.5.2 
 ##  [5] SummarizedExperiment_1.13.0 DelayedArray_0.9.9         
-##  [7] BiocParallel_1.17.18        matrixStats_0.54.0         
+##  [7] BiocParallel_1.17.19        matrixStats_0.54.0         
 ##  [9] Biobase_2.43.1              GenomicRanges_1.35.1       
-## [11] GenomeInfoDb_1.19.3         IRanges_2.17.4             
-## [13] S4Vectors_0.21.23           BiocGenerics_0.29.2        
+## [11] GenomeInfoDb_1.19.3         IRanges_2.17.5             
+## [13] S4Vectors_0.21.24           BiocGenerics_0.29.2        
 ## [15] readxl_1.3.1                R.utils_2.8.0              
 ## [17] R.oo_1.22.0                 R.methodsS3_1.7.1          
-## [19] BiocFileCache_1.7.9         dbplyr_1.3.0               
+## [19] BiocFileCache_1.7.10        dbplyr_1.4.0               
 ## [21] knitr_1.22                  BiocStyle_2.11.0           
 ## 
 ## loaded via a namespace (and not attached):
@@ -549,22 +549,22 @@ sessionInfo()
 ## [25] stringr_1.4.0            digest_0.6.18           
 ## [27] rmarkdown_1.12           XVector_0.23.2          
 ## [29] pkgconfig_2.0.2          htmltools_0.3.6         
-## [31] limma_3.39.14            highr_0.8               
+## [31] limma_3.39.18            highr_0.8               
 ## [33] rlang_0.3.4              RSQLite_2.1.1           
 ## [35] DelayedMatrixStats_1.5.2 dplyr_0.8.0.1           
 ## [37] RCurl_1.95-4.12          magrittr_1.5            
-## [39] BiocSingular_0.99.15     simpleSingleCell_1.7.20 
+## [39] BiocSingular_0.99.18     simpleSingleCell_1.7.21 
 ## [41] GenomeInfoDbData_1.2.1   Matrix_1.2-17           
 ## [43] Rcpp_1.0.1               ggbeeswarm_0.6.0        
 ## [45] munsell_0.5.0            viridis_0.5.1           
 ## [47] stringi_1.4.3            yaml_2.2.0              
-## [49] edgeR_3.25.3             zlibbioc_1.29.0         
+## [49] edgeR_3.25.7             zlibbioc_1.29.0         
 ## [51] plyr_1.8.4               grid_3.7.0              
-## [53] blob_1.1.1               dqrng_0.1.1             
+## [53] blob_1.1.1               dqrng_0.2.0             
 ## [55] crayon_1.3.4             lattice_0.20-38         
 ## [57] cowplot_0.9.4            locfit_1.5-9.1          
 ## [59] ps_1.3.0                 pillar_1.3.1            
-## [61] igraph_1.2.4             codetools_0.2-16        
+## [61] igraph_1.2.4.1           codetools_0.2-16        
 ## [63] glue_1.3.1               evaluate_0.13           
 ## [65] BiocManager_1.30.4       cellranger_1.1.0        
 ## [67] gtable_0.3.0             purrr_0.3.2             

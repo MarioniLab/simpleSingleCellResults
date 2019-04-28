@@ -3,7 +3,7 @@ title: Scalable analyses for big scRNA-seq data with Bioconductor
 author:
 - name: Aaron T. L. Lun
   affiliation: &CRUK Cancer Research UK Cambridge Institute, Li Ka Shing Centre, Robinson Way, Cambridge CB2 0RE, United Kingdom
-date: "2019-04-13"
+date: "2019-04-27"
 vignette: >
   %\VignetteIndexEntry{11. Scalability for big data}
   %\VignetteEngine{knitr::rmarkdown}
@@ -296,20 +296,20 @@ table(Exact=sce.pbmc$Cluster, Approx=clusters$membership)
 
 ```
 ##      Approx
-## Exact   1   2   3   4   5   6   7   8   9  10  11  12
-##    1  773   0   0   1   0   0   0   1   2   0   0   0
-##    2    0 560   0   1   0   0   8   0   0   1   0   0
-##    3    0   0 511   0   0   0   0   0   0   0   0   0
-##    4    0   1   0 525   0   0   0   0   0   0   0   0
-##    5    0   0   0   1 194   0   0   0   0   0   0   0
-##    6   51   0   0   0   0   0   1   0   1   0   0   0
-##    7    2   0   0   0   0 127   0   0   0   0   0   0
-##    8    0   0   0   0   0   0 788   0   0  15   0   0
-##    9    0   0   0   0   0   0   0  45   0   0   0   0
-##    10   0   0   0   0   0   0   0   0  93   0   0   0
-##    11   0   0   0   0   0   0   0   0   0   0  22   0
-##    12   0   0   0   0   0   0   0   0   0 141   0   0
-##    13   0   0   0   0   0   0   0   0   0   0   0  36
+## Exact   1   2   3   4   5   6   7   8   9  10  11  12  13  14
+##    1    1   0   0   0  13 732   0   0   1   0  70   1   0   0
+##    2  495   0   0  16   0   0   0  25   0   0   0   0   0   0
+##    3    0 124   0   0   0   0   0   0   0   0   0   0   0   0
+##    4    1   0   0 527   0   0  25   0   0   0   0   0   0   0
+##    5    0   0 515   0   0   0   0   0   0   0   0   0   0   0
+##    6    0   0   0   0   0   0 173   0   0   0   0   0   0   0
+##    7    3   0   0   0   0   0   0 833   0   0   0   0   0   0
+##    8    0   0   0   0  37   3   0   1   0   0   0   0   0   0
+##    9    0   0   0   0   0   0   0   0  45   0   0   0   0   0
+##    10   0   0   0   0   0   0   0   6   0 143   0   0   0   0
+##    11   0   0   0   0   0   0   0   0   0   0   0  81   0   0
+##    12   0   0   0   0   0   0   0   0   0   0   0   0  17   0
+##    13   0   0   0   0   0   0   0   0   0   0   0   0   0  37
 ```
 
 **Comments from Aaron:**
@@ -336,12 +336,12 @@ str(r.out)
 
 ```
 ## List of 3
-##  $ sdev    : num [1:20] 10.56 7.05 5.56 4.27 3.39 ...
-##  $ rotation: num [1:33694, 1:20] -1.06e-16 7.48e-17 -7.66e-17 -9.39e-05 -7.94e-05 ...
+##  $ sdev    : num [1:20] 10.54 7.03 5.54 4.3 3.54 ...
+##  $ rotation: num [1:33694, 1:20] 1.28e-16 -2.31e-17 -1.47e-17 -9.36e-05 -8.34e-05 ...
 ##   ..- attr(*, "dimnames")=List of 2
 ##   .. ..$ : NULL
 ##   .. ..$ : chr [1:20] "PC1" "PC2" "PC3" "PC4" ...
-##  $ x       : num [1:3901, 1:20] -17.33 -16.33 9.83 9.09 -8.32 ...
+##  $ x       : num [1:3925, 1:20] -17.25 -16.11 9.57 9.4 -8.15 ...
 ##   ..- attr(*, "dimnames")=List of 2
 ##   .. ..$ : NULL
 ##   .. ..$ : chr [1:20] "PC1" "PC2" "PC3" "PC4" ...
@@ -356,12 +356,12 @@ str(i.out)
 
 ```
 ## List of 3
-##  $ sdev    : num [1:20] 10.56 7.05 5.56 4.27 3.39 ...
-##  $ rotation: num [1:33694, 1:20] -3.80e-20 -1.86e-19 -1.23e-18 9.38e-05 7.93e-05 ...
+##  $ sdev    : num [1:20] 10.54 7.03 5.54 4.3 3.54 ...
+##  $ rotation: num [1:33694, 1:20] -1.17e-19 3.36e-19 -5.18e-20 -9.36e-05 -8.35e-05 ...
 ##   ..- attr(*, "dimnames")=List of 2
 ##   .. ..$ : NULL
 ##   .. ..$ : chr [1:20] "PC1" "PC2" "PC3" "PC4" ...
-##  $ x       : num [1:3901, 1:20] 17.33 16.33 -9.83 -9.09 8.32 ...
+##  $ x       : num [1:3925, 1:20] -17.25 -16.11 9.57 9.4 -8.15 ...
 ##   ..- attr(*, "dimnames")=List of 2
 ##   .. ..$ : NULL
 ##   .. ..$ : chr [1:20] "PC1" "PC2" "PC3" "PC4" ...
@@ -403,15 +403,15 @@ sessionInfo()
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] BiocSingular_0.99.15        BiocNeighbors_1.1.13       
-##  [3] scran_1.11.26               scater_1.11.16             
+##  [1] BiocSingular_0.99.18        BiocNeighbors_1.1.13       
+##  [3] scran_1.11.27               scater_1.11.16             
 ##  [5] ggplot2_3.1.1               TENxBrainData_1.3.0        
-##  [7] HDF5Array_1.11.11           rhdf5_2.27.15              
+##  [7] HDF5Array_1.11.12           rhdf5_2.27.19              
 ##  [9] SingleCellExperiment_1.5.2  SummarizedExperiment_1.13.0
-## [11] DelayedArray_0.9.9          BiocParallel_1.17.18       
+## [11] DelayedArray_0.9.9          BiocParallel_1.17.19       
 ## [13] matrixStats_0.54.0          Biobase_2.43.1             
 ## [15] GenomicRanges_1.35.1        GenomeInfoDb_1.19.3        
-## [17] IRanges_2.17.4              S4Vectors_0.21.23          
+## [17] IRanges_2.17.5              S4Vectors_0.21.24          
 ## [19] BiocGenerics_0.29.2         knitr_1.22                 
 ## [21] BiocStyle_2.11.0           
 ## 
@@ -430,30 +430,30 @@ sessionInfo()
 ## [23] stringr_1.4.0                 digest_0.6.18                
 ## [25] rmarkdown_1.12                XVector_0.23.2               
 ## [27] pkgconfig_2.0.2               htmltools_0.3.6              
-## [29] limma_3.39.14                 dbplyr_1.3.0                 
+## [29] limma_3.39.18                 dbplyr_1.4.0                 
 ## [31] rlang_0.3.4                   RSQLite_2.1.1                
-## [33] shiny_1.3.1                   DelayedMatrixStats_1.5.2     
+## [33] shiny_1.3.2                   DelayedMatrixStats_1.5.2     
 ## [35] dplyr_0.8.0.1                 RCurl_1.95-4.12              
-## [37] magrittr_1.5                  simpleSingleCell_1.7.20      
+## [37] magrittr_1.5                  simpleSingleCell_1.7.21      
 ## [39] GenomeInfoDbData_1.2.1        Matrix_1.2-17                
 ## [41] Rcpp_1.0.1                    ggbeeswarm_0.6.0             
 ## [43] munsell_0.5.0                 Rhdf5lib_1.5.4               
-## [45] viridis_0.5.1                 edgeR_3.25.3                 
+## [45] viridis_0.5.1                 edgeR_3.25.7                 
 ## [47] stringi_1.4.3                 yaml_2.2.0                   
 ## [49] zlibbioc_1.29.0               plyr_1.8.4                   
-## [51] BiocFileCache_1.7.9           AnnotationHub_2.15.12        
+## [51] BiocFileCache_1.7.10          AnnotationHub_2.15.15        
 ## [53] grid_3.7.0                    blob_1.1.1                   
-## [55] dqrng_0.1.1                   promises_1.0.1               
+## [55] dqrng_0.2.0                   promises_1.0.1               
 ## [57] ExperimentHub_1.9.3           crayon_1.3.4                 
 ## [59] lattice_0.20-38               beachmat_1.99.8              
 ## [61] locfit_1.5-9.1                ps_1.3.0                     
-## [63] pillar_1.3.1                  igraph_1.2.4                 
+## [63] pillar_1.3.1                  igraph_1.2.4.1               
 ## [65] codetools_0.2-16              glue_1.3.1                   
 ## [67] evaluate_0.13                 BiocManager_1.30.4           
 ## [69] httpuv_1.5.1                  gtable_0.3.0                 
 ## [71] purrr_0.3.2                   assertthat_0.2.1             
 ## [73] xfun_0.6                      rsvd_1.0.0                   
-## [75] mime_0.6                      xtable_1.8-3                 
+## [75] mime_0.6                      xtable_1.8-4                 
 ## [77] later_0.8.0                   viridisLite_0.3.0            
 ## [79] tibble_2.1.1                  AnnotationDbi_1.45.1         
 ## [81] beeswarm_0.2.3                memoise_1.1.0                
