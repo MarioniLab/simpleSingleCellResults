@@ -11,11 +11,15 @@ update: src
 	${RCMD} CMD INSTALL --preclean src/
 
 # Moving the scripts to avoid directory chaos.
-%.Rmd: src
-	cp src/vignettes/$@ .
+src/vignettes/%.Rmd: src
+
+%.Rmd: src/vignettes/%.Rmd
+	cp $< $@
 
 ref.bib: src
 	cp src/vignettes/ref.bib .
+
+.PRECIOUS: %.Rmd # do not delete upon completion!
 
 # Creating the *.knit.md file (destroying it if the command fails).
 %.knit.md : %.Rmd ref.bib
@@ -47,8 +51,7 @@ all: intro.knit.md \
 # Cleaning commands.
 clean: 
 	rm -rf *.Rmd *.html *_files *_cache *.utf8.md *.rds *.tsv *.xls
-	git stash
-	if [ `git stash list | wc -l` -ne 0 ]; then git stash drop; fi
+	rm -rf *.knit.md
 
 distclean: clean
 	rm -rf raw_data
