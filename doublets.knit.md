@@ -3,7 +3,7 @@ title: Detecting doublets in single-cell RNA-seq data
 author:
 - name: Aaron T. L. Lun
   affiliation: &CRUK Cancer Research UK Cambridge Institute, Li Ka Shing Centre, Robinson Way, Cambridge CB2 0RE, United Kingdom
-date: "2019-04-27"
+date: "2019-05-20"
 vignette: >
   %\VignetteIndexEntry{08. Detecting doublets}
   %\VignetteEngine{knitr::rmarkdown}
@@ -35,7 +35,7 @@ These approaches can be highly effective but rely on experimental information th
 A more general approach is to infer doublets from the expression profiles alone [@dahlin2018single].
 In this workflow, we will describe two purely computational approaches for detecting doublets from scRNA-seq data.
 The main difference between these two methods is whether or not they need cluster information beforehand.
-Both are implemented in the *[scran](https://bioconductor.org/packages/3.9/scran)* package from the open-source Bioconductor project [@huber2015orchestrating].
+Both are implemented in the *[scran](https://bioconductor.org/packages/3.10/scran)* package from the open-source Bioconductor project [@huber2015orchestrating].
 We will demonstrate the use of these methods on data from a droplet-based scRNA-seq study of the mouse mammary gland [@bach2017differentiation],
 available from NCBI GEO with the accession code GSE106273.
 
@@ -109,7 +109,7 @@ rowData(sce)$Chr <- chrloc
 
 ## Quality control
 
-We compute quality control (QC) metrics using the `calculateQCMetrics()` function from the *[scater](https://bioconductor.org/packages/3.9/scater)* package [@mccarthy2017scater].
+We compute quality control (QC) metrics using the `calculateQCMetrics()` function from the *[scater](https://bioconductor.org/packages/3.10/scater)* package [@mccarthy2017scater].
 
 
 ```r
@@ -162,7 +162,7 @@ sce <- sce[,!discard]
 library(scran)
 library(BiocSingular)
 set.seed(1000)
-clusters <- quickCluster(sce, use.ranks=FALSE, BSPARAM=IrlbaParam())
+clusters <- quickCluster(sce, BSPARAM=IrlbaParam())
 table(clusters)
 ```
 
@@ -215,7 +215,7 @@ curve(tech.trend(x), add=TRUE, col="red")
 </div>
 
 We use `denoisePCA()` to choose the number of principal components (PCs) to retain based on the technical noise per gene.
-We need to set the seed for reproducibility when `BSPARAM=IrlbaParam()`, due to the use of randomized methods from *[irlba](https://bioconductor.org/packages/3.9/irlba)*.
+We need to set the seed for reproducibility when `BSPARAM=IrlbaParam()`, due to the use of randomized methods from *[irlba](https://bioconductor.org/packages/3.10/irlba)*.
 
 
 ```r
@@ -383,7 +383,7 @@ Fortunately for us, this is a desirable effect as doublets should be rare in a p
 ## Background
 
 The other doublet detection strategy involves _in silico_ simulation of doublets from the single-cell expression profiles [@dahlin2018single].
-This is performed using the `doubletCells()` function from *[scran](https://bioconductor.org/packages/3.9/scran)*, which will:
+This is performed using the `doubletCells()` function from *[scran](https://bioconductor.org/packages/3.10/scran)*, which will:
 
 1. Simulate thousands of doublets by adding together two randomly chosen single-cell profiles.
 2. For each original cell, compute the density of simulated doublets in the surrounding neighbourhood.
@@ -454,7 +454,7 @@ There is no general definition for a fixed threshold above which libraries are t
 
 We recommend interpreting the `doubletCells()` scores in the context of cluster annotation.
 All cells from a cluster with a large average doublet score should be considered suspect.
-Close neighbours of problematic clusters (e.g., identified by `clusterModularity()`, see [here](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/umis.html#evaluating-graph-based-clusters)) should be treated with caution.
+Close neighbours of problematic clusters (e.g., identified by `clusterModularity()`, see [here](https://bioconductor.org/packages/3.10/simpleSingleCell/vignettes/umis.html#evaluating-graph-based-clusters)) should be treated with caution.
 A cluster containing a small proportion of high-scoring cells is generally safe for downstream analyses, provided that the user investigates any interesting results to ensure that they are not being driven by those cells^[For example, checking that DE in an interesting gene is not driven solely by cells with high doublet scores.].
 While clustering is still required, this approach is more robust than `doubletClusters()` to the quality of the clustering.
 
@@ -466,7 +466,7 @@ Any systematic differences between simulated and real doublets will be removed, 
 This overcomes some of issues related to RNA content but is a rather aggressive strategy that may incorrectly inflate the reported doublet scores.
 - The issue of unknown combining proportions can be solved completely if spike-in information is available, e.g., in plate-based protocols.
 This will provide an accurate estimate of the total RNA content of each cell.
-To this end, size factors from `computeSpikeFactors()` (see [here](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/spike.html)) can be supplied to the `doubletCells()` function via the `size.factors.content=` argument.
+To this end, size factors from `computeSpikeFactors()` (see [here](https://bioconductor.org/packages/3.10/simpleSingleCell/vignettes/spike.html)) can be supplied to the `doubletCells()` function via the `size.factors.content=` argument.
 This will use the spike-in size factors to scale the contribution of each cell to a doublet library.
 
 # Concluding remarks
@@ -504,13 +504,13 @@ sessionInfo()
 ```
 
 ```
-## R Under development (unstable) (2019-04-11 r76379)
+## R version 3.6.0 Patched (2019-05-02 r76458)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
 ## Running under: Ubuntu 18.04.2 LTS
 ## 
 ## Matrix products: default
-## BLAS:   /home/luna/Software/R/trunk/lib/libRblas.so
-## LAPACK: /home/luna/Software/R/trunk/lib/libRlapack.so
+## BLAS:   /home/luna/Software/R/R-3-6-branch-dev/lib/libRblas.so
+## LAPACK: /home/luna/Software/R/R-3-6-branch-dev/lib/libRlapack.so
 ## 
 ## locale:
 ##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
@@ -525,72 +525,72 @@ sessionInfo()
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] BiocSingular_0.99.18                  
-##  [2] scran_1.11.27                         
+##  [1] BiocSingular_1.1.1                    
+##  [2] scran_1.13.3                          
 ##  [3] TxDb.Mmusculus.UCSC.mm10.ensGene_3.4.0
-##  [4] GenomicFeatures_1.35.11               
-##  [5] AnnotationDbi_1.45.1                  
+##  [4] GenomicFeatures_1.37.0                
+##  [5] AnnotationDbi_1.47.0                  
 ##  [6] Matrix_1.2-17                         
-##  [7] scater_1.11.16                        
+##  [7] scater_1.13.3                         
 ##  [8] ggplot2_3.1.1                         
-##  [9] SingleCellExperiment_1.5.2            
-## [10] SummarizedExperiment_1.13.0           
-## [11] DelayedArray_0.9.9                    
-## [12] BiocParallel_1.17.19                  
+##  [9] SingleCellExperiment_1.7.0            
+## [10] SummarizedExperiment_1.15.1           
+## [11] DelayedArray_0.11.0                   
+## [12] BiocParallel_1.19.0                   
 ## [13] matrixStats_0.54.0                    
-## [14] Biobase_2.43.1                        
-## [15] GenomicRanges_1.35.1                  
-## [16] GenomeInfoDb_1.19.3                   
-## [17] IRanges_2.17.5                        
-## [18] S4Vectors_0.21.24                     
-## [19] BiocGenerics_0.29.2                   
-## [20] BiocFileCache_1.7.10                  
+## [14] Biobase_2.45.0                        
+## [15] GenomicRanges_1.37.4                  
+## [16] GenomeInfoDb_1.21.1                   
+## [17] IRanges_2.19.3                        
+## [18] S4Vectors_0.23.3                      
+## [19] BiocGenerics_0.31.2                   
+## [20] BiocFileCache_1.9.0                   
 ## [21] dbplyr_1.4.0                          
-## [22] knitr_1.22                            
-## [23] BiocStyle_2.11.0                      
+## [22] knitr_1.23                            
+## [23] BiocStyle_2.13.0                      
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] bitops_1.0-6             bit64_0.9-7             
-##  [3] RColorBrewer_1.1-2       progress_1.2.0          
+##  [3] RColorBrewer_1.1-2       progress_1.2.2          
 ##  [5] httr_1.4.0               dynamicTreeCut_1.63-1   
-##  [7] tools_3.7.0              R6_2.4.0                
+##  [7] tools_3.6.0              R6_2.4.0                
 ##  [9] irlba_2.3.3              vipor_0.4.5             
 ## [11] DBI_1.0.0                lazyeval_0.2.2          
 ## [13] colorspace_1.4-1         withr_2.1.2             
-## [15] processx_3.3.0           tidyselect_0.2.5        
+## [15] processx_3.3.1           tidyselect_0.2.5        
 ## [17] gridExtra_2.3            prettyunits_1.0.2       
 ## [19] bit_1.1-14               curl_3.3                
-## [21] compiler_3.7.0           BiocNeighbors_1.1.13    
-## [23] labeling_0.3             rtracklayer_1.43.4      
-## [25] bookdown_0.9             scales_1.0.0            
+## [21] compiler_3.6.0           BiocNeighbors_1.3.1     
+## [23] labeling_0.3             rtracklayer_1.45.1      
+## [25] bookdown_0.10            scales_1.0.0            
 ## [27] callr_3.2.0              rappdirs_0.3.1          
-## [29] stringr_1.4.0            digest_0.6.18           
-## [31] Rsamtools_1.99.6         rmarkdown_1.12          
-## [33] XVector_0.23.2           pkgconfig_2.0.2         
+## [29] stringr_1.4.0            digest_0.6.19           
+## [31] Rsamtools_2.1.2          rmarkdown_1.12          
+## [33] XVector_0.25.0           pkgconfig_2.0.2         
 ## [35] htmltools_0.3.6          highr_0.8               
-## [37] limma_3.39.18            rlang_0.3.4             
-## [39] RSQLite_2.1.1            DelayedMatrixStats_1.5.2
-## [41] dplyr_0.8.0.1            RCurl_1.95-4.12         
-## [43] magrittr_1.5             simpleSingleCell_1.7.21 
+## [37] limma_3.41.2             rlang_0.3.4             
+## [39] RSQLite_2.1.1            DelayedMatrixStats_1.7.0
+## [41] dplyr_0.8.1              RCurl_1.95-4.12         
+## [43] magrittr_1.5             simpleSingleCell_1.9.3  
 ## [45] GenomeInfoDbData_1.2.1   Rcpp_1.0.1              
 ## [47] ggbeeswarm_0.6.0         munsell_0.5.0           
 ## [49] viridis_0.5.1            stringi_1.4.3           
-## [51] yaml_2.2.0               edgeR_3.25.7            
-## [53] zlibbioc_1.29.0          Rtsne_0.15              
-## [55] plyr_1.8.4               grid_3.7.0              
-## [57] blob_1.1.1               dqrng_0.2.0             
+## [51] yaml_2.2.0               edgeR_3.27.3            
+## [53] zlibbioc_1.31.0          Rtsne_0.15              
+## [55] plyr_1.8.4               grid_3.6.0              
+## [57] blob_1.1.1               dqrng_0.2.1             
 ## [59] crayon_1.3.4             lattice_0.20-38         
-## [61] cowplot_0.9.4            Biostrings_2.51.5       
+## [61] cowplot_0.9.4            Biostrings_2.53.0       
 ## [63] hms_0.4.2                locfit_1.5-9.1          
-## [65] ps_1.3.0                 pillar_1.3.1            
+## [65] ps_1.3.0                 pillar_1.4.0            
 ## [67] igraph_1.2.4.1           codetools_0.2-16        
-## [69] biomaRt_2.39.4           XML_3.98-1.19           
+## [69] biomaRt_2.41.0           XML_3.98-1.19           
 ## [71] glue_1.3.1               evaluate_0.13           
 ## [73] BiocManager_1.30.4       gtable_0.3.0            
 ## [75] purrr_0.3.2              assertthat_0.2.1        
-## [77] xfun_0.6                 rsvd_1.0.0              
+## [77] xfun_0.7                 rsvd_1.0.0              
 ## [79] viridisLite_0.3.0        pheatmap_1.0.12         
-## [81] tibble_2.1.1             GenomicAlignments_1.19.1
+## [81] tibble_2.1.1             GenomicAlignments_1.21.2
 ## [83] beeswarm_0.2.3           memoise_1.1.0           
 ## [85] statmod_1.4.30
 ```

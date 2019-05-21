@@ -12,7 +12,7 @@ author:
   - *CRUK
   - *EMBL
   - Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
-date: "2019-04-27"
+date: "2019-05-20"
 vignette: >
   %\VignetteIndexEntry{06. Quality control details}
   %\VignetteEngine{knitr::rmarkdown}
@@ -46,7 +46,7 @@ Similarly, genes with the largest variances will be driven by differences betwee
 
 As such, we need to remove these cells at the start of the analysis.
 Recall that we were defining low-quality cells as those with outlier values for various quality control (QC) metrics,
-using the `isOutlier()` and `calculateQCMetrics()` functions from the *[scater](https://bioconductor.org/packages/3.9/scater)* package [@mccarthy2017scater].
+using the `isOutlier()` and `calculateQCMetrics()` functions from the *[scater](https://bioconductor.org/packages/3.10/scater)* package [@mccarthy2017scater].
 Here, we will examine some of the reasoning behind the outlier-based QC in more detail.
 
 # Assumptions of outlier identification 
@@ -154,8 +154,8 @@ Large log-fold changes can also be driven by enrichment or depletion of mitochon
 ## In the PBMC data set
 
 For comparison, we consider the PBMC data set in which we previously identified a platelet population
-(see the [previous workflow](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/tenx.html#marker-gene-detection)).
-Recall that we relied on the use of the `emptyDrops()` method from the *[DropletUtils](https://bioconductor.org/packages/3.9/DropletUtils)* package to retain the platelets.
+(see the [previous workflow](https://bioconductor.org/packages/3.10/simpleSingleCell/vignettes/tenx.html#marker-gene-detection)).
+Recall that we relied on the use of the `emptyDrops()` method from the *[DropletUtils](https://bioconductor.org/packages/3.10/DropletUtils)* package to retain the platelets.
 In contrast, if we had used a naive threshold on the total unique molecular identifier (UMI) count, we would have removed this population during the cell calling step.
 
 
@@ -199,26 +199,26 @@ head(info[order(info$logFC, decreasing=TRUE),], 20)
 
 ```
 ##              logFC      Lost       Kept
-## PF4       6.615671 4.2289086 0.17421441
-## PPBP      6.495522 4.8409530 0.27144834
-## HIST1H2AC 6.291680 3.1195253 0.14435051
-## GNG11     6.162314 2.5132359 0.10103056
-## SDPR      5.950336 2.1430640 0.09754273
-## TUBB1     5.610679 1.6478079 0.08989034
-## CLU       5.462238 1.3202347 0.05559122
-## ACRBP     5.325560 1.1933566 0.05436568
-## NRGN      5.118699 1.3155255 0.12992550
-## RGS18     5.009974 1.6512487 0.25377562
-## MAP3K7CL  4.898185 0.9950268 0.08957073
-## SPARC     4.646432 0.6559761 0.02487467
-## MMD       4.616159 0.7450948 0.06367575
-## PGRMC1    4.503524 0.7335820 0.08248177
-## CMTM5     4.166574 0.4469937 0.01643304
-## TSC22D1   4.120268 0.5128047 0.05920195
-## HRAT92    4.116163 0.4214188 0.01144488
-## GP9       4.091146 0.4610813 0.03703803
-## CTSA      3.986470 0.8294337 0.27097756
-## MARCH2    3.966528 0.5655020 0.12228759
+## PF4       6.599033 4.2366210 0.17451587
+## PPBP      6.482278 4.8569384 0.27130694
+## HIST1H2AC 6.275272 3.1252145 0.14460030
+## GNG11     6.149160 2.5178193 0.10055667
+## SDPR      5.934369 2.1469723 0.09771152
+## TUBB1     5.594837 1.6508130 0.09004589
+## CLU       5.446832 1.3226425 0.05568742
+## ACRBP     5.310198 1.1955330 0.05445975
+## NRGN      5.102556 1.3179246 0.13015032
+## RGS18     5.002491 1.6542601 0.25108929
+## MAP3K7CL  4.882485 0.9968414 0.08972572
+## SPARC     4.631725 0.6571724 0.02491772
+## MMD       4.600857 0.7464537 0.06378594
+## PGRMC1    4.488020 0.7349199 0.08262450
+## CMTM5     4.152241 0.4478089 0.01646147
+## TSC22D1   4.105225 0.5137399 0.05930439
+## HRAT92    4.101962 0.4221873 0.01146469
+## GP9       4.076469 0.4619222 0.03710212
+## CTSA      3.971449 0.8309463 0.27084063
+## MARCH2    3.950792 0.5665333 0.12249919
 ```
 
 ## Avoiding loss of cell types
@@ -250,7 +250,7 @@ Indeed, even with the same protocol and system, the appropriate threshold can va
 
 Another strategy is to perform a principal components analysis (PCA) based on the quality metrics for each cell, e.g., the total number of reads, the total number of features and the proportion of mitochondrial or spike-in reads.
 Outliers on a PCA plot may be indicative of low-quality cells that have aberrant technical properties compared to the (presumed) majority of high-quality cells.
-This is demonstrated below on a brain cell dataset from @tasic2016adult, using functions from *[scater](https://bioconductor.org/packages/3.9/scater)*.
+This is demonstrated below on a brain cell dataset from @tasic2016adult, using functions from *[scater](https://bioconductor.org/packages/3.10/scater)*.
 
 
 ```r
@@ -279,7 +279,7 @@ table(sce.allen$outlier)
 Methods like PCA-based outlier detection and support vector machines can provide more power to distinguish low-quality cells from high-quality counterparts [@ilicic2016classification].
 This is because they are able to detect subtle patterns across many quality metrics simultaneously. 
 However, this comes at some cost to interpretability, as the reason for removing a given cell may not always be obvious.
-Users interested in the more sophisticated approaches are referred to the *[scater](https://bioconductor.org/packages/3.9/scater)* and *[cellity](https://bioconductor.org/packages/3.9/cellity)* packages.
+Users interested in the more sophisticated approaches are referred to the *[scater](https://bioconductor.org/packages/3.10/scater)* and *[cellity](https://bioconductor.org/packages/3.10/cellity)* packages.
 
 ## Using the gene expression profiles
 
@@ -299,13 +299,13 @@ sessionInfo()
 ```
 
 ```
-## R Under development (unstable) (2019-04-11 r76379)
+## R version 3.6.0 Patched (2019-05-02 r76458)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
 ## Running under: Ubuntu 18.04.2 LTS
 ## 
 ## Matrix products: default
-## BLAS:   /home/luna/Software/R/trunk/lib/libRblas.so
-## LAPACK: /home/luna/Software/R/trunk/lib/libRlapack.so
+## BLAS:   /home/luna/Software/R/R-3-6-branch-dev/lib/libRblas.so
+## LAPACK: /home/luna/Software/R/R-3-6-branch-dev/lib/libRlapack.so
 ## 
 ## locale:
 ##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
@@ -320,60 +320,60 @@ sessionInfo()
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] scRNAseq_1.9.0              edgeR_3.25.7               
-##  [3] limma_3.39.18               scater_1.11.16             
-##  [5] ggplot2_3.1.1               SingleCellExperiment_1.5.2 
-##  [7] SummarizedExperiment_1.13.0 DelayedArray_0.9.9         
-##  [9] BiocParallel_1.17.19        matrixStats_0.54.0         
-## [11] Biobase_2.43.1              GenomicRanges_1.35.1       
-## [13] GenomeInfoDb_1.19.3         IRanges_2.17.5             
-## [15] S4Vectors_0.21.24           BiocGenerics_0.29.2        
-## [17] knitr_1.22                  BiocStyle_2.11.0           
+##  [1] scRNAseq_1.11.0             edgeR_3.27.3               
+##  [3] limma_3.41.2                scater_1.13.3              
+##  [5] ggplot2_3.1.1               SingleCellExperiment_1.7.0 
+##  [7] SummarizedExperiment_1.15.1 DelayedArray_0.11.0        
+##  [9] BiocParallel_1.19.0         matrixStats_0.54.0         
+## [11] Biobase_2.45.0              GenomicRanges_1.37.4       
+## [13] GenomeInfoDb_1.21.1         IRanges_2.19.3             
+## [15] S4Vectors_0.23.3            BiocGenerics_0.31.2        
+## [17] knitr_1.23                  BiocStyle_2.13.0           
 ## 
 ## loaded via a namespace (and not attached):
 ##   [1] ggbeeswarm_0.6.0         colorspace_1.4-1        
 ##   [3] mvoutlier_2.0.9          modeltools_0.2-22       
 ##   [5] class_7.3-15             rio_0.5.16              
-##   [7] mclust_5.4.3             XVector_0.23.2          
-##   [9] pls_2.7-1                BiocNeighbors_1.1.13    
+##   [7] mclust_5.4.3             XVector_0.25.0          
+##   [9] pls_2.7-1                BiocNeighbors_1.3.1     
 ##  [11] cvTools_0.3.2            flexmix_2.3-15          
 ##  [13] mvtnorm_1.0-10           ranger_0.11.2           
-##  [15] splines_3.7.0            sROC_0.1-2              
-##  [17] codetools_0.2-16         robustbase_0.93-4       
+##  [15] splines_3.6.0            sROC_0.1-2              
+##  [17] codetools_0.2-16         robustbase_0.93-5       
 ##  [19] robCompositions_2.1.0    kernlab_0.9-27          
-##  [21] cluster_2.0.8            BiocManager_1.30.4      
-##  [23] rrcov_1.4-7              compiler_3.7.0          
+##  [21] cluster_2.0.9            BiocManager_1.30.4      
+##  [23] rrcov_1.4-7              compiler_3.6.0          
 ##  [25] assertthat_0.2.1         Matrix_1.2-17           
-##  [27] lazyeval_0.2.2           BiocSingular_0.99.18    
-##  [29] htmltools_0.3.6          tools_3.7.0             
+##  [27] lazyeval_0.2.2           BiocSingular_1.1.1      
+##  [29] htmltools_0.3.6          tools_3.6.0             
 ##  [31] rsvd_1.0.0               gtable_0.3.0            
 ##  [33] glue_1.3.1               GenomeInfoDbData_1.2.1  
-##  [35] dplyr_0.8.0.1            Rcpp_1.0.1              
+##  [35] dplyr_0.8.1              Rcpp_1.0.1              
 ##  [37] carData_3.0-2            trimcluster_0.1-2.1     
 ##  [39] cellranger_1.1.0         zCompositions_1.2.0     
 ##  [41] sgeostat_1.0-27          fpc_2.1-11.2            
-##  [43] DelayedMatrixStats_1.5.2 lmtest_0.9-36           
-##  [45] xfun_0.6                 laeken_0.5.0            
+##  [43] DelayedMatrixStats_1.7.0 lmtest_0.9-37           
+##  [45] xfun_0.7                 laeken_0.5.0            
 ##  [47] stringr_1.4.0            ps_1.3.0                
 ##  [49] openxlsx_4.1.0           irlba_2.3.3             
 ##  [51] DEoptimR_1.0-8           zoo_1.8-5               
-##  [53] zlibbioc_1.29.0          MASS_7.3-51.4           
+##  [53] zlibbioc_1.31.0          MASS_7.3-51.4           
 ##  [55] scales_1.0.0             VIM_4.8.0               
 ##  [57] hms_0.4.2                RColorBrewer_1.1-2      
 ##  [59] yaml_2.2.0               curl_3.3                
 ##  [61] NADA_1.6-1               gridExtra_2.3           
 ##  [63] reshape_0.8.8            stringi_1.4.3           
 ##  [65] highr_0.8                pcaPP_1.9-73            
-##  [67] simpleSingleCell_1.7.21  e1071_1.7-1             
-##  [69] boot_1.3-22              zip_2.0.1               
+##  [67] simpleSingleCell_1.9.3   e1071_1.7-1             
+##  [69] boot_1.3-22              zip_2.0.2               
 ##  [71] truncnorm_1.0-8          prabclus_2.2-7          
 ##  [73] rlang_0.3.4              pkgconfig_2.0.2         
 ##  [75] bitops_1.0-6             evaluate_0.13           
 ##  [77] lattice_0.20-38          purrr_0.3.2             
-##  [79] processx_3.3.0           tidyselect_0.2.5        
+##  [79] processx_3.3.1           tidyselect_0.2.5        
 ##  [81] GGally_1.4.0             plyr_1.8.4              
-##  [83] magrittr_1.5             bookdown_0.9            
-##  [85] R6_2.4.0                 pillar_1.3.1            
+##  [83] magrittr_1.5             bookdown_0.10           
+##  [85] R6_2.4.0                 pillar_1.4.0            
 ##  [87] haven_2.1.0              foreign_0.8-71          
 ##  [89] withr_2.1.2              survival_2.44-1.1       
 ##  [91] abind_1.4-5              RCurl_1.95-4.12         
@@ -381,10 +381,10 @@ sessionInfo()
 ##  [95] tibble_2.1.1             crayon_1.3.4            
 ##  [97] car_3.0-2                rmarkdown_1.12          
 ##  [99] viridis_0.5.1            locfit_1.5-9.1          
-## [101] grid_3.7.0               readxl_1.3.1            
+## [101] grid_3.6.0               readxl_1.3.1            
 ## [103] data.table_1.12.2        callr_3.2.0             
 ## [105] forcats_0.4.0            diptest_0.75-7          
-## [107] vcd_1.4-4                digest_0.6.18           
+## [107] vcd_1.4-4                digest_0.6.19           
 ## [109] tidyr_0.8.3              munsell_0.5.0           
 ## [111] beeswarm_0.2.3           viridisLite_0.3.0       
 ## [113] vipor_0.4.5

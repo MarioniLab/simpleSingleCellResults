@@ -12,7 +12,7 @@ author:
   - *CRUK
   - *EMBL
   - Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
-date: "2019-04-27"
+date: "2019-05-20"
 vignette: >
   %\VignetteIndexEntry{03. UMI count data}
   %\VignetteEngine{knitr::rmarkdown}
@@ -154,7 +154,7 @@ sce
 # Quality control on the cells 
 
 The original authors of the study have already removed low-quality cells prior to data publication.
-Nonetheless, we compute some quality control metrics with *[scater](https://bioconductor.org/packages/3.9/scater)* [@mccarthy2017scater] to check whether the remaining cells are satisfactory.
+Nonetheless, we compute some quality control metrics with *[scater](https://bioconductor.org/packages/3.10/scater)* [@mccarthy2017scater] to check whether the remaining cells are satisfactory.
 
 
 ```r
@@ -233,7 +233,7 @@ table(assignments$phase)
 ```
 ## 
 ##   G1  G2M    S 
-## 2980    8    1
+## 2981    7    1
 ```
 
 ```r
@@ -320,7 +320,7 @@ The approximation relies on stochastic initialization so we need to set the rand
 ```r
 library(BiocSingular)
 set.seed(1000)
-clusters <- quickCluster(sce, use.ranks=FALSE, BSPARAM=IrlbaParam())
+clusters <- quickCluster(sce, BSPARAM=IrlbaParam())
 sce <- computeSumFactors(sce, cluster=clusters, min.mean=0.1)
 summary(sizeFactors(sce))
 ```
@@ -558,7 +558,7 @@ We find that the Walktrap algorithm is usually a good default choice [@yang2016c
 - Decreasing the number of neighbours `k` in `buildSNNGraph` will reduce the connectivity of the graph.
 This will generally result in the formation of smaller clusters [@xu2015identification], which may be desirable if greater resolution is required.
 - Notice that we do not run `library(igraph)`, but instead use `igraph::` to extract methods from the package. 
-This is because *[igraph](https://CRAN.R-project.org/package=igraph)* contains a `normalize` method that will override its counterpart from *[scater](https://bioconductor.org/packages/3.9/scater)*, resulting in some unusual bugs.
+This is because *[igraph](https://CRAN.R-project.org/package=igraph)* contains a `normalize` method that will override its counterpart from *[scater](https://bioconductor.org/packages/3.10/scater)*, resulting in some unusual bugs.
 
 ## Evaluating graph-based clusters
 
@@ -727,7 +727,7 @@ close(gzout)
 **Comments from Aaron:**
 
 - The `overlapExprs()` function may also be useful for summarizing differences between clusters.
-This is discussed in more detail [here](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/de.html#using-the-wilcoxon-rank-sum-test).
+This is discussed in more detail [here](https://bioconductor.org/packages/3.10/simpleSingleCell/vignettes/de.html#using-the-wilcoxon-rank-sum-test).
 
 # Concluding remarks
 
@@ -751,13 +751,13 @@ sessionInfo()
 ```
 
 ```
-## R Under development (unstable) (2019-04-11 r76379)
+## R version 3.6.0 Patched (2019-05-02 r76458)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
 ## Running under: Ubuntu 18.04.2 LTS
 ## 
 ## Matrix products: default
-## BLAS:   /home/luna/Software/R/trunk/lib/libRblas.so
-## LAPACK: /home/luna/Software/R/trunk/lib/libRlapack.so
+## BLAS:   /home/luna/Software/R/R-3-6-branch-dev/lib/libRblas.so
+## LAPACK: /home/luna/Software/R/R-3-6-branch-dev/lib/libRlapack.so
 ## 
 ## locale:
 ##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
@@ -772,54 +772,54 @@ sessionInfo()
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] pheatmap_1.0.12             BiocSingular_0.99.18       
-##  [3] scran_1.11.27               scater_1.11.16             
+##  [1] pheatmap_1.0.12             BiocSingular_1.1.1         
+##  [3] scran_1.13.3                scater_1.13.3              
 ##  [5] ggplot2_3.1.1               org.Mm.eg.db_3.8.2         
-##  [7] AnnotationDbi_1.45.1        SingleCellExperiment_1.5.2 
-##  [9] SummarizedExperiment_1.13.0 DelayedArray_0.9.9         
-## [11] BiocParallel_1.17.19        matrixStats_0.54.0         
-## [13] Biobase_2.43.1              GenomicRanges_1.35.1       
-## [15] GenomeInfoDb_1.19.3         IRanges_2.17.5             
-## [17] S4Vectors_0.21.24           BiocGenerics_0.29.2        
-## [19] BiocFileCache_1.7.10        dbplyr_1.4.0               
-## [21] knitr_1.22                  BiocStyle_2.11.0           
+##  [7] AnnotationDbi_1.47.0        SingleCellExperiment_1.7.0 
+##  [9] SummarizedExperiment_1.15.1 DelayedArray_0.11.0        
+## [11] BiocParallel_1.19.0         matrixStats_0.54.0         
+## [13] Biobase_2.45.0              GenomicRanges_1.37.4       
+## [15] GenomeInfoDb_1.21.1         IRanges_2.19.3             
+## [17] S4Vectors_0.23.3            BiocGenerics_0.31.2        
+## [19] BiocFileCache_1.9.0         dbplyr_1.4.0               
+## [21] knitr_1.23                  BiocStyle_2.13.0           
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] bitops_1.0-6             bit64_0.9-7             
 ##  [3] RColorBrewer_1.1-2       httr_1.4.0              
-##  [5] dynamicTreeCut_1.63-1    tools_3.7.0             
+##  [5] dynamicTreeCut_1.63-1    tools_3.6.0             
 ##  [7] R6_2.4.0                 irlba_2.3.3             
 ##  [9] vipor_0.4.5              DBI_1.0.0               
 ## [11] lazyeval_0.2.2           colorspace_1.4-1        
-## [13] withr_2.1.2              processx_3.3.0          
+## [13] withr_2.1.2              processx_3.3.1          
 ## [15] tidyselect_0.2.5         gridExtra_2.3           
 ## [17] bit_1.1-14               curl_3.3                
-## [19] compiler_3.7.0           BiocNeighbors_1.1.13    
-## [21] labeling_0.3             bookdown_0.9            
+## [19] compiler_3.6.0           BiocNeighbors_1.3.1     
+## [21] labeling_0.3             bookdown_0.10           
 ## [23] scales_1.0.0             callr_3.2.0             
 ## [25] rappdirs_0.3.1           stringr_1.4.0           
-## [27] digest_0.6.18            rmarkdown_1.12          
-## [29] XVector_0.23.2           pkgconfig_2.0.2         
-## [31] htmltools_0.3.6          limma_3.39.18           
+## [27] digest_0.6.19            rmarkdown_1.12          
+## [29] XVector_0.25.0           pkgconfig_2.0.2         
+## [31] htmltools_0.3.6          limma_3.41.2            
 ## [33] highr_0.8                rlang_0.3.4             
-## [35] RSQLite_2.1.1            DelayedMatrixStats_1.5.2
-## [37] dplyr_0.8.0.1            RCurl_1.95-4.12         
-## [39] magrittr_1.5             simpleSingleCell_1.7.21 
+## [35] RSQLite_2.1.1            DelayedMatrixStats_1.7.0
+## [37] dplyr_0.8.1              RCurl_1.95-4.12         
+## [39] magrittr_1.5             simpleSingleCell_1.9.3  
 ## [41] GenomeInfoDbData_1.2.1   Matrix_1.2-17           
 ## [43] Rcpp_1.0.1               ggbeeswarm_0.6.0        
 ## [45] munsell_0.5.0            viridis_0.5.1           
 ## [47] stringi_1.4.3            yaml_2.2.0              
-## [49] edgeR_3.25.7             zlibbioc_1.29.0         
+## [49] edgeR_3.27.3             zlibbioc_1.31.0         
 ## [51] Rtsne_0.15               plyr_1.8.4              
-## [53] grid_3.7.0               blob_1.1.1              
-## [55] dqrng_0.2.0              crayon_1.3.4            
+## [53] grid_3.6.0               blob_1.1.1              
+## [55] dqrng_0.2.1              crayon_1.3.4            
 ## [57] lattice_0.20-38          cowplot_0.9.4           
 ## [59] locfit_1.5-9.1           ps_1.3.0                
-## [61] pillar_1.3.1             igraph_1.2.4.1          
+## [61] pillar_1.4.0             igraph_1.2.4.1          
 ## [63] codetools_0.2-16         glue_1.3.1              
 ## [65] evaluate_0.13            BiocManager_1.30.4      
 ## [67] gtable_0.3.0             purrr_0.3.2             
-## [69] assertthat_0.2.1         xfun_0.6                
+## [69] assertthat_0.2.1         xfun_0.7                
 ## [71] rsvd_1.0.0               viridisLite_0.3.0       
 ## [73] tibble_2.1.1             beeswarm_0.2.3          
 ## [75] memoise_1.1.0            statmod_1.4.30

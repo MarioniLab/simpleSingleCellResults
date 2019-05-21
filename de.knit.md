@@ -3,7 +3,7 @@ title: Detecting differental expression from single-cell RNA-seq data
 author: 
 - name: Aaron T. L. Lun
   affiliation: &CRUK Cancer Research UK Cambridge Institute, Li Ka Shing Centre, Robinson Way, Cambridge CB2 0RE, United Kingdom
-date: "2019-04-27"
+date: "2019-05-20"
 vignette: >
   %\VignetteIndexEntry{10. Detecting differential expression}
   %\VignetteEngine{knitr::rmarkdown}
@@ -31,7 +31,7 @@ This includes the basis of blocking on uninteresting factors of variation in `fi
 
 ## Using the `block=` argument
 
-Previous workflows ([here](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/reads.html#detecting-marker-genes-between-clusters) and [here](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/batch.html#using-the-corrected-values-in-downstream-analyses)) used the `block=` argument in `findMarkers()` to account for uninteresting factors of variation.
+Previous workflows ([here](https://bioconductor.org/packages/3.10/simpleSingleCell/vignettes/reads.html#detecting-marker-genes-between-clusters) and [here](https://bioconductor.org/packages/3.10/simpleSingleCell/vignettes/batch.html#using-the-corrected-values-in-downstream-analyses)) used the `block=` argument in `findMarkers()` to account for uninteresting factors of variation.
 This will instruct `findMarkers()` to perform pairwise $t$-tests between clusters using only cells on the same level of the blocking factor. 
 It will then combine $p$-values from different plates using Stouffer's Z method to obtain a single $p$-value per gene.
 
@@ -98,7 +98,7 @@ In scenarios where cells from two clusters never co-occur in the same batch, the
 ## Using the `design=` argument
 
 Another approach is to define a design matrix containing the batch of origin as the sole factor.
-`findMarkers()` will then fit a linear model to the log-expression values, similar to the use of *[limma](https://bioconductor.org/packages/3.9/limma)* for bulk RNA sequencing data [@ritchie2015limma].
+`findMarkers()` will then fit a linear model to the log-expression values, similar to the use of *[limma](https://bioconductor.org/packages/3.10/limma)* for bulk RNA sequencing data [@ritchie2015limma].
 This handles situations where multiple batches contain unique clusters, as comparisons can be implicitly performed via shared cell types in each batch.
 There is also a slight increase in power when information is shared across clusters for variance estimation.
 
@@ -149,7 +149,7 @@ Thus, we generally recommend the use of `block=` where possible.
 The `overlapExprs()` function uses the Wilcoxon rank sum test to detect uneven mixing of the distributions of expression values between clusters.
 The effect size is reported as the probability of randomly sampling one observation in one cluster that is greater than a random observation in another cluster.
 This prioritizes genes where there is clear separation between the distributions of expression values of different clusters.
-We demonstrate the use of `overlapExprs()` on the 416B data set from the [previous workflow](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/reads.html),
+We demonstrate the use of `overlapExprs()` on the 416B data set from the [previous workflow](https://bioconductor.org/packages/3.10/simpleSingleCell/vignettes/reads.html),
 detecting DE genes between clusters while blocking on the plate of origin.
 
 
@@ -209,7 +209,7 @@ The downside is that they are slower, the effect size is more difficult to inter
 # Using other DE analysis results
 
 It is possible to perform marker gene detection based on results from other DE analysis methods.
-For example, consider the `voom` approach in the *[limma](https://bioconductor.org/packages/3.9/limma)* package [@law2014voom].
+For example, consider the `voom` approach in the *[limma](https://bioconductor.org/packages/3.10/limma)* package [@law2014voom].
 
 
 ```r
@@ -271,7 +271,7 @@ for (x in seq_along(clust.terms)) {
 ```
 
 The results of this comparison are consolidated into a single marker list for each cluster with the `combineMarkers()` function.
-This yields an ordering of genes that can be interpreted in the same manner as discussed [previously](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/reads.html#detecting-marker-genes-between-clusters) for `findMarkers()` output.
+This yields an ordering of genes that can be interpreted in the same manner as discussed [previously](https://bioconductor.org/packages/3.10/simpleSingleCell/vignettes/reads.html#detecting-marker-genes-between-clusters) for `findMarkers()` output.
 
 
 ```r
@@ -342,11 +342,11 @@ Indeed, the use of cells as replicates only masks the fact that the sample size 
 The "most correct" strategy for accommodating two levels of replication is to use a (generalized) linear mixed model.
 However, these are difficult to implement from both a theoretical and practical perspective - see [here](https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html) for an in-depth discussion.
 A faster approach is to use a summation strategy [@lun2017overcoming], where all cells in each combination of sample and condition (or cluster) are summed together.
-This yields a single pseudo-bulk count profile per combination, to which standard methods like *[edgeR](https://bioconductor.org/packages/3.9/edgeR)* or *[limma](https://bioconductor.org/packages/3.9/limma)* can be applied.
+This yields a single pseudo-bulk count profile per combination, to which standard methods like *[edgeR](https://bioconductor.org/packages/3.10/edgeR)* or *[limma](https://bioconductor.org/packages/3.10/limma)* can be applied.
 
 # Using pseudo-bulk counts 
 
-We demonstrate this procedure on the [416B data set](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/reads.html) again.
+We demonstrate this procedure on the [416B data set](https://bioconductor.org/packages/3.10/simpleSingleCell/vignettes/reads.html) again.
 We create a factor containing all combinations of the per-cell factors of interest.
 Here, the factors of interest are the assigned cluster and the plate of origin for each cell^[Cluster is nested in oncogene induction status so that latter will not be used here.].
 All cells from one plate with the same oncogene induction status were obtained from the same biological sample.
@@ -394,7 +394,7 @@ head(summed)
 ## Rp1                         0          0          0          0          2
 ```
 
-We perform a standard *[edgeR](https://bioconductor.org/packages/3.9/edgeR)* analysis using the quasi-likelihood (QL) framework [@chen2016from] to identify differential expression between clusters.
+We perform a standard *[edgeR](https://bioconductor.org/packages/3.10/edgeR)* analysis using the quasi-likelihood (QL) framework [@chen2016from] to identify differential expression between clusters.
 We ignore spike-in transcripts and low-abundance genes, and we compute normalization factors^[Not the same as size factors!] using the `calcNormFactors()` function.
 
 
@@ -426,7 +426,7 @@ summary(y$trended.dispersion)
 
 ```
 ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-##  0.0298  0.1145  0.2591  0.3851  0.6096  1.0686
+## 0.02974 0.11443 0.25894 0.38510 0.60977 1.06925
 ```
 
 ```r
@@ -436,7 +436,7 @@ summary(fit$df.prior)
 
 ```
 ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-##   2.734   2.734   2.734   2.785   2.852   2.917
+##   2.737   2.737   2.737   2.788   2.859   2.920
 ```
 
 We test for DE between the first two clusters using `glmQLFTest()`.
@@ -451,9 +451,9 @@ summary(decideTests(res))
 
 ```
 ##        1*sum.clust1 -1*sum.clust2
-## Down                          694
-## NotSig                      10455
-## Up                            402
+## Down                          707
+## NotSig                      10439
+## Up                            405
 ```
 
 ```r
@@ -463,16 +463,16 @@ summary(decideTests(res))
 ```
 ## Coefficient:  1*sum.clust1 -1*sum.clust2 
 ##            logFC   logCPM        F       PValue          FDR
-## H2afx  -4.697242 7.661437 744.1153 2.672668e-08 0.0003087199
-## Cenpf  -3.900258 7.788431 371.3529 3.538580e-07 0.0020437070
-## Pmf1   -3.481731 6.824035 257.9062 9.899188e-07 0.0022061846
-## Cdk1   -3.870176 8.771666 274.0027 1.050688e-06 0.0022061846
-## Mki67  -3.063625 8.526310 252.7112 1.371305e-06 0.0022061846
-## Dut    -3.215033 7.977394 247.6234 1.466158e-06 0.0022061846
-## Ube2c  -6.555191 8.547760 236.0084 1.716877e-06 0.0022061846
-## Mad2l1 -3.326515 7.227419 223.3985 1.824158e-06 0.0022061846
-## Ctsg   -9.802729 4.473695 211.4945 1.931895e-06 0.0022061846
-## Srm    -3.362611 8.177461 224.8892 2.011531e-06 0.0022061846
+## H2afx  -4.705118 7.660453 759.0851 2.483667e-08 0.0002868884
+## Cenpf  -3.908109 7.787069 388.5249 2.930229e-07 0.0016923539
+## Pmf1   -3.489725 6.825686 264.7124 9.031752e-07 0.0020504630
+## Mki67  -3.071246 8.525429 263.9944 1.182572e-06 0.0020504630
+## Cdk1   -3.878273 8.772554 261.4039 1.221613e-06 0.0020504630
+## Dut    -3.222792 7.980844 259.1590 1.256806e-06 0.0020504630
+## Ube2c  -6.562471 8.544501 243.4641 1.543614e-06 0.0020504630
+## Mad2l1 -3.334600 7.228002 224.9613 1.773234e-06 0.0020504630
+## Ctsg   -9.810366 4.476225 210.1129 1.968233e-06 0.0020504630
+## Srm    -3.371245 8.179901 225.0141 1.999676e-06 0.0020504630
 ```
 
 The DE analysis on pseudo-bulk counts does not explicitly penalize DE genes that are highly variable across cells within each sample.

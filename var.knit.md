@@ -12,7 +12,7 @@ author:
   - *CRUK
   - *EMBL
   - Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
-date: "2019-04-27"
+date: "2019-05-20"
 vignette: >
   %\VignetteIndexEntry{09. Advanced variance modelling}
   %\VignetteEngine{knitr::rmarkdown}
@@ -100,7 +100,7 @@ summary(is.spike)
 
 ### Quality control and normalization
 
-For each cell, we calculate quality control metrics using the `calculateQCMetrics` function from *[scater](https://bioconductor.org/packages/3.9/scater)* [@mccarthy2017scater] as previously described.
+For each cell, we calculate quality control metrics using the `calculateQCMetrics` function from *[scater](https://bioconductor.org/packages/3.10/scater)* [@mccarthy2017scater] as previously described.
 We filter out HSCs that are outliers for any metric, under the assumption that these represent low-quality libraries. 
 
 
@@ -248,9 +248,9 @@ plotExpression(sce.hsc, features=rownames(hvg.out)[1:10]) + fontsize
 
 There are many other strategies for defining HVGs, based on a variety of metrics:
 
-- the coefficient of variation, using the `technicalCV2()` function [@brennecke2013accounting] or the `DM()` function [@kim2015characterizing] in *[scran](https://bioconductor.org/packages/3.9/scran)*.
-- the dispersion parameter in the negative binomial distribution, using the `estimateDisp()` function in *[edgeR](https://bioconductor.org/packages/3.9/edgeR)* [@mccarthy2012differential].
-- a proportion of total variability, using methods in the *[BASiCS](https://bioconductor.org/packages/3.9/BASiCS)* package [@vallejos2015basics].
+- the coefficient of variation, using the `technicalCV2()` function [@brennecke2013accounting] or the `DM()` function [@kim2015characterizing] in *[scran](https://bioconductor.org/packages/3.10/scran)*.
+- the dispersion parameter in the negative binomial distribution, using the `estimateDisp()` function in *[edgeR](https://bioconductor.org/packages/3.10/edgeR)* [@mccarthy2012differential].
+- a proportion of total variability, using methods in the *[BASiCS](https://bioconductor.org/packages/3.10/BASiCS)* package [@vallejos2015basics].
 
 Here, we used the variance of the log-expression values because the log-transformation protects against genes with strong expression in only one or two cells.
 This reduces the risk that the set of top HVGs is not dominated by genes with (mostly uninteresting) outlier expression patterns.
@@ -500,13 +500,13 @@ sessionInfo()
 ```
 
 ```
-## R Under development (unstable) (2019-04-11 r76379)
+## R version 3.6.0 Patched (2019-05-02 r76458)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
 ## Running under: Ubuntu 18.04.2 LTS
 ## 
 ## Matrix products: default
-## BLAS:   /home/luna/Software/R/trunk/lib/libRblas.so
-## LAPACK: /home/luna/Software/R/trunk/lib/libRlapack.so
+## BLAS:   /home/luna/Software/R/R-3-6-branch-dev/lib/libRblas.so
+## LAPACK: /home/luna/Software/R/R-3-6-branch-dev/lib/libRlapack.so
 ## 
 ## locale:
 ##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
@@ -521,54 +521,54 @@ sessionInfo()
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] scran_1.11.27               scater_1.11.16             
-##  [3] ggplot2_3.1.1               SingleCellExperiment_1.5.2 
-##  [5] SummarizedExperiment_1.13.0 DelayedArray_0.9.9         
-##  [7] BiocParallel_1.17.19        matrixStats_0.54.0         
-##  [9] Biobase_2.43.1              GenomicRanges_1.35.1       
-## [11] GenomeInfoDb_1.19.3         IRanges_2.17.5             
-## [13] S4Vectors_0.21.24           BiocGenerics_0.29.2        
+##  [1] scran_1.13.3                scater_1.13.3              
+##  [3] ggplot2_3.1.1               SingleCellExperiment_1.7.0 
+##  [5] SummarizedExperiment_1.15.1 DelayedArray_0.11.0        
+##  [7] BiocParallel_1.19.0         matrixStats_0.54.0         
+##  [9] Biobase_2.45.0              GenomicRanges_1.37.4       
+## [11] GenomeInfoDb_1.21.1         IRanges_2.19.3             
+## [13] S4Vectors_0.23.3            BiocGenerics_0.31.2        
 ## [15] readxl_1.3.1                R.utils_2.8.0              
 ## [17] R.oo_1.22.0                 R.methodsS3_1.7.1          
-## [19] BiocFileCache_1.7.10        dbplyr_1.4.0               
-## [21] knitr_1.22                  BiocStyle_2.11.0           
+## [19] BiocFileCache_1.9.0         dbplyr_1.4.0               
+## [21] knitr_1.23                  BiocStyle_2.13.0           
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] bitops_1.0-6             bit64_0.9-7             
 ##  [3] httr_1.4.0               dynamicTreeCut_1.63-1   
-##  [5] tools_3.7.0              R6_2.4.0                
+##  [5] tools_3.6.0              R6_2.4.0                
 ##  [7] irlba_2.3.3              vipor_0.4.5             
 ##  [9] DBI_1.0.0                lazyeval_0.2.2          
 ## [11] colorspace_1.4-1         withr_2.1.2             
 ## [13] tidyselect_0.2.5         gridExtra_2.3           
-## [15] processx_3.3.0           bit_1.1-14              
-## [17] curl_3.3                 compiler_3.7.0          
-## [19] BiocNeighbors_1.1.13     labeling_0.3            
-## [21] bookdown_0.9             scales_1.0.0            
+## [15] processx_3.3.1           bit_1.1-14              
+## [17] curl_3.3                 compiler_3.6.0          
+## [19] BiocNeighbors_1.3.1      labeling_0.3            
+## [21] bookdown_0.10            scales_1.0.0            
 ## [23] callr_3.2.0              rappdirs_0.3.1          
-## [25] stringr_1.4.0            digest_0.6.18           
-## [27] rmarkdown_1.12           XVector_0.23.2          
+## [25] stringr_1.4.0            digest_0.6.19           
+## [27] rmarkdown_1.12           XVector_0.25.0          
 ## [29] pkgconfig_2.0.2          htmltools_0.3.6         
-## [31] limma_3.39.18            highr_0.8               
+## [31] limma_3.41.2             highr_0.8               
 ## [33] rlang_0.3.4              RSQLite_2.1.1           
-## [35] DelayedMatrixStats_1.5.2 dplyr_0.8.0.1           
+## [35] DelayedMatrixStats_1.7.0 dplyr_0.8.1             
 ## [37] RCurl_1.95-4.12          magrittr_1.5            
-## [39] BiocSingular_0.99.18     simpleSingleCell_1.7.21 
+## [39] BiocSingular_1.1.1       simpleSingleCell_1.9.3  
 ## [41] GenomeInfoDbData_1.2.1   Matrix_1.2-17           
 ## [43] Rcpp_1.0.1               ggbeeswarm_0.6.0        
 ## [45] munsell_0.5.0            viridis_0.5.1           
 ## [47] stringi_1.4.3            yaml_2.2.0              
-## [49] edgeR_3.25.7             zlibbioc_1.29.0         
-## [51] plyr_1.8.4               grid_3.7.0              
-## [53] blob_1.1.1               dqrng_0.2.0             
+## [49] edgeR_3.27.3             zlibbioc_1.31.0         
+## [51] plyr_1.8.4               grid_3.6.0              
+## [53] blob_1.1.1               dqrng_0.2.1             
 ## [55] crayon_1.3.4             lattice_0.20-38         
 ## [57] cowplot_0.9.4            locfit_1.5-9.1          
-## [59] ps_1.3.0                 pillar_1.3.1            
+## [59] ps_1.3.0                 pillar_1.4.0            
 ## [61] igraph_1.2.4.1           codetools_0.2-16        
 ## [63] glue_1.3.1               evaluate_0.13           
 ## [65] BiocManager_1.30.4       cellranger_1.1.0        
 ## [67] gtable_0.3.0             purrr_0.3.2             
-## [69] assertthat_0.2.1         xfun_0.6                
+## [69] assertthat_0.2.1         xfun_0.7                
 ## [71] rsvd_1.0.0               viridisLite_0.3.0       
 ## [73] tibble_2.1.1             beeswarm_0.2.3          
 ## [75] memoise_1.1.0            statmod_1.4.30

@@ -5,7 +5,7 @@ author:
   affiliation: Cancer Research UK Cambridge Institute, Li Ka Shing Centre, Robinson Way, Cambridge CB2 0RE, United Kingdom
 - name: Michael D. Morgan
   affiliation: Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
-date: "2019-04-27"
+date: "2019-05-20"
 vignette: >
   %\VignetteIndexEntry{05. Correcting batch effects}
   %\VignetteEngine{knitr::rmarkdown}
@@ -212,7 +212,7 @@ This is done with pre-clustering by `quickCluster()` to avoid pooling together v
 library(scran)
 library(BiocSingular)
 set.seed(1000) # for irlba. 
-clusters <- quickCluster(sce.gse81076, use.ranks=FALSE, BSPARAM=IrlbaParam())
+clusters <- quickCluster(sce.gse81076, BSPARAM=IrlbaParam())
 table(clusters)
 ```
 
@@ -253,7 +253,7 @@ We then compute normalized log-expression values for use in downstream analyses.
 sce.gse81076 <- normalize(sce.gse81076)
 ```
 
-### Identifying highly variable genes
+### Modelling variability
 
 We identify highly variable genes (HVGs) using `trendVar()` and `decomposeVar()`, using the variances of spike-in transcripts to model technical noise.
 We set `block=` to ensure that uninteresting differences between plates or donors do not inflate the variance.
@@ -285,20 +285,24 @@ We will be using this information later when performing feature selection prior 
 ```r
 dec.gse81076 <- dec
 dec.gse81076$Symbol <- rowData(sce.gse81076)$Symbol
-dec.gse81076 <- dec.gse81076[order(dec.gse81076$bio, decreasing=TRUE),]
-head(dec.gse81076)
+dec.gse81076[order(dec.gse81076$bio, decreasing=TRUE),]
 ```
 
 ```
-## DataFrame with 6 rows and 7 columns
-##                             mean            total              bio
-##                        <numeric>        <numeric>        <numeric>
-## ENSG00000254647 2.84438696097646 6.37771955862257  5.9349216380737
-## ENSG00000129965 1.89026042119725   6.029667887451 5.58238903992444
-## ENSG00000115263 4.01989463994372 5.74235119909272 5.50960551194796
-## ENSG00000118271 3.67399583064614 5.77781565535565  5.4770598707833
-## ENSG00000115386 4.24266345753652 5.39869761580333 5.16308284974181
-## ENSG00000164266 3.03518659963559  5.4170378405534 5.00991839661113
+## DataFrame with 17776 rows and 7 columns
+##                              mean             total                 bio
+##                         <numeric>         <numeric>           <numeric>
+## ENSG00000254647  2.84438696097646  6.37771955862257     5.9349216380737
+## ENSG00000129965  1.89026042119725    6.029667887451    5.58238903992444
+## ENSG00000115263  4.01989463994372  5.74235119909272    5.50960551194796
+## ENSG00000118271  3.67399583064614  5.77781565535565     5.4770598707833
+## ENSG00000115386  4.24266345753652  5.39869761580333    5.16308284974181
+## ...                           ...               ...                 ...
+## ERCC-00095      0.553795666013432 0.452348515513772 -0.0561557263770323
+## ERCC-00092      0.637709106227571 0.500985818813633 -0.0642680847685771
+## ERCC-00022      0.862960231263933 0.638946209543932 -0.0691817369735185
+## ERCC-00076       1.07551171426781 0.700607404061927 -0.0836790105399513
+## ERCC-00060       1.28686343117818 0.703486522627051 -0.0998254606381872
 ##                              tech   p.value       FDR      Symbol
 ##                         <numeric> <numeric> <numeric> <character>
 ## ENSG00000254647  0.44279792054887         0         0         INS
@@ -306,7 +310,12 @@ head(dec.gse81076)
 ## ENSG00000115263 0.232745687144762         0         0         GCG
 ## ENSG00000118271 0.300755784572344         0         0         TTR
 ## ENSG00000115386 0.235614766061516         0         0       REG1A
-## ENSG00000164266 0.407119443942266         0         0      SPINK1
+## ...                           ...       ...       ...         ...
+## ERCC-00095      0.508504241890804        NA        NA  ERCC-00095
+## ERCC-00092       0.56525390358221        NA        NA  ERCC-00092
+## ERCC-00022      0.708127946517451        NA        NA  ERCC-00022
+## ERCC-00076      0.784286414601879        NA        NA  ERCC-00076
+## ERCC-00060      0.803311983265238        NA        NA  ERCC-00060
 ```
 
 
@@ -476,7 +485,7 @@ We compute size factors for the endogenous genes and spike-in transcripts, and u
 
 ```r
 set.seed(1000)
-clusters <- quickCluster(sce.gse85241, use.ranks=FALSE, BSPARAM=IrlbaParam())
+clusters <- quickCluster(sce.gse85241, BSPARAM=IrlbaParam())
 table(clusters)
 ```
 
@@ -510,7 +519,7 @@ summary(sizeFactors(sce.gse85241, "ERCC"))
 sce.gse85241 <- normalize(sce.gse85241)
 ```
 
-### Identifying highly variable genes
+### Modelling variability
 
 We fit a trend to the spike-in variances as previously described, allowing us to model the technical noise for each gene (Figure \@ref(fig:var-gse85241)).
 Again, we set `block=` to ensure that uninteresting differences between plates or donors do not inflate the variance.
@@ -538,28 +547,50 @@ We order genes by decreasing biological component, as described above.
 ```r
 dec.gse85241 <- dec
 dec.gse85241$Symbol <- rowData(sce.gse85241)$Symbol
-dec.gse85241 <- dec.gse85241[order(dec.gse85241$bio, decreasing=TRUE),]
-head(dec.gse85241)
+dec.gse85241[order(dec.gse85241$bio, decreasing=TRUE),]
 ```
 
 ```
-## DataFrame with 6 rows and 7 columns
-##                             mean            total              bio
-##                        <numeric>        <numeric>        <numeric>
-## ENSG00000115263 7.67110494913732 6.64869412141223 6.61993009624089
-## ENSG00000089199 4.63141777116535 6.49101561206233 6.37005001267999
-## ENSG00000169903 3.02363719480826 6.60374469250074 6.25171241896403
-## ENSG00000254647 2.00812251287305 6.46803316161483 5.91300126053973
-## ENSG00000118271 7.34417012391726 5.82255630100473  5.7911444440125
-## ENSG00000171951  4.2002996520299 5.63389093078673 5.47030577732233
-##                               tech   p.value       FDR      Symbol
-##                          <numeric> <numeric> <numeric> <character>
-## ENSG00000115263 0.0287640251713411         0         0         GCG
-## ENSG00000089199  0.120965599382341         0         0        CHGB
-## ENSG00000169903  0.352032273536714         0         0      TM4SF4
-## ENSG00000254647  0.555031901075099         0         0         INS
-## ENSG00000118271 0.0314118569922332         0         0         TTR
-## ENSG00000171951   0.16358515346441         0         0        SCG2
+## DataFrame with 16917 rows and 7 columns
+##                              mean             total                 bio
+##                         <numeric>         <numeric>           <numeric>
+## ENSG00000115263  7.67110494913732  6.64869412141223    6.61993009624089
+## ENSG00000089199  4.63141777116535  6.49101561206233    6.37005001267999
+## ENSG00000169903  3.02363719480826  6.60374469250074    6.25171241896403
+## ENSG00000254647  2.00812251287305  6.46803316161483    5.91300126053973
+## ENSG00000118271  7.34417012391726  5.82255630100473     5.7911444440125
+## ...                           ...               ...                 ...
+## ENSG00000108788  0.28438033585739 0.261308383319682 -0.0185743479647361
+## ENSG00000136930 0.398007623993996 0.340056907053161 -0.0248929968330346
+## ERCC-00145      0.511770773448024  0.42713647562905  -0.027045891903818
+## ERCC-00111      0.710387541718175 0.533274950016986 -0.0309917667628056
+## ERCC-00060      0.755042498564148 0.555030816487066 -0.0318898087800423
+##                               tech           p.value               FDR
+##                          <numeric>         <numeric>         <numeric>
+## ENSG00000115263 0.0287640251713411                 0                 0
+## ENSG00000089199  0.120965599382341                 0                 0
+## ENSG00000169903  0.352032273536714                 0                 0
+## ENSG00000254647  0.555031901075099                 0                 0
+## ENSG00000118271 0.0314118569922332                 0                 0
+## ...                            ...               ...               ...
+## ENSG00000108788  0.279882731284418 0.224723582889521 0.270284772219458
+## ENSG00000136930  0.364949903886196 0.172641543518826  0.20817884448381
+## ERCC-00145       0.454182367532868                NA                NA
+## ERCC-00111       0.564266716779791                NA                NA
+## ERCC-00060       0.586920625267108                NA                NA
+##                      Symbol
+##                 <character>
+## ENSG00000115263         GCG
+## ENSG00000089199        CHGB
+## ENSG00000169903      TM4SF4
+## ENSG00000254647         INS
+## ENSG00000118271         TTR
+## ...                     ...
+## ENSG00000108788         MLX
+## ENSG00000136930       PSMB7
+## ERCC-00145       ERCC-00145
+## ERCC-00111       ERCC-00111
+## ERCC-00060       ERCC-00060
 ```
 
 
@@ -570,7 +601,7 @@ In @haghverdi2018batch, we originally performed batch correction across four sep
 For simplicity, we will only consider the two batches generated using CEL-seq(2) and ignore those generated using Smart-seq2 [@segerstolpe2016singlecell;@lawlor2017singlecell].
 As one might expect, batch correction is easiest when dealing with data generated from the same technology,
 as fewer systematic differences are present that can interfere with the biological structure.
-Nonetheless, it is often possible to obtain good results when applying MNN correction to batches of data generated with different technologies.
+Nonetheless, it is often possible to obtain good results when applying MNN correction to batches of data generated with different technologies, as demonstrated in [this workflow](https://bioconductor.org/packages/3.10/simpleSingleCell/vignettes/multibatch.html) for advanced batch correction.
 
 It is also worth pointing out that both of the CEL-seq(2) batches above contain cells from multiple donors.
 Each donor could be treated as a separate batch in their own right, 
@@ -604,7 +635,8 @@ This improves the quality of the correction by removing one aspect of the techni
 
 
 ```r
-rescaled <- batchelor::multiBatchNorm(
+library(batchelor)
+rescaled <- multiBatchNorm(
     sce.gse85241[universe,], 
     sce.gse81076[universe,]
 )
@@ -617,8 +649,6 @@ rescaled.gse81076 <- rescaled[[2]]
 - Technically, we should have performed variance modelling and feature selection _after_ calling `multiBatchNorm()`.
 This ensures that the variance components are estimated from the same values to be used in the batch correction.
 In practice, this makes little difference, and it tends to be easier to process each batch separately and consolidate all results in one step as shown above.
-- The `batchelor::` prefix avoids ambiguity during the migration of `multiBatchNorm()` from *[scran](https://bioconductor.org/packages/3.9/scran)* to *[batchelor](https://bioconductor.org/packages/3.9/batchelor)*.
-This will not be necessary in the next release.
 
 # Performing MNN-based correction
 
@@ -631,7 +661,7 @@ Thus, the difference between cells in MNN pairs can be used as an estimate of th
 We apply the `fastMNN()` function to the three batches to remove the batch effect, using the genes in `chosen`.
 To reduce computational work and technical noise, all cells in all cells are projected into the low-dimensional space defined by the top `d` principal components.
 Identification of MNNs and calculation of correction vectors are then performed in this low-dimensional space.
-The function returns a `SingleCellExperiment` object containing low-dimensional corrected values for downstream analyses like clustering or visualization.
+The function returns a `SingleCellExperiment` object containing corrected values for downstream analyses like clustering or visualization.
 
 
 ```r
@@ -639,7 +669,7 @@ set.seed(100)
 unc.gse81076 <- logcounts(rescaled.gse81076)[chosen,]
 unc.gse85241 <- logcounts(rescaled.gse85241)[chosen,]
 
-mnn.out <- batchelor::fastMNN(
+mnn.out <- fastMNN(
     GSE81076=unc.gse81076, GSE85241=unc.gse85241,
     k=20, d=50, BSPARAM=IrlbaParam(deferred=TRUE)
 )
@@ -651,8 +681,8 @@ mnn.out
 ## dim: 14667 3638 
 ## metadata(2): merge.order merge.info
 ## assays(1): reconstructed
-## rownames(14667): ENSG00000115263 ENSG00000089199 ... ENSG00000125450
-##   ENSG00000105171
+## rownames(14667): ENSG00000268895 ENSG00000121410 ... ENSG00000074755
+##   ENSG00000036549
 ## rowData names(1): rotation
 ## colnames(3638): D2ex_1 D2ex_2 ... D30.8_93 D30.8_94
 ## colData names(1): batch
@@ -816,342 +846,6 @@ In this case, the proportion of lost variance is small, indicating that non-orth
 
 
 
-# Controlling the merge order
-
-## Manual specification 
-
-The order of the supplied batches will affect the result as the first batch is used to define the reference space to which all other batches are corrected.
-Specifically, the first batch is defined as the reference batch;
-the second batch is corrected to and merged with the current reference batch, yielding a new reference batch;
-and so on for all batches in the supplied order, with an increasingly large reference batch at each step.
-The use of a merged reference ensures that information from batches other than the first are used to identify MNN pairs in later batches.
-
-The order of batches to merge can be manually specified in the `auto.order=` argument to `fastMNN()`.
-In the example shown below, batch 2 is treated as the reference as it is the first specified batch in `auto.order=`.
-The first batch is then corrected to the second batch to obtain a new reference batch - and so on, if more than two batches were present.
-
-
-```r
-mnn.out2 <- batchelor::fastMNN(
-    GSE81076=unc.gse81076, GSE85241=unc.gse85241,
-    k=20, d=50, auto.order=c(2,1), BSPARAM=IrlbaParam(deferred=TRUE)
-)
-metadata(mnn.out2)$merge.order # batch 2 (GSE85241) is first in the order.
-```
-
-```
-## [1] "GSE85241" "GSE81076"
-```
-
-```r
-metadata(mnn.out2)$merge.info$pairs[[1]] # 'first' now refers to GSE85241.
-```
-
-```
-## DataFrame with 6626 rows and 2 columns
-##          first    second
-##      <integer> <integer>
-## 1         1294       748
-## 2         1294       635
-## 3         1294       963
-## 4         1294      1206
-## 5         1294       921
-## ...        ...       ...
-## 6622      3638      1191
-## 6623      3638       597
-## 6624      3638      1274
-## 6625      3638      1197
-## 6626      3638      1188
-```
-
-Using `auto.order=` will change the merge order without requiring a change to the supplied order of batches in `fastMNN()`.
-Similarly, the order of batches (and cells) in the output will not be altered.
-This makes it easy to explore different merge orders without altering the surrounding code.
-
-
-```r
-Rle(mnn.out2$batch) # same as mnn.out$batch
-```
-
-```
-## character-Rle of length 3638 with 2 runs
-##   Lengths:       1292       2346
-##   Values : "GSE81076" "GSE85241"
-```
-
-If very different batches (in terms of cell composition) are present, we suggest setting the largest, most heterogeneous batch as the first.
-This ensures that sufficient MNN pairs will be identified between the first and other batches for stable correction.
-Conversely, if two small batches without shared populations are supplied first, the wrong MNN pairs will be detected and the result of the merge will be incorrect.
-
-
-
-## Hierarchical merging 
-
-### Motivation  
-
-In more complex experiments, we may know beforehand that certain sets of batches are more similar to each other.
-We might then want to merge those similar batches before attempting the more difficult merges involving batches with different cell type composition and/or gene expression.
-Examples include:
-
-- Merging batches that represent replicate experiments from the same condition, prior to merging across conditions.
-- Merging batches generated with the same scRNA-seq technology prior to merging across technologies.
-
-This strategy limits encourages detection of correct MNN pairs as similar batches should have more shared populations, 
-By comparison, performing the more difficult merges first is more likely to introduce errors whereby distinct subpopulations are incorrectly placed together.
-This unnecessarily propagates the error to later steps as the initial merge is used as a reference for subsequent merges.
-
-### Setting up the inputs
-
-Hierarchical merging can be achieved through multiple calls to `fastMNN()` with progressively merged batches.
-To illustrate, assume that we want to remove `Donor` effects within each batch prior to merging across batches.
-We split up the cells in GSE85241 according to the donor of origin, creating one `SingleCellExperiment` object for each donor.
-
-
-```r
-all.donors <- unique(rescaled.gse85241$Donor)
-table(rescaled.gse85241$Donor)
-```
-
-```
-## 
-## D28 D29 D30 D31 
-## 340 604 689 713
-```
-
-```r
-by.donor.85241 <- vector("list", length(all.donors))
-names(by.donor.85241) <- sort(all.donors)
-for (x in all.donors) {
-    by.donor.85241[[x]] <- rescaled.gse85241[,rescaled.gse85241$Donor==x]
-}
-```
-
-We repeat this process for GSE81076.
-For demonstration purposes, we will aggregate some of the donors together to ensure that there are enough cells in each level for MNN detection.
-
-
-```r
-adj.donors <- c(D101="A", D102="A", D10631="A",
-    D17="B", D1713="B", D172444="B",
-    D2="C", D3="C",
-    D71="D", D72="D", D73="D", D74="D")[rescaled.gse81076$Donor]
-table(adj.donors)
-```
-
-```
-## adj.donors
-##   A   B   C   D 
-## 162 464 320 346
-```
-
-```r
-all.donors <- unique(adj.donors)
-by.donor.81076 <- vector("list", length(all.donors))
-names(by.donor.81076) <- sort(all.donors)
-for (x in all.donors) {
-    by.donor.81076[[x]] <- rescaled.gse81076[,adj.donors==x]
-}
-```
-
-We use the `multiBatchPCA()` function to perform a PCA across _all_ batches to be merged.
-This ensures that all cells are placed onto the same coordinate space, which would obviously not be possible if a PCA was performed for each batch separately.
-Specifically, `multiBatchPCA()` performs a modified PCA to ensure that each supplied matrix contributes equally to the definition of the PC space.
-This avoids problems with imbalances in the number of cells across batches, meanining that smaller batches (possibly with unique cell types) are not ignored.
-
-
-```r
-all.batches <- c(by.donor.85241, by.donor.81076)
-
-# Cosine normalizing for consistency with fastMNN() defaults.
-all.logcounts <- lapply(all.batches, logcounts)
-scaled <- lapply(all.logcounts, batchelor::cosineNorm) 
-
-set.seed(1000) # for irlba.
-pc.all <- do.call(batchelor::multiBatchPCA, c(scaled, 
-    list(d=50, BSPARAM=IrlbaParam(deferred=TRUE))
-))
-names(pc.all)
-```
-
-```
-## [1] "D28" "D29" "D30" "D31" "A"   "B"   "C"   "D"
-```
-
-**Comments from Aaron:**
-
-- Here, we have applied `multiBatchPCA()` to the batch-level inputs for convenience.
-It is also possible to supply donor-level matrices to equalize contributions across donors.
-- Recall that we ran `multiBatchNorm()` earlier to generate the `rescaled.gse*` objects.
-As a result, cosine normalization is not technically necessary, as all batches should be on the same scale already (see `?cosineNorm` for a discussion of this).
-Nonetheless, we run it here for consistency with our previous `fastMNN()` call where cosine normalization is turned on by default.
-
-### Performing progressive merges 
-
-We pass the matrices corresponding to the donors in GSE85241 to `fastMNN()`, setting `pc.input=TRUE` to indicate that dimensionality reduction has already been performed.
-This uses the first donor to define the reference space^[Which can be changed with `auto.order=`, if so desired.] and merges cells from all other donors to the first.
-In this manner, we remove donor effects within the GSE85241 batch.
-
-
-```r
-pcs.85241 <- pc.all[seq_along(by.donor.85241)]
-mnn.out.85241 <- do.call(batchelor::fastMNN, c(pcs.85241, list(pc.input=TRUE)))
-Rle(mnn.out.85241$batch)
-```
-
-```
-## character-Rle of length 2346 with 4 runs
-##   Lengths:   340   604   689   713
-##   Values : "D28" "D29" "D30" "D31"
-```
-
-Note that when `pc.input=TRUE`, a `DataFrame` is returned instead of a `SingleCellExperiment`.
-This reflects the fact that per-gene identities are lost when PCs are supplied instead of per-gene expression vectors^[Though it is entirely possible to reconstruct these using rotation vectors, see below.].
-We repeat this for the donors in the GSE81076 batch.
-
-
-```r
-pcs.81076 <- tail(pc.all, length(by.donor.81076))
-mnn.out.81076 <- do.call(batchelor::fastMNN, c(pcs.81076, list(pc.input=TRUE)))
-Rle(mnn.out.81076$batch)
-```
-
-```
-## character-Rle of length 1292 with 4 runs
-##   Lengths: 162 464 320 346
-##   Values : "A" "B" "C" "D"
-```
-
-The next step is to merge the two batches together.
-To do this, we simply repeat the `fastMNN()` call with the donor-corrected values for each batch.
-Again, we need to set `pc.input=TRUE` to prevent the function from unnecessarily (and incorrectly) repeating the cosine normalization and PCA steps on the corrected values.
-We use a larger `k` in the final `fastMNN()` call to improve the robustness of MNN detection to outlier cells on the edges of each cluster.
-
-
-```r
-mnn.out3 <- batchelor::fastMNN(
-    GSE81076=mnn.out.81076,
-    GSE85241=mnn.out.85241, 
-    pc.input=TRUE, k=100 # see comments below.
-) 
-
-Rle(mnn.out3$batch) # by dataset
-```
-
-```
-## character-Rle of length 3638 with 2 runs
-##   Lengths:       1292       2346
-##   Values : "GSE81076" "GSE85241"
-```
-
-```r
-Rle(c(mnn.out.81076$batch, mnn.out.85241$batch)) # by donor
-```
-
-```
-## character-Rle of length 3638 with 8 runs
-##   Lengths:   162   464   320   346   340   604   689   713
-##   Values :   "A"   "B"   "C"   "D" "D28" "D29" "D30" "D31"
-```
-
-This yields a final corrected expression matrix where both within-batch donor effects and batch effects have been corrected.
-We examine the quality of each of the merge steps with t-SNE plots (Figure \@ref(fig:tsne-hmerge)).
-Within each batch, the donors are generally well-mixed, and the final merge is consistent with Figure \@ref(fig:tsne-batch). 
-
-
-```r
-set.seed(1000)
-par(mfrow=c(1,3))
-
-library(Rtsne)
-tout.85241 <- Rtsne(mnn.out.85241$corrected, pca=FALSE)
-plot(tout.85241$Y[,1], tout.85241$Y[,2], main="GSE85241 donors",
-    col=as.factor(mnn.out.85241$batch), xlab="tSNE1", ylab="tSNE2")
-
-tout.81076 <- Rtsne(mnn.out.81076$corrected, pca=FALSE)
-plot(tout.81076$Y[,1], tout.81076$Y[,2], main="GSE81076 donors",
-    col=as.factor(mnn.out.81076$batch), xlab="tSNE1", ylab="tSNE2")
-
-tout.all <- Rtsne(mnn.out3$corrected, pca=FALSE)
-plot(tout.all$Y[,1], tout.all$Y[,2], main="Final",
-    col=as.factor(mnn.out3$batch), xlab="tSNE1", ylab="tSNE2")
-```
-
-<div class="figure">
-<img src="batch_files/figure-html/tsne-hmerge-1.png" alt="t-SNE plots after correcting for donor effects within each data set, and after correcting for batch effects between data sets (final). Each point represents a cell that is coloured according to its donor of origin (left, middle) or the data set of origin (right)." width="960" />
-<p class="caption">(\#fig:tsne-hmerge)t-SNE plots after correcting for donor effects within each data set, and after correcting for batch effects between data sets (final). Each point represents a cell that is coloured according to its donor of origin (left, middle) or the data set of origin (right).</p>
-</div>
-
-**Comments from Aaron:**
-
-- Here, we have applied `multiBatchPCA()` to the batch-level inputs for convenience.
-It is also possible to supply donor-level matrices to equalize contributions across donors.
-- One might ask why a larger `k` was not needed in Figure \@ref(fig:tsne-batch) as well.
-This was probably because the outliers were masked by inter-donor heterogeneity when the t-SNE plots were generated without removing the donor effects.
-- In this specific example, cells from the same donor will occupy contiguous rows in the `mnn.out3$corrected` matrix.
-However, this may not have been the case for the original ordering of cells in each `SingleCellExperiment`.
-This requires some extra account-keeping to match up the final corrected matrix to the original ordering, e.g., when cross-referencing to metadata.
-
-    
-    ```r
-    original.plate <- unlist(lapply(rescaled, "[[", i="Plate"))
-    original.names <- unlist(lapply(rescaled, colnames))
-    
-    # Needs unique names: trigger error otherwise.
-    stopifnot(anyDuplicated(original.names)==0L)
-    
-    m <- match(rownames(mnn.out3$corrected), original.names)
-    new.plate <- original.plate[m]
-    ```
-
-
-
-## Automatic specification
-
-In situations where the nature of each batch is unknown, users can set `auto.order=TRUE` to allow `fastMNN()` to empirically choose which batches to merge at each step.
-The first merge is performed between the pair of batches with the most MNN pairs.
-Progressive merges are performed with the remaining batch that has the most MNN pairs with the current reference batch.
-The aim is to maximize the number of MNN pairs at each step to provide a stable correction.
-We demonstrate below using the within-donor subbatches in the GSE81076 data set.
-
-
-```r
-mnn.out.auto <- do.call(batchelor::fastMNN, c(pcs.81076, 
-    list(pc.input=TRUE, auto.order=TRUE)))
-names(by.donor.81076) # supplied order 
-```
-
-```
-## [1] "A" "B" "C" "D"
-```
-
-```r
-metadata(mnn.out.auto)$merge.order # automatically defined order
-```
-
-```
-## [1] "D" "B" "C" "A"
-```
-
-As with manual specification, the merge order does not affect the output order of cells.
-This makes it easy to try different merge orderings without having to deal with a re-ordering of output cells.
-
-
-```r
-Rle(mnn.out.auto$batch) 
-```
-
-```
-## character-Rle of length 1292 with 4 runs
-##   Lengths: 162 464 320 346
-##   Values : "A" "B" "C" "D"
-```
-
-The obvious cost of this approach is that of computation time. 
-Nearest-neighbour searches need to be performed between all pairs of batches, and then between each remaining batch and the reference at each merge step.
-As such, we prefer manual definition of a merge order that makes better use of prior knowledge about the experiment design.
-
-
-
 # Using the corrected values in downstream analyses
 
 ## For cell-based analyses
@@ -1214,7 +908,7 @@ We do not use the corrected values directly in gene-based analyses, for various 
 - It is usually inappropriate to perform DE analyses on batch-corrected values, due to the failure to model the uncertainty of the correction.
 This usually results in loss of type I error control, i.e., more false positives than expected.
 - The correction does not preserve the mean-variance relationship.
-Applications of common DE methods like *[edgeR](https://bioconductor.org/packages/3.9/edgeR)* or *[limma](https://bioconductor.org/packages/3.9/limma)* are unlikely to be valid.
+Applications of common DE methods like *[edgeR](https://bioconductor.org/packages/3.10/edgeR)* or *[limma](https://bioconductor.org/packages/3.10/limma)* are unlikely to be valid.
 - Batch correction may (correctly) remove biological differences between batches in the course of mapping all cells onto a common coordinate system.
 Returning to the uncorrected expression values provides an opportunity for detecting such differences if they are of interest.
 Conversely, if the batch correction made a mistake, the use of the uncorrected expression values provides an important sanity check.
@@ -1270,8 +964,8 @@ as.data.frame(demo[,1:3]) # only first three columns for brevity.
 
 
 
-Other approaches for handling batch effects during marker gene detection are discussed [elsewhere](https://bioconductor.org/packages/3.9/simpleSingleCell/vignettes/de.html#blocking-on-uninteresting-factors-of-variation).
-It is similarly possible to perform these analyses with standard Bioconductor packages for DE analysis such as *[edgeR](https://bioconductor.org/packages/3.9/edgeR)* or *[limma](https://bioconductor.org/packages/3.9/limma)*.
+Other approaches for handling batch effects during marker gene detection are discussed [elsewhere](https://bioconductor.org/packages/3.10/simpleSingleCell/vignettes/de.html#blocking-on-uninteresting-factors-of-variation).
+It is similarly possible to perform these analyses with standard Bioconductor packages for DE analysis such as *[edgeR](https://bioconductor.org/packages/3.10/edgeR)* or *[limma](https://bioconductor.org/packages/3.10/limma)*.
 Note that the use of `block=` is roughly similar to the use of a batch-cluster interaction model and testing whether the average log-fold change across batches is equal to zero.
 
 **Comments from Aaron:**
@@ -1286,7 +980,7 @@ This makes it difficult to interpret the effect size of DE analyses based on the
 When applied on gene expression values, `fastMNN()` will also return a matrix of corrected per-gene expression values in the `reconstructed` assay.
 This is obtained by taking the cross-product of the corrected low-dimensional values with the rotation vectors from the initial PCA,
 which effectively reverses the initial projection into a low-dimensional space during `multiBatchPCA()`.
-The example below extracts the corrected expression values for insulin.
+The cross-product is represented as a `LowRankMatrix` to avoid explicitly creating a large dense matrix.
 
 
 ```r
@@ -1295,31 +989,35 @@ assay(sce, "reconstructed")
 
 ```
 ## <14667 x 3638> LowRankMatrix object of type "double":
-##               D2ex_1        D2ex_2        D2ex_3 ...      D30.8_93
-##    GCG   -0.05524770   -0.05151017   -0.05767458   . -0.0149947200
-##   CHGB   -0.02991609   -0.02866532   -0.02961641   . -0.0262184713
-## TM4SF4   -0.02477495   -0.03042626   -0.02821652   . -0.0069536055
-##    INS   -0.02249294   -0.02011597   -0.01585674   .  0.0007176131
-##    TTR   -0.05441265   -0.05924151   -0.05007137   . -0.0306570407
-##    ...             .             .             .   .             .
-##  INTS5  2.371094e-04 -2.293720e-04  2.468718e-04   .  0.0010819816
-## PLGRKT  1.901531e-04  2.368056e-04  2.222304e-04   .  0.0020596355
-## RUVBL2 -1.851085e-04  6.657381e-05  7.270702e-04   .  0.0006563725
-##  NUP85 -5.918494e-05 -8.362143e-06  3.003140e-04   .  0.0019161638
-##   POP4 -2.176989e-03 -2.583791e-03 -2.046742e-03   .  0.0018909824
-##             D30.8_94
-##    GCG -0.0315699659
-##   CHGB -0.0230390676
-## TM4SF4 -0.0128199079
-##    INS -0.0054854880
-##    TTR -0.0272707530
-##    ...             .
-##  INTS5  0.0011030223
-## PLGRKT  0.0006906096
-## RUVBL2  0.0019940485
-##  NUP85  0.0016072321
-##   POP4  0.0014569066
+##                 D2ex_1        D2ex_2        D2ex_3 ...      D30.8_93
+## A1BG-AS1 -0.0001897759  0.0001626336 -0.0002743021   .  6.301206e-05
+##     A1BG -0.0012809755 -0.0002372484 -0.0015181636   . -3.382437e-05
+##     A1CF -0.0034189000  0.0010362134  0.0004535614   . -7.918062e-03
+##  A2M-AS1 -0.0001402640 -0.0001251938 -0.0001492425   . -3.582318e-05
+##    A2ML1  0.0004526199  0.0011910430  0.0005729512   . -2.896223e-04
+##      ...             .             .             .   .             .
+##   ZYG11A  8.185510e-04  1.178146e-03  1.132632e-03   . -2.836755e-06
+##   ZYG11B -3.068301e-03  3.233709e-03  1.196817e-03   . -1.843556e-03
+##      ZYX  3.146123e-03  2.415224e-04 -4.719915e-04   .  8.020050e-03
+##    ZZEF1 -2.776474e-03 -8.861943e-06 -3.822129e-04   . -1.659030e-03
+##     ZZZ3 -2.185849e-03 -1.596340e-03 -2.019538e-03   . -2.079179e-03
+##               D30.8_94
+## A1BG-AS1  4.063966e-05
+##     A1BG  1.687394e-03
+##     A1CF -6.685736e-03
+##  A2M-AS1  1.289417e-04
+##    A2ML1 -2.254602e-04
+##      ...             .
+##   ZYG11A -1.182668e-04
+##   ZYG11B -8.991679e-05
+##      ZYX  1.306827e-02
+##    ZZEF1  2.992283e-04
+##     ZZZ3 -2.142771e-03
 ```
+
+We can then use standard methods on the `LowRankMatrix` to extract the corrected expression values for a gene of interest.
+For example, subsetting by row name is used below to obtain the corrected expression for insulin.
+
 
 ```r
 summary(assay(sce)["INS",])
@@ -1330,36 +1028,150 @@ summary(assay(sce)["INS",])
 ## -0.038066 -0.005596  0.003042  0.014278  0.013968  0.100745
 ```
 
-If `fastMNN()` was run on low-dimensional inputs, only the low-dimensional output will be reported.
-Nonetheless, users can obtain per-gene corrected values by manually computing the cross-product using the PCA rotation vectors.
-For example, the code below obtains corrected expression values for _GCG_ from our hierarchical merge.
-
-
-```r
-rotations <- metadata(pc.all)$rotation
-cor.exp <- tcrossprod(mnn.out3$corrected,
-    rotations["ENSG00000115263",,drop=FALSE])
-summary(cor.exp)
-```
-
-```
-##  ENSG00000115263    
-##  Min.   :-0.075929  
-##  1st Qu.:-0.038805  
-##  Median :-0.028759  
-##  Mean   :-0.018606  
-##  3rd Qu.: 0.009197  
-##  Max.   : 0.074218
-```
-
-Explicit calculation of all per-gene corrected values is probably ill-advised as this would involve the construction of a dense matrix.
-This may be prohibitively memory-consuming for large data sets that are otherwise representable as sparse matrices.
-Rather, corrected values can be computed for specific genes as they are needed, e.g., using the `LowRankMatrix` class.
-
 Per-gene corrected values can be readily used for visualization, e.g., in Figure \@ref(fig:tsne-markers).
 This can be more aesthetically pleasing than uncorrected expression values that may contain large shifts on the colour scale between cells in different batches.
 However, use of the corrected values in any quantitative procedure should be treated with extreme caution.
 If they must be used, they should be backed up by similar results from an analysis on the uncorrected values.
+
+# Controlling the merge order
+
+## Manual specification 
+
+The order of the supplied batches will affect the result as the first batch is used to define the reference space to which all other batches are corrected.
+Specifically, the first batch is defined as the reference batch;
+the second batch is corrected to and merged with the current reference batch, yielding a new reference batch;
+and so on for all batches in the supplied order, with an increasingly large reference batch at each step.
+The use of a merged reference ensures that information from batches other than the first are used to identify MNN pairs in later batches.
+
+The order of batches to merge can be manually specified in the `auto.order=` argument to `fastMNN()`.
+In the example shown below, batch 2 is treated as the reference as it is the first specified batch in `auto.order=`.
+The first batch is then corrected to the second batch to obtain a new reference batch - and so on, if more than two batches were present.
+
+
+```r
+mnn.out2 <- fastMNN(
+    GSE81076=unc.gse81076, GSE85241=unc.gse85241,
+    k=20, d=50, auto.order=c(2,1), BSPARAM=IrlbaParam(deferred=TRUE)
+)
+metadata(mnn.out2)$merge.order # batch 2 (GSE85241) is first in the order.
+```
+
+```
+## [1] "GSE85241" "GSE81076"
+```
+
+```r
+metadata(mnn.out2)$merge.info$pairs[[1]] # 'first' now refers to GSE85241.
+```
+
+```
+## DataFrame with 6626 rows and 2 columns
+##          first    second
+##      <integer> <integer>
+## 1         1294       748
+## 2         1294       635
+## 3         1294       963
+## 4         1294      1206
+## 5         1294       921
+## ...        ...       ...
+## 6622      3638      1191
+## 6623      3638       597
+## 6624      3638      1274
+## 6625      3638      1197
+## 6626      3638      1188
+```
+
+Using `auto.order=` will change the merge order without requiring a change to the supplied order of batches in `fastMNN()`.
+Similarly, the order of batches (and cells) in the output will not be altered.
+This makes it easy to explore different merge orders without altering the surrounding code.
+
+
+```r
+Rle(mnn.out2$batch) # same as mnn.out$batch
+```
+
+```
+## character-Rle of length 3638 with 2 runs
+##   Lengths:       1292       2346
+##   Values : "GSE81076" "GSE85241"
+```
+
+If very different batches (in terms of cell composition) are present, we suggest setting the largest, most heterogeneous batch as the first.
+This ensures that sufficient MNN pairs will be identified between the first and other batches for stable correction.
+Conversely, if two small batches without shared populations are supplied first, the wrong MNN pairs will be detected and the result of the merge will be incorrect.
+
+
+
+## Hierarchical merging 
+
+In more complex experiments, we may know beforehand that certain sets of batches are more similar to each other.
+We might then want to merge those similar batches before attempting the more difficult merges involving batches with different cell type composition and/or gene expression.
+Examples include:
+
+- Merging batches that represent replicate experiments from the same condition, prior to merging across conditions.
+- Merging batches generated with the same scRNA-seq technology prior to merging across technologies.
+
+This strategy encourages detection of correct MNN pairs as similar batches should have more shared populations.
+By comparison, performing the more difficult merges first is more likely to introduce errors whereby distinct subpopulations are incorrectly placed together.
+This unnecessarily propagates the error to later steps as the initial merge is used as a reference for subsequent merges.
+
+Hierarchical merging is achieved by first projecting all batches into a common PC space with `multiBatchPCA()`,
+and then performing multiple calls to `fastMNN()` with progressively merged batches.
+We will demonstrate this in the following [vignette](https://bioconductor.org/packages/3.10/simpleSingleCell/vignettes/multibatch.html).
+
+## Automatic specification
+
+In situations where the nature of each batch is unknown, users can set `auto.order=TRUE` to allow `fastMNN()` to empirically choose which batches to merge at each step.
+The first merge is performed between the pair of batches with the most MNN pairs.
+Progressive merges are performed with the remaining batch that has the most MNN pairs with the current reference batch.
+The aim is to maximize the number of MNN pairs at each step to provide a stable correction.
+We demonstrate below by splitting the GSE85241 data set into two subbatches.
+
+
+```r
+first.half <- seq_len(ncol(unc.gse85241)/2)
+mnn.auto <- fastMNN(
+    GSE81076=unc.gse81076, 
+    GSE85241_first=unc.gse85241[,first.half],
+    GSE85241_second=unc.gse85241[,-first.half],
+    k=20, d=50, auto.order=TRUE, BSPARAM=IrlbaParam(deferred=TRUE)
+)
+```
+
+We see that the automatically defined order differs from the sequence of batches provided to `fastMNN()`.
+In particular, the subbatches within GSE85241 are merged together before both are merged with GSE81076.
+This is expected as neighbors are more likely to be identified between cells from the same batch than across batches.
+
+
+```r
+metadata(mnn.auto)$merge.order # automatically defined order
+```
+
+```
+## [1] "GSE85241_second" "GSE85241_first"  "GSE81076"
+```
+
+
+
+As with manual specification, the merge order does not affect the output order of cells.
+This makes it easy to try different merge orderings without having to deal with a re-ordering of output cells.
+
+
+```r
+Rle(mnn.auto$batch) 
+```
+
+```
+## character-Rle of length 3638 with 3 runs
+##   Lengths:              1292              1173              1173
+##   Values :        "GSE81076"  "GSE85241_first" "GSE85241_second"
+```
+
+The obvious cost of this approach is that of computation time. 
+Nearest-neighbour searches need to be performed between all pairs of batches, and then between each remaining batch and the reference at each merge step.
+Manual definition of the merge order may also be able to make better use of prior knowledge about the experiment design.
+
+
 
 # Concluding remarks
 
@@ -1371,6 +1183,17 @@ This avoids the need to repeat all of the processing steps described above.
 saveRDS(file="pancreas_data.rds", sce)
 ```
 
+We also save the processed objects for each data set separately, 
+for use in the [later workflow](https://bioconductor.org/packages/3.10/simpleSingleCell/vignettes/multibatch.html).
+
+
+```r
+saveRDS(file="gse81076_sce.rds", sce.gse81076)
+saveRDS(file="gse81076_dec.rds", dec.gse81076)
+saveRDS(file="gse85241_sce.rds", sce.gse85241)
+saveRDS(file="gse85241_dec.rds", dec.gse85241)
+```
+
 All software packages used in this workflow are publicly available from the Comprehensive R Archive Network (https://cran.r-project.org) or the Bioconductor project (http://bioconductor.org).
 The specific version numbers of the packages used are shown below, along with the version of the R installation.
 
@@ -1380,13 +1203,13 @@ sessionInfo()
 ```
 
 ```
-## R Under development (unstable) (2019-04-11 r76379)
+## R version 3.6.0 Patched (2019-05-02 r76458)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
 ## Running under: Ubuntu 18.04.2 LTS
 ## 
 ## Matrix products: default
-## BLAS:   /home/luna/Software/R/trunk/lib/libRblas.so
-## LAPACK: /home/luna/Software/R/trunk/lib/libRlapack.so
+## BLAS:   /home/luna/Software/R/R-3-6-branch-dev/lib/libRblas.so
+## LAPACK: /home/luna/Software/R/R-3-6-branch-dev/lib/libRlapack.so
 ## 
 ## locale:
 ##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
@@ -1401,54 +1224,54 @@ sessionInfo()
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] Rtsne_0.15                  BiocSingular_0.99.18       
-##  [3] scran_1.11.27               scater_1.11.16             
-##  [5] ggplot2_3.1.1               SingleCellExperiment_1.5.2 
-##  [7] SummarizedExperiment_1.13.0 DelayedArray_0.9.9         
-##  [9] BiocParallel_1.17.19        matrixStats_0.54.0         
-## [11] GenomicRanges_1.35.1        GenomeInfoDb_1.19.3        
-## [13] org.Hs.eg.db_3.8.2          AnnotationDbi_1.45.1       
-## [15] IRanges_2.17.5              S4Vectors_0.21.24          
-## [17] Biobase_2.43.1              BiocGenerics_0.29.2        
-## [19] BiocFileCache_1.7.10        dbplyr_1.4.0               
-## [21] knitr_1.22                  BiocStyle_2.11.0           
+##  [1] batchelor_1.1.1             BiocSingular_1.1.1         
+##  [3] scran_1.13.3                scater_1.13.3              
+##  [5] ggplot2_3.1.1               SingleCellExperiment_1.7.0 
+##  [7] SummarizedExperiment_1.15.1 DelayedArray_0.11.0        
+##  [9] BiocParallel_1.19.0         matrixStats_0.54.0         
+## [11] GenomicRanges_1.37.4        GenomeInfoDb_1.21.1        
+## [13] org.Hs.eg.db_3.8.2          AnnotationDbi_1.47.0       
+## [15] IRanges_2.19.3              S4Vectors_0.23.3           
+## [17] Biobase_2.45.0              BiocGenerics_0.31.2        
+## [19] BiocFileCache_1.9.0         dbplyr_1.4.0               
+## [21] knitr_1.23                  BiocStyle_2.13.0           
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] bitops_1.0-6             bit64_0.9-7             
 ##  [3] httr_1.4.0               dynamicTreeCut_1.63-1   
-##  [5] tools_3.7.0              R6_2.4.0                
+##  [5] tools_3.6.0              R6_2.4.0                
 ##  [7] irlba_2.3.3              vipor_0.4.5             
 ##  [9] DBI_1.0.0                lazyeval_0.2.2          
 ## [11] colorspace_1.4-1         withr_2.1.2             
-## [13] processx_3.3.0           tidyselect_0.2.5        
+## [13] processx_3.3.1           tidyselect_0.2.5        
 ## [15] gridExtra_2.3            bit_1.1-14              
-## [17] curl_3.3                 compiler_3.7.0          
-## [19] BiocNeighbors_1.1.13     labeling_0.3            
-## [21] bookdown_0.9             scales_1.0.0            
+## [17] curl_3.3                 compiler_3.6.0          
+## [19] BiocNeighbors_1.3.1      labeling_0.3            
+## [21] bookdown_0.10            scales_1.0.0            
 ## [23] callr_3.2.0              rappdirs_0.3.1          
-## [25] stringr_1.4.0            digest_0.6.18           
-## [27] rmarkdown_1.12           XVector_0.23.2          
+## [25] stringr_1.4.0            digest_0.6.19           
+## [27] rmarkdown_1.12           XVector_0.25.0          
 ## [29] pkgconfig_2.0.2          htmltools_0.3.6         
-## [31] limma_3.39.18            highr_0.8               
+## [31] limma_3.41.2             highr_0.8               
 ## [33] rlang_0.3.4              RSQLite_2.1.1           
-## [35] DelayedMatrixStats_1.5.2 dplyr_0.8.0.1           
+## [35] DelayedMatrixStats_1.7.0 dplyr_0.8.1             
 ## [37] RCurl_1.95-4.12          magrittr_1.5            
-## [39] simpleSingleCell_1.7.21  GenomeInfoDbData_1.2.1  
+## [39] simpleSingleCell_1.9.3   GenomeInfoDbData_1.2.1  
 ## [41] Matrix_1.2-17            Rcpp_1.0.1              
 ## [43] ggbeeswarm_0.6.0         munsell_0.5.0           
 ## [45] viridis_0.5.1            stringi_1.4.3           
-## [47] yaml_2.2.0               edgeR_3.25.7            
-## [49] zlibbioc_1.29.0          plyr_1.8.4              
-## [51] grid_3.7.0               blob_1.1.1              
-## [53] dqrng_0.2.0              crayon_1.3.4            
-## [55] lattice_0.20-38          cowplot_0.9.4           
-## [57] locfit_1.5-9.1           ps_1.3.0                
-## [59] pillar_1.3.1             igraph_1.2.4.1          
-## [61] codetools_0.2-16         glue_1.3.1              
-## [63] evaluate_0.13            BiocManager_1.30.4      
-## [65] batchelor_0.99.8         gtable_0.3.0            
+## [47] yaml_2.2.0               edgeR_3.27.3            
+## [49] zlibbioc_1.31.0          Rtsne_0.15              
+## [51] plyr_1.8.4               grid_3.6.0              
+## [53] blob_1.1.1               dqrng_0.2.1             
+## [55] crayon_1.3.4             lattice_0.20-38         
+## [57] cowplot_0.9.4            locfit_1.5-9.1          
+## [59] ps_1.3.0                 pillar_1.4.0            
+## [61] igraph_1.2.4.1           codetools_0.2-16        
+## [63] glue_1.3.1               evaluate_0.13           
+## [65] BiocManager_1.30.4       gtable_0.3.0            
 ## [67] purrr_0.3.2              assertthat_0.2.1        
-## [69] xfun_0.6                 rsvd_1.0.0              
+## [69] xfun_0.7                 rsvd_1.0.0              
 ## [71] viridisLite_0.3.0        tibble_2.1.1            
 ## [73] beeswarm_0.2.3           memoise_1.1.0           
 ## [75] statmod_1.4.30

@@ -12,7 +12,7 @@ author:
   - *CRUK
   - *EMBL
   - Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
-date: "2019-04-27"
+date: "2019-05-20"
 vignette: >
   %\VignetteIndexEntry{01. Introduction}
   %\VignetteEngine{knitr::rmarkdown}
@@ -27,11 +27,11 @@ bibliography: ref.bib
 
 # Workflow version information
 
-**R version**: R Under development (unstable) (2019-04-11 r76379)
+**R version**: R version 3.6.0 Patched (2019-05-02 r76458)
 
-**Bioconductor version**: 3.9
+**Bioconductor version**: 3.10
 
-**Package**: 1.7.21
+**Package**: 1.9.3
 
 # Motivation
 
@@ -66,7 +66,7 @@ The workflows start from a count matrix and describe a number of key steps for s
 The application of these procedures will be demonstrated on several public scRNA-seq datasets involving immortalized myeloid progenitors, brain cells, haematopoietic stem cells, T-helper cells and mouse embryonic stem cells, generated with a range of experimental protocols and platforms [@lun2017assessing;@wilson2015combined;@zeisel2015brain;@islam2011characterization;@buettner2015computational;@zheng2017massively].
 The aim is to provide a variety of modular usage examples that can be applied by readers to construct custom analysis pipelines for their own experiments.
 
-See the *[simpleSingleCell](https://bioconductor.org/packages/3.9/simpleSingleCell)* landing page for links to individual workflows and for instructions on how to install the required packages.
+See the *[simpleSingleCell](https://bioconductor.org/packages/3.10/simpleSingleCell)* landing page for links to individual workflows and for instructions on how to install the required packages.
 To cite any of these workflows, please refer to http://f1000research.com/articles/5-2122/v2 for instructions.
 
 # Obtaining a count matrix
@@ -74,7 +74,7 @@ To cite any of these workflows, please refer to http://f1000research.com/article
 All of these workflows start from a publicly available count matrix.
 For simplicity, we forego a description of the read processing steps required to generate the count matrix, i.e., read alignment and counting into features.
 For SMART-seq2 data [@picelli2014fulllength], quantification procedures developed for bulk RNA-seq are generally satisfactory [@love2015rnaseq;@chen2016from].
-Users favouring an R-based approach to read alignment and counting might consider using the methods in the *[Rsubread](https://bioconductor.org/packages/3.9/Rsubread)* package [@liao2013subread;@liao2014featurecounts].
+Users favouring an R-based approach to read alignment and counting might consider using the methods in the *[Rsubread](https://bioconductor.org/packages/3.10/Rsubread)* package [@liao2013subread;@liao2014featurecounts].
 
 Many other scRNA-seq protocols contain bespoke sequence structures that require careful processing:
 
@@ -85,7 +85,7 @@ Processing of this data requires extraction of the UMI sequence from each read o
 This includes data generated from droplet-based experiments [@zheng2017massively] or from very high-throughput plate-based protocols like MARS-seq [@jaitin2014massively].
 Processing of this data usually requires a separate step to extract the barcode sequence from each read and to allocate the read to the correct per-cell sequencing library.
 
-For these data sets, the *[scPipe](https://bioconductor.org/packages/3.9/scPipe)* package [@lian2018scpipe] provides an R-based processing pipeline for obtaining a count matrix. 
+For these data sets, the *[scPipe](https://bioconductor.org/packages/3.10/scPipe)* package [@lian2018scpipe] provides an R-based processing pipeline for obtaining a count matrix. 
 
 If spike-in RNA was added, the sequences of the spike-in transcripts can be included as additional FASTA files during genome index building prior to alignment.
 Similarly, genomic intervals for both spike-in transcripts and endogenous genes can be concatenated into a single GTF file prior to counting.
