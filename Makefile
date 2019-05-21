@@ -46,6 +46,7 @@ all: intro.knit.md \
         var.knit.md \
         de.knit.md \
         bigdata.knit.md \
+        multibatch.knit.md \
         misc.knit.md
 
 # Cleaning commands.
